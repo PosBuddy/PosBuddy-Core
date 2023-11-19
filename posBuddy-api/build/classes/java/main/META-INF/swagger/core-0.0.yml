@@ -1,0 +1,4 @@
+openapi: 3.0.1
+info:
+  title: Core
+  version: "0.0"

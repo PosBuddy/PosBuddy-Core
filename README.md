@@ -1,2 +1,2 @@
-# Core
+# PosBuddy-Core
 Main Application
