@@ -1,0 +1,5 @@
+#develop resource to postgres database
+datasources:
+  default:
+    password: posBuddy
+    url: jdbc:postgresql://posBuddy:5432/posbuddy

@@ -1,0 +1,29 @@
+micronaut:
+  router:
+    static-resources:
+      default:
+        enabled: true
+        paths: classpath:static
+        mapping: /**
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+  application:
+    name: PosBuddy-core
+
+datasources:
+  default:
+    dialect: POSTGRES
+    url: jdbc:postgresql://posBuddy-database:5432/posbuddy
+    username: posbuddy
+    driver-class-name: org.postgresql.Driver
+
+jpa:
+  default:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
