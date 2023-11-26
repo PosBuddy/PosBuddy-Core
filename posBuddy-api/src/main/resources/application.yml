@@ -16,11 +16,10 @@ micronaut:
 
 datasources:
   default:
-    dialect: POSTGRES
     url: jdbc:postgresql://posBuddy-database:5432/posbuddy
     username: posbuddy
     driver-class-name: org.postgresql.Driver
-
+    dialect: POSTGRES
 jpa:
   default:
     properties:

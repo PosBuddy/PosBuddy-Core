@@ -32,6 +32,7 @@ dependencies {
 
     runtimeOnly("ch.qos.logback:logback-classic")
     runtimeOnly "org.postgresql:postgresql:$postgresVersion"
+    runtimeOnly("org.yaml:snakeyaml")
 
     testImplementation("io.micronaut:micronaut-http-client")
 }
@@ -44,7 +45,10 @@ java {
     sourceCompatibility = JavaVersion.toVersion("17")
     targetCompatibility = JavaVersion.toVersion("17")
 }
-
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.forkOptions.jvmArgs << '-Dmicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop'
+}
 
 graalvmNative.toolchainDetection = false
 micronaut {
