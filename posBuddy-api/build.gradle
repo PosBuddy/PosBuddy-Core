@@ -7,22 +7,32 @@ plugins {
 version = "0.1"
 group = "de.jkarthaus.posBuddy"
 
+ext {
+    postgresVersion= "42.6.0"
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("io.micronaut.data:micronaut-data-processor")
     annotationProcessor("io.micronaut:micronaut-http-validation")
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
     annotationProcessor("io.micronaut.serde:micronaut-serde-processor")
+
     implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
     implementation("io.micronaut.serde:micronaut-serde-jackson")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.swagger.core.v3:swagger-annotations")
+
+    compileOnly("org.projectlombok:lombok")
     compileOnly("io.micronaut:micronaut-http-client")
+
     runtimeOnly("ch.qos.logback:logback-classic")
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly "org.postgresql:postgresql:$postgresVersion"
+
     testImplementation("io.micronaut:micronaut-http-client")
 }
 

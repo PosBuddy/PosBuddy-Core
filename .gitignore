@@ -1,2 +1,4 @@
-/.gradle/
+k/.gradle/
 /.idea/
+/posBuddy-api/build/
+/.gradle/
