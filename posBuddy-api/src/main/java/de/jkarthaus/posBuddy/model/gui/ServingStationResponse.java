@@ -9,12 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Serdeable
-public class ItemResponse {
+public class ServingStationResponse {
 
     private String id;
-    private String unit;
-    private Integer minAge;
-    private String dispensingStation;
-    private Double price;
+    private String name;
+    private String location;
 
 }
