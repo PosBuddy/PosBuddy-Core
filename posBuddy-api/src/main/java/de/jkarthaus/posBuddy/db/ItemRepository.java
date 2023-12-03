@@ -1,10 +1,10 @@
 package de.jkarthaus.posBuddy.db;
 
-import de.jkarthaus.posBuddy.db.entities.Item;
+import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 
 import java.util.List;
 
 
 public interface ItemRepository {
-    List<Item> findByStation(String stationId);
+    List<ItemEntity> findByStation(String stationId);
 }

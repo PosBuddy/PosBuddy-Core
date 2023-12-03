@@ -1,7 +1,7 @@
 package de.jkarthaus.posBuddy.db.impl;
 
 import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.db.entities.Item;
+import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import io.micronaut.transaction.annotation.ReadOnly;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
@@ -18,10 +18,10 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @ReadOnly
     @Override
-    public List<Item> findByStation(String stationId) {
-        TypedQuery<Item> query = entityManager.createQuery(
+    public List<ItemEntity> findByStation(String stationId) {
+        TypedQuery<ItemEntity> query = entityManager.createQuery(
                         "select i from items as i where station= :station",
-                        Item.class
+                        ItemEntity.class
                 )
                 .setParameter("station", stationId);
         return null;
