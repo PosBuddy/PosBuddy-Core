@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Introspected
 public class ItemEntity {
+
     @Id
     @Column(name = "artikel", nullable = false, length = Integer.MAX_VALUE)
     private String artikel;
