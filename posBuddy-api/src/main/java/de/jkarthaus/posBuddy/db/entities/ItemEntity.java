@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
+@Entity(name = "items")
 @Table(name = "items")
 @Data
 @AllArgsConstructor
@@ -18,19 +18,23 @@ import lombok.NoArgsConstructor;
 public class ItemEntity {
 
     @Id
-    @Column(name = "artikel", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "id", nullable = false, length = 10)
+    private String id;
+
+    @Column(name = "artikel", nullable = false, length = 40)
     private String artikel;
 
-    @Column(name = "einheit", nullable = false, length = Integer.MAX_VALUE)
-    private String einheit;
+    @Column(name = "unit", nullable = false, length = 20)
+    private String unit;
 
-    @Column(name = "minalter", nullable = false)
-    private Integer minalter;
+    @Column(name = "minage", nullable = false, length = Integer.MAX_VALUE)
+    private Integer minAge;
 
-    @Column(name = "ausgabestation", nullable = false, length = Integer.MAX_VALUE)
-    private String ausgabestation;
+    @Column(name = "dispensingstation", nullable = false, length = 10)
+    private String dispensingStationId;
 
-    @Column(name = "preis", nullable = false)
-    private Double preis;
+
+    @Column(name = "price", nullable = false)
+    private Double price;
 
 }

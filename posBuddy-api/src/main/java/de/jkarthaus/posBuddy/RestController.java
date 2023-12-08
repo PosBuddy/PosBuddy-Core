@@ -1,5 +1,6 @@
 package de.jkarthaus.posBuddy;
 
+import de.jkarthaus.posBuddy.db.ItemRepository;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.ItemResponse;
@@ -15,18 +16,13 @@ import lombok.RequiredArgsConstructor;
 public class RestController {
 
     final ItemMapper itemMapper;
+    final ItemRepository itemRepository;
 
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
     public ItemResponse getItems(String station) {
-        return itemMapper.toResponse(
-                new ItemEntity(
-                        "artikel",
-                        "einheit",
-                        0,
-                        "station",
-                        0.0
 
-                )
+        return itemMapper.toResponse(
+                itemRepository.findByStation(station)
         );
     }
 

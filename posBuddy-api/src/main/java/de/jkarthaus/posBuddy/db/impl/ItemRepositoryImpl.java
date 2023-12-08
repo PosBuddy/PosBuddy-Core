@@ -20,10 +20,9 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public List<ItemEntity> findByStation(String stationId) {
         TypedQuery<ItemEntity> query = entityManager.createQuery(
-                        "select i from items as i where station= :station",
-                        ItemEntity.class
-                )
-                .setParameter("station", stationId);
-        return null;
+                "select i from items as i where i.dispensingStationId = :dispensingStation",
+                ItemEntity.class
+        ).setParameter("dispensingStation", stationId);
+        return query.getResultList();
     }
 }

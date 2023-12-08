@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,10 +15,27 @@ import lombok.NoArgsConstructor;
 @Introspected
 public class ItemResponse {
 
-    private String id;
-    private String unit;
-    private Integer minAge;
-    private String dispensingStation;
-    private Double price;
+    List<Item> itemList;
+
+    @Data
+    @Serdeable
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Item {
+        private String id;
+        private String unit;
+        private Integer minAge;
+        private DispensingStation dispensingStation;
+        private Double price;
+    }
+
+    @Data
+    @Serdeable
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class DispensingStation {
+        String id;
+        String name;
+    }
 
 }
