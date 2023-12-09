@@ -13,6 +13,22 @@ micronaut:
         mapping: /swagger-ui/**
   application:
     name: PosBuddy-core
+  security:
+    x509:
+      enabled: true
+  ssl:
+    enabled: true
+  server:
+    ssl:
+      client-authentication: want
+      key-store:
+        path: classpath:ssl/keystore.p12
+        password: posBuddy
+        type: PKCS12
+      trust-store:
+        path: classpath:ssl/truststore.jks
+        password: posBuddy
+        type: JKS
 
 datasources:
   default:
