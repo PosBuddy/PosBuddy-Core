@@ -1,7 +1,7 @@
 package de.jkarthaus.posBuddy;
 
+import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.ItemResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingStationResponse;
@@ -17,12 +17,14 @@ public class RestController {
 
     final ItemMapper itemMapper;
     final ItemRepository itemRepository;
+    final DispensingStationRepository dispensingStationRepository;
 
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
     public ItemResponse getItems(String station) {
 
         return itemMapper.toResponse(
-                itemRepository.findByStation(station)
+                itemRepository.findByStation(station),
+                dispensingStationRepository.getDispensingStations()
         );
     }
 

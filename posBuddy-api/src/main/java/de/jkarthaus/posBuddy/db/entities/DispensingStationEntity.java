@@ -8,8 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "dispensingStation")
-@Table(name = "dispensingStations")
+@Entity(name = "dispensingstations")
+@Table(name = "dispensingstations")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
