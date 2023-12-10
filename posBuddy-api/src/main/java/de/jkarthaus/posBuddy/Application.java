@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.info.License;
                 description = "The best Party PointOfSale System",
                 license = @License(name = "Apache 2.0", url = " http://www.apache.org/licenses/"),
                 contact = @Contact(url = "https://github.com/PosBuddy", name = "Joern Karthaus")
+
         )
 )
 public class Application {

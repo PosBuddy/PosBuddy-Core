@@ -11,11 +11,23 @@ micronaut:
       swagger-ui:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
+
   application:
     name: PosBuddy-core
   security:
     x509:
       enabled: true
+    intercept-url-map:
+      -
+        pattern: /swagger/**
+        http-method: GET
+        access:
+          - isAnonymous()
+      -
+        pattern: /swagger-ui/**
+        http-method: GET
+        access:
+          - isAnonymous()
   ssl:
     enabled: true
   server:
