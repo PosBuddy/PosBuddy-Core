@@ -1,4 +1,5 @@
 
-rootProject.name="PosBuddy-Core"
+rootProject.name="posbuddy-core"
 
-include 'posBuddy-api', 'posBuddy-gui'
+include 'posbuddy-api', 'posbuddy-gui'
+

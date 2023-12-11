@@ -8,7 +8,7 @@ version = "0.1"
 group = "de.jkarthaus.posBuddy"
 
 ext {
-    postgresVersion= "42.6.0"
+    postgresVersion = "42.6.0"
 }
 
 repositories {
@@ -53,6 +53,7 @@ tasks.withType(JavaCompile) {
     options.forkOptions.jvmArgs << '-Dmicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop'
 }
 
+
 graalvmNative.toolchainDetection = false
 micronaut {
     runtime("netty")
@@ -62,8 +63,8 @@ micronaut {
         annotations("de.jkarthaus.posBuddy.*")
     }
     aot {
-    // Please review carefully the optimizations enabled below
-    // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
+        // Please review carefully the optimizations enabled below
+        // Check https://micronaut-projects.github.io/micronaut-aot/latest/guide/ for more details
         optimizeServiceLoading = false
         convertYamlToJava = false
         precomputeOperations = true
