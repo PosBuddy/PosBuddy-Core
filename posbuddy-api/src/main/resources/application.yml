@@ -44,7 +44,7 @@ micronaut:
 
 datasources:
   default:
-    url: jdbc:postgresql://posBuddy-database:5432/posbuddy
+    url: jdbc:postgresql://localhost:5432/posbuddy
     username: posbuddy
     driver-class-name: org.postgresql.Driver
     dialect: POSTGRES
