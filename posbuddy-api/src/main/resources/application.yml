@@ -28,6 +28,11 @@ micronaut:
         http-method: GET
         access:
           - isAnonymous()
+      -
+        pattern: /assets/**
+        http-method: GET
+        access:
+          - isAnonymous()
   ssl:
     enabled: true
   server:

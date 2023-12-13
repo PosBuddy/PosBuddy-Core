@@ -3,3 +3,9 @@ datasources:
   default:
     password: posBuddy
     url: jdbc:postgresql://posBuddy:5432/posbuddy
+micronaut:
+  router:
+    static-resources:
+      assets:
+        paths: file:/tmp/
+        mapping: /assets/**
