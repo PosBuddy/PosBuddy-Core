@@ -13,8 +13,8 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@Entity
 @Table(name = "identity")
+@Entity(name = "identity")
 public class IdentityEntity {
     @Id
     @Size(max = 36)

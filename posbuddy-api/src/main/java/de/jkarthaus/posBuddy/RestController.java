@@ -2,20 +2,22 @@ package de.jkarthaus.posBuddy;
 
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
+import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
+import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
+import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.ItemResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 import de.jkarthaus.posBuddy.model.gui.ServingStationResponse;
+import de.jkarthaus.posBuddy.service.IdentityService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.RequestAttribute;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,7 @@ public class RestController {
     final ItemMapper itemMapper;
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
+    final IdentityService identityService;
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
@@ -52,6 +55,19 @@ public class RestController {
                 "Cocktail Bar",
                 "right to the DJ"
         );
+    }
+
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    public IdentityResponse getIdentity(String posBuddyId) {
+
+        try {
+            return  identityService.getIdentityResponseById(posBuddyId);
+        } catch (posBuddyIdNotValidException e) {
+            throw new RuntimeException(e);
+        } catch (posBuddyIdNotAssignedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Secured(IS_ANONYMOUS)
