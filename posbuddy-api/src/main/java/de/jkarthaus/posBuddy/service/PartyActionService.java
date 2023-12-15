@@ -4,9 +4,9 @@ import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 
-public interface IdentityService {
+public interface PartyActionService {
 
 
-    IdentityResponse getIdentityResponseById(String posBuddyId)
+    IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAssignedException;
 }

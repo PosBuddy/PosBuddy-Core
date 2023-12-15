@@ -6,7 +6,7 @@ import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
-import de.jkarthaus.posBuddy.service.IdentityService;
+import de.jkarthaus.posBuddy.service.PartyActionService;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +16,13 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 @Singleton
-public class IdentityServiceImpl implements IdentityService {
+public class PartyActionServiceImpl implements PartyActionService {
 
     private final IdentityMapper identityMapper;
     private final IdentityRepository identityRepository;
 
     @Override
-    public IdentityResponse getIdentityResponseById(String posBuddyId)
+    public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAssignedException {
         try {
             UUID uuid = UUID.fromString(posBuddyId);
@@ -36,6 +36,10 @@ public class IdentityServiceImpl implements IdentityService {
             throw new posBuddyIdNotAssignedException("posBuddy ID not found");
         }
         return identityMapper.toResponse(identityEntity);
+    }
+
+    public void serveItems(){
+
     }
 
 }

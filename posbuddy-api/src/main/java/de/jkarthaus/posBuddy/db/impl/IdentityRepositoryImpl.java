@@ -2,9 +2,11 @@ package de.jkarthaus.posBuddy.db.impl;
 
 import de.jkarthaus.posBuddy.db.IdentityRepository;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
+import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
 import io.micronaut.transaction.annotation.ReadOnly;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 
@@ -16,12 +18,23 @@ public class IdentityRepositoryImpl implements IdentityRepository {
 
     @Override
     @ReadOnly
-    public IdentityEntity findById(String posBuddyId) {
-        TypedQuery<IdentityEntity> query = entityManager.createQuery(
-                "select i from identity as i where i.posbuddyid = :posBuddyId ",
-
-                IdentityEntity.class
-        ).setParameter("posBuddyId", posBuddyId);
-        return query.getSingleResult();
+    public IdentityEntity findById(String posBuddyId) throws posBuddyIdNotAssignedException {
+        IdentityEntity result = null;
+        try {
+            TypedQuery<IdentityEntity> query = entityManager.createQuery(
+                    """
+                                                    
+                                select i from identity as i where i.posbuddyid = :posBuddyId
+                            and i.startallocation < now() 
+                            and i.endallocation is null
+                               
+                            """,
+                    IdentityEntity.class
+            ).setParameter("posBuddyId", posBuddyId);
+            result = query.getSingleResult();
+        } catch (NoResultException noResultException) {
+            throw new posBuddyIdNotAssignedException("ID is not assigned");
+        }
+        return result;
     }
 }

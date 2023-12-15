@@ -9,7 +9,7 @@ import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.ItemResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 import de.jkarthaus.posBuddy.model.gui.ServingStationResponse;
-import de.jkarthaus.posBuddy.service.IdentityService;
+import de.jkarthaus.posBuddy.service.PartyActionService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -34,7 +34,7 @@ public class RestController {
     final ItemMapper itemMapper;
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
-    final IdentityService identityService;
+    final PartyActionService partyActionService;
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
@@ -62,7 +62,7 @@ public class RestController {
     public IdentityResponse getIdentity(String posBuddyId) {
 
         try {
-            return  identityService.getIdentityResponseById(posBuddyId);
+            return  partyActionService.getIdentityResponseByPosBuddyId(posBuddyId);
         } catch (posBuddyIdNotValidException e) {
             throw new RuntimeException(e);
         } catch (posBuddyIdNotAssignedException e) {
