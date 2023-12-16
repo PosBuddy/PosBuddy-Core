@@ -37,4 +37,8 @@ public class IdentityRepositoryImpl implements IdentityRepository {
         }
         return result;
     }
+    public setNewBalance(String posBuddyId, Float ballance){
+
+    }
+
 }
