@@ -43,4 +43,13 @@ public class RevenueEntity {
     @Column(name = "timeofsales", nullable = false)
     private Instant timeofsales;
 
+    @Size(max = 1)
+    @NotNull
+    @Column(name = "paymentaction", nullable = false, length = 1)
+    private String paymentaction;
+
+    @NotNull
+    @Column(name = "timeofaction", nullable = false)
+    private Instant timeofaction;
+
 }
