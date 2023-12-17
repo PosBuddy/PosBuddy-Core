@@ -65,7 +65,7 @@ public class PartyActionServiceImpl implements PartyActionService {
             } catch (ItemNotFoundException e) {
                 log.error("Item with id:{} not exists. -> no revenue", serveItem.getItemId());
             }
-            identityRepository.
+            identityRepository.setNewBalance(serveItem.getItemId(), actBallance.get());
         });
 
     }

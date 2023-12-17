@@ -28,7 +28,7 @@ public class RevenueEntity {
 
     @Size(max = 10)
     @NotNull
-    @Column(name = "itemid", nullable = false, length = 10)
+    @Column(name = "itemid", nullable = true, length = 10)
     private String itemid;
 
     @NotNull

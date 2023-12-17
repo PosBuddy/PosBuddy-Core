@@ -4,6 +4,7 @@ import de.jkarthaus.posBuddy.db.IdentityRepository;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
 import io.micronaut.transaction.annotation.ReadOnly;
+import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -37,8 +38,14 @@ public class IdentityRepositoryImpl implements IdentityRepository {
         }
         return result;
     }
-    public setNewBalance(String posBuddyId, Float ballance){
 
+    @Transactional
+    @Override
+    public void setNewBalance(String posBuddyId, Float balance) {
+        IdentityEntity identityEntity = new IdentityEntity();
+        identityEntity.setPosbuddyid(posBuddyId);
+        identityEntity.setBalance(balance);
+        entityManager.merge(identityEntity);
     }
 
 }
