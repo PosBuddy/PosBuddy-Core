@@ -7,10 +7,12 @@ import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
 import de.jkarthaus.posBuddy.exception.ItemNotFoundException;
+import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAssignableException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.model.Constants;
+import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 import de.jkarthaus.posBuddy.service.PartyActionService;
@@ -35,10 +37,7 @@ public class PartyActionServiceImpl implements PartyActionService {
     @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAssignedException {
-        try {
-            UUID uuid = UUID.fromString(posBuddyId);
-        } catch (Exception exception) {
-            log.error("posBuddy Id: {} is not a valif UUID", posBuddyId);
+        if (!isIdValid(posBuddyId)) {
             throw new posBuddyIdNotValidException("no valid UUID");
         }
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
@@ -88,12 +87,32 @@ public class PartyActionServiceImpl implements PartyActionService {
         identityRepository.setNewBalance(identityEntity.getPosbuddyid(), newBalance);
     }
 
-    public void allocatePosBuddyId(){
-        //TODO implement me
+    @Override
+    public void allocatePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
+            throws PosBuddyIdNotAssignableException, posBuddyIdNotValidException {
+        if (!isIdValid(allocatePosBuddyIdRequest.getPosBuddyId())) {
+            throw new posBuddyIdNotValidException("");
+        }
+        boolean isAssignable = identityRepository.isPosBuddyIdAssignable(allocatePosBuddyIdRequest.getPosBuddyId());
+        if (isAssignable) {
+            identityRepository.AssignPosBuddyId(identityMapper.fromRequest(allocatePosBuddyIdRequest));
+            return;
+        }
+        throw new PosBuddyIdNotAssignableException("Id is not asignable");
     }
 
-    public void  deAllocatePosBuddyId(String posBuddyId){
+    public void deAllocatePosBuddyId(String posBuddyId) {
 
+    }
+
+    private boolean isIdValid(String posBuddyId) {
+        try {
+            UUID uuid = UUID.fromString(posBuddyId);
+        } catch (Exception exception) {
+            log.error("posBuddy Id: {} is not a valif UUID", posBuddyId);
+            return false;
+        }
+        return true;
     }
 
 }

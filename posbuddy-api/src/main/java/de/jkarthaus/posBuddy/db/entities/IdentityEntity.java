@@ -6,7 +6,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
@@ -15,6 +17,8 @@ import java.time.LocalDate;
 @Setter
 @Table(name = "identity")
 @Entity(name = "identity")
+@AllArgsConstructor
+@NoArgsConstructor
 public class IdentityEntity {
     @Id
     @Size(max = 36)

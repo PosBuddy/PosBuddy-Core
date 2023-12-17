@@ -10,9 +10,13 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import java.time.LocalDate;
 
 @RequiredArgsConstructor
 @Singleton
+@Slf4j
 public class IdentityRepositoryImpl implements IdentityRepository {
 
     private final EntityManager entityManager;
@@ -39,6 +43,34 @@ public class IdentityRepositoryImpl implements IdentityRepository {
         return result;
     }
 
+    @Override
+    @ReadOnly
+    public boolean isPosBuddyIdAssignable(String posBuddyId) {
+        IdentityEntity identityEntity = null;
+        try {
+            TypedQuery<IdentityEntity> query = entityManager.createQuery(
+                    """
+                            select i from identity as i where i.posbuddyid = :posBuddyId
+                            """,
+                    IdentityEntity.class
+            ).setParameter("posBuddyId", posBuddyId);
+            identityEntity = query.getSingleResult();
+        } catch (NoResultException noResultException) {
+            log.debug("id:{} is assignable becuase id not exists");
+            return true;
+        }
+        if (identityEntity.getEndallocation() == null) {
+            log.debug("id:{} already assigned", posBuddyId);
+            return false;
+        }
+        if (identityEntity.getEndallocation().isBefore(LocalDate.now())) {
+            log.debug("id:{} EndAllocation is before now -> id is new Assignable");
+            return true;
+        }
+        log.warn("id:{} has unknown condition -> set to not assignable");
+        return false;
+    }
+
     @Transactional
     @Override
     public void setNewBalance(String posBuddyId, Float balance) {
@@ -48,4 +80,10 @@ public class IdentityRepositoryImpl implements IdentityRepository {
         entityManager.merge(identityEntity);
     }
 
+
+    @Transactional
+    @Override
+    public void AssignPosBuddyId(IdentityEntity identityEntity){
+        entityManager.merge(identityEntity);
+    }
 }
