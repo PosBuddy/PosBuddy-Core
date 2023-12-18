@@ -12,7 +12,9 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
 @Singleton
@@ -63,7 +65,7 @@ public class IdentityRepositoryImpl implements IdentityRepository {
             log.debug("id:{} already assigned", posBuddyId);
             return false;
         }
-        if (identityEntity.getEndallocation().isBefore(LocalDate.now())) {
+        if (identityEntity.getEndallocation().isBefore(LocalDateTime.now())) {
             log.debug("id:{} EndAllocation is before now -> id is new Assignable");
             return true;
         }

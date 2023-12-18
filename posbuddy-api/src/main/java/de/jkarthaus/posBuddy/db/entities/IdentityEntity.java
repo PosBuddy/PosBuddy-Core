@@ -11,7 +11,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -50,13 +52,15 @@ public class IdentityEntity {
     private String atribute3;
 
     @Column(name = "startallocation")
-    private LocalDate startallocation;
+    private LocalDateTime startallocation;
 
     @Column(name = "endallocation")
-    private LocalDate endallocation;
+    private LocalDateTime endallocation;
+
 
     @NotNull
     @Column(name = "balance", nullable = false)
     private Float balance;
+
 
 }

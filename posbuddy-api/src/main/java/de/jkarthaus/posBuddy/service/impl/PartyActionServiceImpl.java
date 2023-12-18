@@ -98,8 +98,7 @@ public class PartyActionServiceImpl implements PartyActionService {
         boolean isAssignable = identityRepository.isPosBuddyIdAssignable(posBuddyId);
         if (isAssignable) {
             identityRepository.AssignPosBuddyId(
-                    identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest)
-            );
+                    identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest));
             return;
         }
         throw new PosBuddyIdNotAssignableException("posBuddyId is not assignable");

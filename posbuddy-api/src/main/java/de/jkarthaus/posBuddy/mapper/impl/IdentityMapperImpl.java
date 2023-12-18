@@ -7,7 +7,10 @@ import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import jakarta.inject.Singleton;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Singleton
 @Slf4j
@@ -28,6 +31,7 @@ public class IdentityMapperImpl implements IdentityMapper {
 
     @Override
     public IdentityEntity fromRequest(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest) {
+        System.out.println(ZonedDateTime.now());
         return new IdentityEntity(
                 posBuddyId,
                 allocatePosBuddyIdRequest.getSurname(),
@@ -36,7 +40,7 @@ public class IdentityMapperImpl implements IdentityMapper {
                 allocatePosBuddyIdRequest.getAttribute1(),
                 allocatePosBuddyIdRequest.getAttribute2(),
                 allocatePosBuddyIdRequest.getAttribute3(),
-                LocalDate.now(),
+                LocalDateTime.now(),
                 null,
                 allocatePosBuddyIdRequest.getBalance()
         );
