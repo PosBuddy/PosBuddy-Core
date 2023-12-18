@@ -27,9 +27,9 @@ public class IdentityMapperImpl implements IdentityMapper {
     }
 
     @Override
-    public IdentityEntity fromRequest(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest) {
+    public IdentityEntity fromRequest(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest) {
         return new IdentityEntity(
-                allocatePosBuddyIdRequest.getPosBuddyId(),
+                posBuddyId,
                 allocatePosBuddyIdRequest.getSurname(),
                 allocatePosBuddyIdRequest.getLastname(),
                 allocatePosBuddyIdRequest.getBirthday(),

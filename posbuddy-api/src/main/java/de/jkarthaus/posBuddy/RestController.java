@@ -2,13 +2,11 @@ package de.jkarthaus.posBuddy;
 
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
+import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAssignableException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
-import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
-import de.jkarthaus.posBuddy.model.gui.ItemResponse;
-import de.jkarthaus.posBuddy.model.gui.ServingRequest;
-import de.jkarthaus.posBuddy.model.gui.ServingStationResponse;
+import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -62,10 +60,12 @@ public class RestController {
     public IdentityResponse getIdentity(String posBuddyId) {
 
         try {
-            return  partyActionService.getIdentityResponseByPosBuddyId(posBuddyId);
+            return partyActionService.getIdentityResponseByPosBuddyId(posBuddyId);
         } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
             throw new RuntimeException(e);
         } catch (posBuddyIdNotAssignedException e) {
+            log.error("posBuddyIdNotAssignedException:{}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -81,7 +81,30 @@ public class RestController {
         if (x509Authentication != authentication) {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
+        return HttpResponse.ok();
+    }
 
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/allocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse allocate(
+            String posBuddyId,
+            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        log.info("allocate Person to posBuddyId:", posBuddyId);
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        try {
+            partyActionService.allocatePosBuddyId(posBuddyId, allocatePosBuddyIdRequest);
+        } catch (PosBuddyIdNotAssignableException e) {
+            log.error("PosBuddyIdNotAssignableException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        }
         return HttpResponse.ok();
     }
 

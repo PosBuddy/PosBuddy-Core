@@ -18,6 +18,6 @@ public interface PartyActionService {
 
     void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAssignedException;
 
-    void allocatePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
+    void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAssignableException, posBuddyIdNotValidException;
 }

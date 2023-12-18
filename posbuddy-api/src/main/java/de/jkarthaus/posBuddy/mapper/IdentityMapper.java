@@ -11,5 +11,6 @@ public interface IdentityMapper {
 
     IdentityResponse toResponse(IdentityEntity identityEntity);
 
-    IdentityEntity fromRequest(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest);
+
+    IdentityEntity fromRequest(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest);
 }

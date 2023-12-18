@@ -90,14 +90,16 @@ public class PartyActionServiceImpl implements PartyActionService {
     }
 
     @Override
-    public void allocatePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
+    public void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAssignableException, posBuddyIdNotValidException {
-        if (isNotValidUUID(allocatePosBuddyIdRequest.getPosBuddyId())) {
+        if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("");
         }
-        boolean isAssignable = identityRepository.isPosBuddyIdAssignable(allocatePosBuddyIdRequest.getPosBuddyId());
+        boolean isAssignable = identityRepository.isPosBuddyIdAssignable(posBuddyId);
         if (isAssignable) {
-            identityRepository.AssignPosBuddyId(identityMapper.fromRequest(allocatePosBuddyIdRequest));
+            identityRepository.AssignPosBuddyId(
+                    identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest)
+            );
             return;
         }
         throw new PosBuddyIdNotAssignableException("posBuddyId is not assignable");

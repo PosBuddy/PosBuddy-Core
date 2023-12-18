@@ -12,7 +12,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Serdeable
 public class AllocatePosBuddyIdRequest {
-    private String posBuddyId;
     private String surname;
     private String lastname;
     private LocalDate birthday;
