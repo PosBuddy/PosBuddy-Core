@@ -37,22 +37,23 @@ public class PartyActionServiceImpl implements PartyActionService {
     @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAssignedException {
-        if (!isIdValid(posBuddyId)) {
+        if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("no valid UUID");
         }
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         if (identityEntity == null) {
-            log.info("Actual valid posBuddy Identity with ID:{} not found in Database");
+            log.info("Actual valid posBuddy Identity with ID:{} not found in Database", posBuddyId);
             throw new posBuddyIdNotAssignedException("posBuddy ID not found");
         }
         return identityMapper.toResponse(identityEntity);
     }
 
+    @Override
     public void serveItems(ServingRequest servingRequest, String posBuddyId)
             throws posBuddyIdNotAssignedException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
-        AtomicReference<Float> actBallance = new AtomicReference<>(identityEntity.getBalance());
-        servingRequest.getServeItems().stream().forEach(serveItem -> {
+        AtomicReference<Float> actBalance = new AtomicReference<>(identityEntity.getBalance());
+        servingRequest.getServeItems().forEach(serveItem -> {
             try {
                 ItemEntity itemEntity = itemRepository.findItemById(serveItem.getItemId());
                 RevenueEntity revenueEntity = new RevenueEntity();
@@ -62,16 +63,17 @@ public class PartyActionServiceImpl implements PartyActionService {
                 revenueEntity.setPosbuddyid(posBuddyId);
                 revenueEntity.setPaymentaction(Constants.PAYMENT);
                 revenueRepository.addRevenue(revenueEntity);
-                actBallance.set(actBallance.get() - revenueEntity.getValue());
+                actBalance.set(actBalance.get() - revenueEntity.getValue());
             } catch (ItemNotFoundException e) {
                 log.error("Item with id:{} not exists. -> no revenue", serveItem.getItemId());
             }
-            identityRepository.setNewBalance(serveItem.getItemId(), actBallance.get());
+            identityRepository.setNewBalance(serveItem.getItemId(), actBalance.get());
         });
 
     }
 
 
+    @Override
     public void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAssignedException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         float newBalance = identityEntity.getBalance() + value;
@@ -83,14 +85,14 @@ public class PartyActionServiceImpl implements PartyActionService {
         revenueEntity.setPosbuddyid(posBuddyId);
         revenueEntity.setPaymentaction(Constants.DEPOSIT);
         revenueRepository.addRevenue(revenueEntity);
-        // setNewBallance
+        // setNewBalance
         identityRepository.setNewBalance(identityEntity.getPosbuddyid(), newBalance);
     }
 
     @Override
     public void allocatePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAssignableException, posBuddyIdNotValidException {
-        if (!isIdValid(allocatePosBuddyIdRequest.getPosBuddyId())) {
+        if (isNotValidUUID(allocatePosBuddyIdRequest.getPosBuddyId())) {
             throw new posBuddyIdNotValidException("");
         }
         boolean isAssignable = identityRepository.isPosBuddyIdAssignable(allocatePosBuddyIdRequest.getPosBuddyId());
@@ -98,21 +100,22 @@ public class PartyActionServiceImpl implements PartyActionService {
             identityRepository.AssignPosBuddyId(identityMapper.fromRequest(allocatePosBuddyIdRequest));
             return;
         }
-        throw new PosBuddyIdNotAssignableException("Id is not asignable");
+        throw new PosBuddyIdNotAssignableException("posBuddyId is not assignable");
     }
 
     public void deAllocatePosBuddyId(String posBuddyId) {
 
     }
 
-    private boolean isIdValid(String posBuddyId) {
+    private boolean isNotValidUUID(String posBuddyId) {
         try {
             UUID uuid = UUID.fromString(posBuddyId);
+            log.debug("ID:{} is a valid UUID", uuid);
         } catch (Exception exception) {
-            log.error("posBuddy Id: {} is not a valif UUID", posBuddyId);
-            return false;
+            log.error("ID: {} is not a valid UUID", posBuddyId);
+            return true;
         }
-        return true;
+        return false;
     }
 
 }
