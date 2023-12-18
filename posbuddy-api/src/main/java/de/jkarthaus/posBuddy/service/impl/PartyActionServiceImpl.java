@@ -61,7 +61,7 @@ public class PartyActionServiceImpl implements PartyActionService {
                 revenueEntity.setTimeofsales(Instant.now());
                 revenueEntity.setValue(Double.valueOf(serveItem.getCount() * itemEntity.getPrice()).floatValue());
                 revenueEntity.setPosbuddyid(posBuddyId);
-                revenueEntity.setPaymentaction(Constants.PAYMENT);
+                revenueEntity.setPaymentaction(Constants.REVENUE);
                 revenueRepository.addRevenue(revenueEntity);
                 actBalance.set(actBalance.get() - revenueEntity.getValue());
             } catch (ItemNotFoundException e) {
@@ -89,6 +89,16 @@ public class PartyActionServiceImpl implements PartyActionService {
         identityRepository.setNewBalance(identityEntity.getPosbuddyid(), newBalance);
     }
 
+    /**
+     * connect a posBuddyId with a Person
+     * this connection exists until you
+     * deAllocate
+     *
+     * @param posBuddyId
+     * @param allocatePosBuddyIdRequest
+     * @throws PosBuddyIdNotAssignableException
+     * @throws posBuddyIdNotValidException
+     */
     @Override
     public void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAssignableException, posBuddyIdNotValidException {
@@ -105,6 +115,11 @@ public class PartyActionServiceImpl implements PartyActionService {
     }
 
     public void deAllocatePosBuddyId(String posBuddyId) {
+        //TODO: implement me
+    }
+
+    public void payment(String posBuddyId, Float value) {
+        //TODO: implement me
 
     }
 
