@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -39,10 +40,6 @@ public class RevenueEntity {
     @Column(name = "value", nullable = false)
     private Float value;
 
-    @NotNull
-    @Column(name = "timeofsales", nullable = false)
-    private Instant timeofsales;
-
     @Size(max = 1)
     @NotNull
     @Column(name = "paymentaction", nullable = false, length = 1)
@@ -50,6 +47,6 @@ public class RevenueEntity {
 
     @NotNull
     @Column(name = "timeofaction", nullable = false)
-    private Instant timeofaction;
+    private LocalDateTime timeofaction;
 
 }

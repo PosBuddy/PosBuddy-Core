@@ -6,10 +6,7 @@ import de.jkarthaus.posBuddy.db.RevenueRepository;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
-import de.jkarthaus.posBuddy.exception.ItemNotFoundException;
-import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAssignableException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
+import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.model.Constants;
 import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
@@ -20,7 +17,7 @@ import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,21 +33,21 @@ public class PartyActionServiceImpl implements PartyActionService {
 
     @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
-            throws posBuddyIdNotValidException, posBuddyIdNotAssignedException {
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
         if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("no valid UUID");
         }
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         if (identityEntity == null) {
             log.info("Actual valid posBuddy Identity with ID:{} not found in Database", posBuddyId);
-            throw new posBuddyIdNotAssignedException("posBuddy ID not found");
+            throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
         }
         return identityMapper.toResponse(identityEntity);
     }
 
     @Override
     public void serveItems(ServingRequest servingRequest, String posBuddyId)
-            throws posBuddyIdNotAssignedException {
+            throws posBuddyIdNotAllocatedException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         AtomicReference<Float> actBalance = new AtomicReference<>(identityEntity.getBalance());
         servingRequest.getServeItems().forEach(serveItem -> {
@@ -58,7 +55,7 @@ public class PartyActionServiceImpl implements PartyActionService {
                 ItemEntity itemEntity = itemRepository.findItemById(serveItem.getItemId());
                 RevenueEntity revenueEntity = new RevenueEntity();
                 revenueEntity.setAmount(serveItem.getCount());
-                revenueEntity.setTimeofsales(Instant.now());
+                revenueEntity.setTimeofaction(LocalDateTime.now());
                 revenueEntity.setValue(Double.valueOf(serveItem.getCount() * itemEntity.getPrice()).floatValue());
                 revenueEntity.setPosbuddyid(posBuddyId);
                 revenueEntity.setPaymentaction(Constants.REVENUE);
@@ -74,13 +71,13 @@ public class PartyActionServiceImpl implements PartyActionService {
 
 
     @Override
-    public void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAssignedException {
+    public void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         float newBalance = identityEntity.getBalance() + value;
         // add revenue
         RevenueEntity revenueEntity = new RevenueEntity();
         revenueEntity.setAmount(1);
-        revenueEntity.setTimeofsales(Instant.now());
+        revenueEntity.setTimeofaction(LocalDateTime.now());
         revenueEntity.setValue(value);
         revenueEntity.setPosbuddyid(posBuddyId);
         revenueEntity.setPaymentaction(Constants.DEPOSIT);
@@ -93,33 +90,51 @@ public class PartyActionServiceImpl implements PartyActionService {
      * connect a posBuddyId with a Person
      * this connection exists until you
      * deAllocate
-     *
-     * @param posBuddyId
-     * @param allocatePosBuddyIdRequest
-     * @throws PosBuddyIdNotAssignableException
-     * @throws posBuddyIdNotValidException
      */
     @Override
     public void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
-            throws PosBuddyIdNotAssignableException, posBuddyIdNotValidException {
+            throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException {
         if (isNotValidUUID(posBuddyId)) {
-            throw new posBuddyIdNotValidException("");
+            throw new posBuddyIdNotValidException("PosBuddy ID is not validS");
         }
-        boolean isAssignable = identityRepository.isPosBuddyIdAssignable(posBuddyId);
+        boolean isAssignable = identityRepository.isPosBuddyIdAllocatable(posBuddyId);
         if (isAssignable) {
-            identityRepository.AssignPosBuddyId(
+            identityRepository.allocatePosBuddyId(
                     identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest));
             return;
         }
-        throw new PosBuddyIdNotAssignableException("posBuddyId is not assignable");
+        throw new PosBuddyIdNotAllocateableException("posBuddyId is not assignable");
     }
 
-    public void deAllocatePosBuddyId(String posBuddyId) {
-        //TODO: implement me
+    @Override
+    public void deAllocatePosBuddyId(String posBuddyId)
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
+        if (isNotValidUUID(posBuddyId)) {
+            throw new posBuddyIdNotValidException("PosBuddy ID is not valid");
+        }
+        if (identityRepository.isPosBuddyIdAllocatable(posBuddyId)) {
+            throw new posBuddyIdNotAllocatedException("posBuddyId is Not allocated");
+        }
+        identityRepository.deAllocatePosBuddyId(posBuddyId);
     }
 
-    public void payment(String posBuddyId, Float value) {
-        //TODO: implement me
+    @Override
+    public void payment(String posBuddyId, Float value) throws
+            posBuddyIdNotAllocatedException, OutOfBalanceException {
+        IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
+        if (identityEntity.getBalance() < 0) {
+            throw new OutOfBalanceException("Balance is already negativ");
+        }
+        if (identityEntity.getBalance() - value < 0) {
+            throw new OutOfBalanceException("insufficient credit");
+        }
+        RevenueEntity revenueEntity = new RevenueEntity();
+        revenueEntity.setPaymentaction(Constants.PAYMENT);
+        revenueEntity.setPosbuddyid(posBuddyId);
+        revenueEntity.setAmount(1);
+        revenueEntity.setTimeofaction(LocalDateTime.now());
+        revenueRepository.addRevenue(revenueEntity);
+        identityRepository.setNewBalance(posBuddyId, identityEntity.getBalance() - value);
 
     }
 

@@ -2,8 +2,8 @@ package de.jkarthaus.posBuddy;
 
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAssignableException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
+import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAllocateableException;
+import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.*;
@@ -64,8 +64,8 @@ public class RestController {
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
             throw new RuntimeException(e);
-        } catch (posBuddyIdNotAssignedException e) {
-            log.error("posBuddyIdNotAssignedException:{}", e.getMessage());
+        } catch (posBuddyIdNotAllocatedException e) {
+            log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -98,8 +98,8 @@ public class RestController {
         }
         try {
             partyActionService.allocatePosBuddyId(posBuddyId, allocatePosBuddyIdRequest);
-        } catch (PosBuddyIdNotAssignableException e) {
-            log.error("PosBuddyIdNotAssignableException:{}", e.getMessage());
+        } catch (PosBuddyIdNotAllocateableException e) {
+            log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
             throw new RuntimeException(e);
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());

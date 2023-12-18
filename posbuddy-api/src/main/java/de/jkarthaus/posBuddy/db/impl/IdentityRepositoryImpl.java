@@ -2,7 +2,7 @@ package de.jkarthaus.posBuddy.db.impl;
 
 import de.jkarthaus.posBuddy.db.IdentityRepository;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotAssignedException;
+import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
 import io.micronaut.transaction.annotation.ReadOnly;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
@@ -12,8 +12,6 @@ import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
@@ -25,7 +23,7 @@ public class IdentityRepositoryImpl implements IdentityRepository {
 
     @Override
     @ReadOnly
-    public IdentityEntity findById(String posBuddyId) throws posBuddyIdNotAssignedException {
+    public IdentityEntity findById(String posBuddyId) throws posBuddyIdNotAllocatedException {
         IdentityEntity result = null;
         try {
             TypedQuery<IdentityEntity> query = entityManager.createQuery(
@@ -40,14 +38,14 @@ public class IdentityRepositoryImpl implements IdentityRepository {
             ).setParameter("posBuddyId", posBuddyId);
             result = query.getSingleResult();
         } catch (NoResultException noResultException) {
-            throw new posBuddyIdNotAssignedException("ID is not assigned");
+            throw new posBuddyIdNotAllocatedException("ID is not assigned");
         }
         return result;
     }
 
     @Override
     @ReadOnly
-    public boolean isPosBuddyIdAssignable(String posBuddyId) {
+    public boolean isPosBuddyIdAllocatable(String posBuddyId) {
         IdentityEntity identityEntity = null;
         try {
             TypedQuery<IdentityEntity> query = entityManager.createQuery(
@@ -85,7 +83,16 @@ public class IdentityRepositoryImpl implements IdentityRepository {
 
     @Transactional
     @Override
-    public void AssignPosBuddyId(IdentityEntity identityEntity){
+    public void deAllocatePosBuddyId(String posBuddyId) {
+        IdentityEntity identityEntity = new IdentityEntity();
+        identityEntity.setPosbuddyid(posBuddyId);
+        identityEntity.setEndallocation(LocalDateTime.now());
+        entityManager.merge(identityEntity);
+    }
+
+    @Transactional
+    @Override
+    public void allocatePosBuddyId(IdentityEntity identityEntity) {
         entityManager.merge(identityEntity);
     }
 }
