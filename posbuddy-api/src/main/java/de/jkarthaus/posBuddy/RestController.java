@@ -131,7 +131,7 @@ public class RestController {
     }
 
     @Secured(IS_ANONYMOUS)
-    @Get(uri = "/payment/{posBuddyId}/value", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/payment/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     public HttpResponse payment(
             String posBuddyId,
             @QueryValue Float value,

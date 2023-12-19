@@ -73,18 +73,7 @@ public class IdentityRepositoryImpl implements IdentityRepository {
 
     @Transactional
     @Override
-    public void setNewBalance(String posBuddyId, Float balance) {
-        IdentityEntity identityEntity = new IdentityEntity();
-        identityEntity.setPosbuddyid(posBuddyId);
-        identityEntity.setBalance(balance);
-        entityManager.merge(identityEntity);
-    }
-
-
-    @Transactional
-    @Override
-    public void deAllocatePosBuddyId(IdentityEntity identityEntity) {
-        identityEntity.setEndallocation(LocalDateTime.now());
+    public void updateIdentityEntity(IdentityEntity identityEntity) {
         entityManager.merge(identityEntity);
         }
 

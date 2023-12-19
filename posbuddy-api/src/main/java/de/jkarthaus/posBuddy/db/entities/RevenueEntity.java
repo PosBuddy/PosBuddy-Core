@@ -1,12 +1,11 @@
 package de.jkarthaus.posBuddy.db.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
@@ -19,6 +18,7 @@ public class RevenueEntity {
     @Id
     @NotNull
     @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Integer id;
 
     @Size(max = 36)
@@ -27,7 +27,6 @@ public class RevenueEntity {
     private String posbuddyid;
 
     @Size(max = 10)
-    @NotNull
     @Column(name = "itemid", nullable = true, length = 10)
     private String itemid;
 

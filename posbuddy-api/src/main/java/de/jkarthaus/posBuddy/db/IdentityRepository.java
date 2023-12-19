@@ -12,12 +12,9 @@ public interface IdentityRepository {
     @ReadOnly
     boolean isPosBuddyIdAllocatable(String posBuddyId);
 
-    @Transactional
-    void setNewBalance(String posBuddyId, Float balance);
-
 
     @Transactional
-    void deAllocatePosBuddyId(IdentityEntity identityEntity);
+    void updateIdentityEntity(IdentityEntity identityEntity);
 
     @Transactional
     void allocatePosBuddyId(IdentityEntity identityEntity);

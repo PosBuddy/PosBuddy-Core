@@ -13,6 +13,7 @@ import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 import de.jkarthaus.posBuddy.service.PartyActionService;
+import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,9 +63,10 @@ public class PartyActionServiceImpl implements PartyActionService {
                 revenueRepository.addRevenue(revenueEntity);
                 actBalance.set(actBalance.get() - revenueEntity.getValue());
             } catch (ItemNotFoundException e) {
-                log.error("Item with id:{} not exists. -> no revenue", serveItem.getItemId());
+                log.error("Item with id:{} not exists. -> no revenue for this item", serveItem.getItemId());
             }
-            identityRepository.setNewBalance(serveItem.getItemId(), actBalance.get());
+            identityEntity.setBalance(actBalance.get());
+            identityRepository.updateIdentityEntity(identityEntity);
         });
 
     }
@@ -83,7 +85,8 @@ public class PartyActionServiceImpl implements PartyActionService {
         revenueEntity.setPaymentaction(Constants.DEPOSIT);
         revenueRepository.addRevenue(revenueEntity);
         // setNewBalance
-        identityRepository.setNewBalance(identityEntity.getPosbuddyid(), newBalance);
+        identityEntity.setBalance(newBalance);
+        identityRepository.updateIdentityEntity(identityEntity);
     }
 
     /**
@@ -115,11 +118,13 @@ public class PartyActionServiceImpl implements PartyActionService {
         if (identityRepository.isPosBuddyIdAllocatable(posBuddyId)) {
             throw new posBuddyIdNotAllocatedException("posBuddyId is Not allocated");
         }
-
-        identityRepository.deAllocatePosBuddyId(identityRepository.findById(posBuddyId));
+        IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
+        identityEntity.setEndallocation(LocalDateTime.now());
+        identityRepository.updateIdentityEntity(identityEntity);
     }
 
     @Override
+    @Transactional
     public void payment(String posBuddyId, Float value) throws
             posBuddyIdNotAllocatedException, OutOfBalanceException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
@@ -129,14 +134,17 @@ public class PartyActionServiceImpl implements PartyActionService {
         if (identityEntity.getBalance() - value < 0) {
             throw new OutOfBalanceException("insufficient credit");
         }
+        // persist revenue
         RevenueEntity revenueEntity = new RevenueEntity();
         revenueEntity.setPaymentaction(Constants.PAYMENT);
         revenueEntity.setPosbuddyid(posBuddyId);
         revenueEntity.setAmount(1);
+        revenueEntity.setValue(value);
         revenueEntity.setTimeofaction(LocalDateTime.now());
         revenueRepository.addRevenue(revenueEntity);
-        identityRepository.setNewBalance(posBuddyId, identityEntity.getBalance() - value);
-
+        // update new balance
+        identityEntity.setBalance(identityEntity.getBalance() - value);
+        identityRepository.updateIdentityEntity(identityEntity);
     }
 
     private boolean isNotValidUUID(String posBuddyId) {
