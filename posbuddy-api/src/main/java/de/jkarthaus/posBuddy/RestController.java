@@ -2,6 +2,7 @@ package de.jkarthaus.posBuddy;
 
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
+import de.jkarthaus.posBuddy.exception.OutOfBalanceException;
 import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAllocateableException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
@@ -10,9 +11,7 @@ import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
@@ -103,6 +102,54 @@ public class RestController {
             throw new RuntimeException(e);
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return HttpResponse.ok();
+    }
+
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/deAllocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse deAllocate(
+            String posBuddyId,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        log.info("deAllocate Person from posBuddyId:", posBuddyId);
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        try {
+            partyActionService.deAllocatePosBuddyId(posBuddyId);
+        } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        } catch (posBuddyIdNotAllocatedException e) {
+            log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return HttpResponse.ok();
+    }
+
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/payment/{posBuddyId}/value", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse payment(
+            String posBuddyId,
+            @QueryValue Float value,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        log.info("payout {} EUR from posBuddyId:", posBuddyId);
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+
+        try {
+            partyActionService.payment(posBuddyId, value);
+        } catch (posBuddyIdNotAllocatedException e) {
+            log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        } catch (OutOfBalanceException e) {
+            log.error("OutOfBalanceException:{}", e.getMessage());
             throw new RuntimeException(e);
         }
         return HttpResponse.ok();

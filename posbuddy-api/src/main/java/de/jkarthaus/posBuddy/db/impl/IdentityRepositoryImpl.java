@@ -83,12 +83,10 @@ public class IdentityRepositoryImpl implements IdentityRepository {
 
     @Transactional
     @Override
-    public void deAllocatePosBuddyId(String posBuddyId) {
-        IdentityEntity identityEntity = new IdentityEntity();
-        identityEntity.setPosbuddyid(posBuddyId);
+    public void deAllocatePosBuddyId(IdentityEntity identityEntity) {
         identityEntity.setEndallocation(LocalDateTime.now());
         entityManager.merge(identityEntity);
-    }
+        }
 
     @Transactional
     @Override

@@ -3,6 +3,7 @@ datasources:
   default:
     password: posBuddy
     url: jdbc:postgresql://posBuddy.fritz.box:5432/posbuddy
+
 micronaut:
   router:
     static-resources:

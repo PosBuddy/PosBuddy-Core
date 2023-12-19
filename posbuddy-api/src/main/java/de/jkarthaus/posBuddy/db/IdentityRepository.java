@@ -15,8 +15,9 @@ public interface IdentityRepository {
     @Transactional
     void setNewBalance(String posBuddyId, Float balance);
 
+
     @Transactional
-    void deAllocatePosBuddyId(String posBuddyId);
+    void deAllocatePosBuddyId(IdentityEntity identityEntity);
 
     @Transactional
     void allocatePosBuddyId(IdentityEntity identityEntity);

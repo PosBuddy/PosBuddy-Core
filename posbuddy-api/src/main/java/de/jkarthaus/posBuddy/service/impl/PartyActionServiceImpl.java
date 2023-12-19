@@ -115,7 +115,8 @@ public class PartyActionServiceImpl implements PartyActionService {
         if (identityRepository.isPosBuddyIdAllocatable(posBuddyId)) {
             throw new posBuddyIdNotAllocatedException("posBuddyId is Not allocated");
         }
-        identityRepository.deAllocatePosBuddyId(posBuddyId);
+
+        identityRepository.deAllocatePosBuddyId(identityRepository.findById(posBuddyId));
     }
 
     @Override
