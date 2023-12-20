@@ -9,9 +9,14 @@ import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
+import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
@@ -32,6 +37,7 @@ public class RestController {
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
     final PartyActionService partyActionService;
+    final SecurityService securityService;
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
@@ -80,6 +86,14 @@ public class RestController {
         if (x509Authentication != authentication) {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
+        if (!securityService.isServeStation(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        }
+        try {
+            partyActionService.serveItems(servingRequest, posId);
+        } catch (posBuddyIdNotAllocatedException e) {
+            throw new RuntimeException(e);
+        }
         return HttpResponse.ok();
     }
 
@@ -94,6 +108,9 @@ public class RestController {
         if (x509Authentication != authentication) {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
+        }
+        if (!securityService.isCheckoutStation(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
             partyActionService.allocatePosBuddyId(posBuddyId, allocatePosBuddyIdRequest);
@@ -118,6 +135,9 @@ public class RestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
+        if (!securityService.isCheckoutStation(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        }
         try {
             partyActionService.deAllocatePosBuddyId(posBuddyId);
         } catch (posBuddyIdNotValidException e) {
@@ -131,7 +151,7 @@ public class RestController {
     }
 
     @Secured(IS_ANONYMOUS)
-    @Get(uri = "/payment/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/payment/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     public HttpResponse payment(
             String posBuddyId,
             @QueryValue Float value,
@@ -140,9 +160,11 @@ public class RestController {
         log.info("payout {} EUR from posBuddyId:", posBuddyId);
         if (x509Authentication != authentication) {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
-            return HttpResponse.notAllowed();
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
-
+        if (!securityService.isCheckoutStation(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        }
         try {
             partyActionService.payment(posBuddyId, value);
         } catch (posBuddyIdNotAllocatedException e) {
