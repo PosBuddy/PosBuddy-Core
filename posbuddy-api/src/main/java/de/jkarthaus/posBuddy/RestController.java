@@ -2,12 +2,10 @@ package de.jkarthaus.posBuddy;
 
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.exception.OutOfBalanceException;
-import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAllocateableException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
+import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.*;
+import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.HttpResponse;
@@ -37,6 +35,7 @@ public class RestController {
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
     final PartyActionService partyActionService;
+    final DataImportService dataImportService;
     final SecurityService securityService;
 
     @Secured(IS_ANONYMOUS)
@@ -73,6 +72,19 @@ public class RestController {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
             throw new RuntimeException(e);
         }
+    }
+
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/importItems", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse importItems(@Nullable X509Authentication x509Authentication,
+                                    @Nullable Authentication authentication) {
+        try {
+            dataImportService.importItemCsv();
+        } catch (ParseImportException e) {
+            log.error("ParseImportException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return HttpResponse.ok();
     }
 
     @Secured(IS_ANONYMOUS)

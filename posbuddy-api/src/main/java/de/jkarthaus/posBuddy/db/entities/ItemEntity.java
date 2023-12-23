@@ -21,7 +21,7 @@ public class ItemEntity {
     @Column(name = "id", nullable = false, length = 10)
     private String id;
 
-    @Column(name = "artikel", nullable = false, length = 40)
+    @Column(name = "itemtext", nullable = false, length = 40)
     private String itemText;
 
     @Column(name = "unit", nullable = false, length = 20)
@@ -32,7 +32,6 @@ public class ItemEntity {
 
     @Column(name = "dispensingstation", nullable = false, length = 10)
     private String dispensingStationId;
-
 
     @Column(name = "price", nullable = false)
     private Double price;

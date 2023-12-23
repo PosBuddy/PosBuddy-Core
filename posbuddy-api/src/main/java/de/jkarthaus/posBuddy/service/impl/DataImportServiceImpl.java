@@ -1,6 +1,7 @@
 package de.jkarthaus.posBuddy.service.impl;
 
 import de.jkarthaus.posBuddy.db.ItemRepository;
+import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.exception.ParseImportException;
 import jakarta.inject.Singleton;
 import lombok.AllArgsConstructor;
@@ -18,17 +19,23 @@ import java.util.Map;
 @Singleton
 @Slf4j
 @RequiredArgsConstructor
-public class DataImportServiceImpl {
+public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.DataImportService {
 
     private final ItemRepository itemRepository;
 
     private Map<String, ItemImport> dataImport;
 
-    private void importItemCsv() throws ParseImportException {
+    @Override
+    public void importItemCsv() throws ParseImportException {
         dataImport = new HashMap<>();
+        log.info("check all data for import");
         try {
-            Reader in = new FileReader("path/to/file.csv");
-            Iterable<CSVRecord> records = CSVFormat.EXCEL.parse(in);
+            Reader in = new FileReader("/tmp/posBuddyItems.csv");
+            Iterable<CSVRecord> records = CSVFormat
+                    .EXCEL
+                    .withHeader("ID", "Bezeichnung", "Einheit", "Mindestalter", "Ausgabestation", "Preis")
+                    .withFirstRecordAsHeader()
+                    .parse(in);
             for (CSVRecord record : records) {
                 String itemId = checkId(record.get("ID"));
                 dataImport.put(
@@ -45,6 +52,21 @@ public class DataImportServiceImpl {
         } catch (Exception e) {
             throw new ParseImportException(e.getMessage());
         }
+        log.info("remove all items");
+        itemRepository.clearItems();
+        log.info("add new items from import");
+        dataImport.keySet().stream().forEach(itemId ->
+                itemRepository.addItem(
+                        new ItemEntity(
+                                itemId,
+                                dataImport.get(itemId).itemText,
+                                dataImport.get(itemId).getUnit(),
+                                dataImport.get(itemId).getMinAge(),
+                                dataImport.get(itemId).getDispensingStation(),
+                                Float.valueOf(dataImport.get(itemId).getPrice()).doubleValue()
+                        )
+                )
+        );
     }
 
     private String checkId(String itemId) throws ParseImportException {
@@ -103,12 +125,15 @@ public class DataImportServiceImpl {
                     "itemMinAge of item:" + itemId + " is not a number between 0 and 99"
             );
         }
-        return  check;
+        return check;
     }
 
     private float checkPrice(String price, String itemId) throws ParseImportException {
         float priceF;
         try {
+            price = price.replace("EUR", "");
+            price = price.replace(",", ".");
+            price = price.trim();
             priceF = Float.parseFloat(price);
         } catch (Exception e) {
             throw new ParseImportException(
