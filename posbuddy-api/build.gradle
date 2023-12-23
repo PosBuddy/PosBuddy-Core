@@ -30,6 +30,7 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations")
     implementation("io.micronaut.security:micronaut-security")
 
+    compileOnly("org.apache.commons:commons-csv:1.10.0")
     compileOnly("org.projectlombok:lombok")
     compileOnly("io.micronaut:micronaut-http-client")
 

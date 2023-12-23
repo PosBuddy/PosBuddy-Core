@@ -22,7 +22,7 @@ public class ItemEntity {
     private String id;
 
     @Column(name = "artikel", nullable = false, length = 40)
-    private String artikel;
+    private String itemText;
 
     @Column(name = "unit", nullable = false, length = 20)
     private String unit;

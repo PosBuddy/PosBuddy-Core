@@ -59,6 +59,7 @@ public class PartyActionServiceImpl implements PartyActionService {
                 revenueEntity.setTimeofaction(LocalDateTime.now());
                 revenueEntity.setValue(Double.valueOf(serveItem.getCount() * itemEntity.getPrice()).floatValue());
                 revenueEntity.setPosbuddyid(posBuddyId);
+                revenueEntity.setItemtext(itemEntity.getItemText());
                 revenueEntity.setPaymentaction(Constants.REVENUE);
                 revenueRepository.addRevenue(revenueEntity);
                 actBalance.set(actBalance.get() - revenueEntity.getValue());

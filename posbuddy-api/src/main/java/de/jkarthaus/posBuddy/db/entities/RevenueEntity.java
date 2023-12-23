@@ -27,8 +27,8 @@ public class RevenueEntity {
     private String posbuddyid;
 
     @Size(max = 10)
-    @Column(name = "itemid", nullable = true, length = 10)
-    private String itemid;
+    @Column(name = "itemtext", nullable = true, length = 10)
+    private String itemtext;
 
     @NotNull
     @Column(name = "amount", nullable = false)
