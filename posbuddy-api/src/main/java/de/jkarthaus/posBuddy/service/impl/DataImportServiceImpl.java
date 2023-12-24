@@ -1,6 +1,8 @@
 package de.jkarthaus.posBuddy.service.impl;
 
+import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
+import de.jkarthaus.posBuddy.db.entities.DispensingStationEntity;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.exception.ParseImportException;
 import jakarta.inject.Singleton;
@@ -22,12 +24,15 @@ import java.util.Map;
 public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.DataImportService {
 
     private final ItemRepository itemRepository;
+    private final DispensingStationRepository dispensingStationRepository;
 
-    private Map<String, ItemImport> dataImport;
+    private Map<String, ItemDataImport> itemDataImportMap;
+    private Map<String, DispensingStationDataImport> dispensingStationDataImportMap;
+
 
     @Override
     public void importItemCsv() throws ParseImportException {
-        dataImport = new HashMap<>();
+        itemDataImportMap = new HashMap<>();
         log.info("check all data for import");
         try {
             Reader in = new FileReader("/tmp/posBuddyItems.csv");
@@ -38,9 +43,9 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
                     .parse(in);
             for (CSVRecord record : records) {
                 String itemId = checkId(record.get("ID"));
-                dataImport.put(
+                itemDataImportMap.put(
                         itemId,
-                        new ItemImport(
+                        new ItemDataImport(
                                 checkItemText(record.get("Bezeichnung"), itemId),
                                 checkItemUnit(record.get("Einheit"), itemId),
                                 checkItemMinAge(record.get("Mindestalter"), itemId),
@@ -55,15 +60,54 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
         log.info("remove all items");
         itemRepository.clearItems();
         log.info("add new items from import");
-        dataImport.keySet().stream().forEach(itemId ->
+        itemDataImportMap.keySet().stream().forEach(itemId ->
                 itemRepository.addItem(
                         new ItemEntity(
                                 itemId,
-                                dataImport.get(itemId).itemText,
-                                dataImport.get(itemId).getUnit(),
-                                dataImport.get(itemId).getMinAge(),
-                                dataImport.get(itemId).getDispensingStation(),
-                                Float.valueOf(dataImport.get(itemId).getPrice()).doubleValue()
+                                itemDataImportMap.get(itemId).itemText,
+                                itemDataImportMap.get(itemId).getUnit(),
+                                itemDataImportMap.get(itemId).getMinAge(),
+                                itemDataImportMap.get(itemId).getDispensingStation(),
+                                Float.valueOf(itemDataImportMap.get(itemId).getPrice()).doubleValue()
+                        )
+                )
+        );
+    }
+
+
+    @Override
+    public void importDispensingStationCsv() throws ParseImportException {
+        dispensingStationDataImportMap = new HashMap<>();
+        log.info("check all data for import");
+        try {
+            Reader in = new FileReader("/tmp/posBuddyDispensingStations.csv");
+            Iterable<CSVRecord> records = CSVFormat
+                    .EXCEL
+                    .withHeader("ID", "Bezeichnung", "Ort")
+                    .withFirstRecordAsHeader()
+                    .parse(in);
+            for (CSVRecord record : records) {
+                String dissId = checkId(record.get("ID"));
+                dispensingStationDataImportMap.put(
+                        dissId,
+                        new DispensingStationDataImport(
+                                checkDispensingStationName(record.get("Bezeichnung"), dissId),
+                                checkDispensingStationLocation(record.get("Ort"), dissId)
+                        )
+                );
+            }
+        } catch (Exception e) {
+            throw new ParseImportException(e.getMessage());
+        }
+        log.info("remove all Dispensing Stations");
+        dispensingStationRepository.clearDispensingStations();
+        log.info("add new Dispensing Stations from import");
+        dispensingStationDataImportMap.keySet().stream().forEach(dissId ->
+                dispensingStationRepository.addDispensingStation(
+                        new DispensingStationEntity(
+                                dissId,
+                                dispensingStationDataImportMap.get(dissId).name,
+                                dispensingStationDataImportMap.get(dissId).location
                         )
                 )
         );
@@ -75,7 +119,7 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
                     "length of ItemId:" + itemId + " > 10"
             );
         }
-        if (dataImport.containsKey(itemId)) {
+        if (itemDataImportMap.containsKey(itemId)) {
             throw new ParseImportException(
                     "ItemId:" + itemId + " is not unique"
             );
@@ -95,6 +139,34 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
             );
         }
         return itemText.trim();
+    }
+
+    private String checkDispensingStationName(String name, String dissId) throws ParseImportException {
+        if (name == null || name.trim().isEmpty()) {
+            throw new ParseImportException(
+                    "Text of Dispensing Station Name:" + dissId + " is empty or to short"
+            );
+        }
+        if (name.length() > 40) {
+            throw new ParseImportException(
+                    "length of Dispensing Station Name:" + dissId + " > 40"
+            );
+        }
+        return name.trim();
+    }
+
+    private String checkDispensingStationLocation(String location, String dissId) throws ParseImportException {
+        if (location == null || location.trim().isEmpty()) {
+            throw new ParseImportException(
+                    "Text of Dispensing Station Location:" + dissId + " is empty or to short"
+            );
+        }
+        if (location.length() > 40) {
+            throw new ParseImportException(
+                    "length of Dispensing Station Loation:" + dissId + " > 40"
+            );
+        }
+        return location.trim();
     }
 
     private String checkItemUnit(String itemUnit, String itemId) throws ParseImportException {
@@ -164,17 +236,21 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
     }
 
 
-    private void importDispensingStationCsv() {
-    }
-
     @Data
     @AllArgsConstructor
-    private static class ItemImport {
+    private static class ItemDataImport {
         String itemText;
         String unit;
         int minAge;
         String dispensingStation;
         float price;
+    }
+
+    @Data
+    @AllArgsConstructor
+    private static class DispensingStationDataImport {
+        String name;
+        String location;
     }
 
 
