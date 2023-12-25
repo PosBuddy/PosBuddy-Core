@@ -79,7 +79,22 @@ public class RestController {
     public HttpResponse importItems(@Nullable X509Authentication x509Authentication,
                                     @Nullable Authentication authentication) {
         try {
+            // TODO : implement Security
             dataImportService.importItemCsv();
+        } catch (ParseImportException e) {
+            log.error("ParseImportException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+        return HttpResponse.ok();
+    }
+
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/importDispensingStations", produces = MediaType.APPLICATION_JSON)
+    public HttpResponse importDispensingStations(@Nullable X509Authentication x509Authentication,
+                                                 @Nullable Authentication authentication) {
+        try {
+            // TODO : implement Security
+            dataImportService.importDispensingStationCsv();
         } catch (ParseImportException e) {
             log.error("ParseImportException:{}", e.getMessage());
             throw new RuntimeException(e);

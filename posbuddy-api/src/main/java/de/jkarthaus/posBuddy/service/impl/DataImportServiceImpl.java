@@ -42,7 +42,7 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
                     .withFirstRecordAsHeader()
                     .parse(in);
             for (CSVRecord record : records) {
-                String itemId = checkId(record.get("ID"));
+                String itemId = checkItemId(record.get("ID"));
                 itemDataImportMap.put(
                         itemId,
                         new ItemDataImport(
@@ -87,7 +87,7 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
                     .withFirstRecordAsHeader()
                     .parse(in);
             for (CSVRecord record : records) {
-                String dissId = checkId(record.get("ID"));
+                String dissId = checkDispensingStationId(record.get("ID"));
                 dispensingStationDataImportMap.put(
                         dissId,
                         new DispensingStationDataImport(
@@ -113,8 +113,8 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
         );
     }
 
-    private String checkId(String itemId) throws ParseImportException {
-        if (itemId.length() > 10) {
+    private String checkItemId(String itemId) throws ParseImportException {
+        if (itemId.trim().length() > 10) {
             throw new ParseImportException(
                     "length of ItemId:" + itemId + " > 10"
             );
@@ -124,7 +124,21 @@ public class DataImportServiceImpl implements de.jkarthaus.posBuddy.service.Data
                     "ItemId:" + itemId + " is not unique"
             );
         }
-        return itemId;
+        return itemId.trim();
+    }
+
+    private String checkDispensingStationId(String dispensingStationId) throws ParseImportException {
+        if (dispensingStationId.trim().length() > 10) {
+            throw new ParseImportException(
+                    "length of dispensingStationId:" + dispensingStationId + " > 10"
+            );
+        }
+        if (dispensingStationDataImportMap.containsKey(dispensingStationId)) {
+            throw new ParseImportException(
+                    "ItemId:" + dispensingStationId + " is not unique"
+            );
+        }
+        return dispensingStationId.trim();
     }
 
     private String checkItemText(String itemText, String itemId) throws ParseImportException {
