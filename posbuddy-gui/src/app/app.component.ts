@@ -14,4 +14,5 @@ export class AppComponent {
   title = 'posbuddy-gui';
   active = 1;
 
+
 }

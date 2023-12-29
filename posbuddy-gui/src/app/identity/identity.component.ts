@@ -1,9 +1,11 @@
 import {Component} from '@angular/core';
+import {ZXingScannerModule} from '@zxing/ngx-scanner';
+
 
 @Component({
   selector: 'app-identity',
   standalone: true,
-  imports: [],
+  imports: [ZXingScannerModule],
   templateUrl: './identity.component.html',
   styleUrl: './identity.component.css'
 })
@@ -14,12 +16,11 @@ export class IdentityComponent {
   youthLaw: boolean = true;
 
 
-  function getYouthLawText(): string {
+  getYouthLawText(): string {
     if (this.youthLaw) {
       return "Ja"
     } else {
       return "Nein"
     }
   }
-
 }
