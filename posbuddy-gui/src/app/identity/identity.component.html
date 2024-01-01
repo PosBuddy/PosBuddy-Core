@@ -1,12 +1,17 @@
 <div class="card" style="width: 12rem;">
-  <img class="card-img-top" src="assets/guest.png" alt="Card image cap">
-  <div class="card-body">
-    <h5 class="card-title">{{ name }}</h5>
-    <p class="card-text">Aktueller Kontostand: {{ revenue }} EUR</p>
-    <p class="card-text">Jugendschutzgesetz: {{ getYouthLawText() }}</p>
-    <a href="#" class="btn btn-primary">ID Scannen</a>
-  </div>
+    <img class="card-img-top" src="assets/guest.png" alt="Card image cap">
+    <div class="card-body">
+        <h5 class="card-title">{{ name }}</h5>
+        <p class="card-text">Aktueller Kontostand: {{ revenue }} EUR</p>
+        <p class="card-text">Jugendschutzgesetz: {{ getYouthLawText() }}</p>
+        <button (click)="scanQRCode()">ID Scannen</button>
+    </div>
 </div>
 
-<zxing-scanner [enable] ='false'></zxing-scanner>
+<zxing-scanner
+  [enable]='false'
+  (scanSuccess)="onScanSuccess($event)"
+>
+
+</zxing-scanner>
 

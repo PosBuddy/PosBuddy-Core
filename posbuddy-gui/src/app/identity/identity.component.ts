@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {ZXingScannerModule} from '@zxing/ngx-scanner';
+import {Component, ViewChild} from '@angular/core';
+import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
 
 
 @Component({
@@ -10,6 +10,8 @@ import {ZXingScannerModule} from '@zxing/ngx-scanner';
   styleUrl: './identity.component.css'
 })
 export class IdentityComponent {
+
+  @ViewChild(ZXingScannerComponent) qrCodeScanner: ZXingScannerComponent | undefined;
 
   name: string = "Unbekannt"
   revenue: number = 0
@@ -23,4 +25,19 @@ export class IdentityComponent {
       return "Nein"
     }
   }
+
+  scanQRCode(): void {
+    this.qrCodeScanner!.enable = true;
+
+  }
+
+  scanError(error: Error) {
+    console.error(error);
+  }
+
+  onScanSuccess(e: string) {
+    console.log("->" + e + "<-")
+    this.qrCodeScanner!.enable = false;
+  }
+
 }
