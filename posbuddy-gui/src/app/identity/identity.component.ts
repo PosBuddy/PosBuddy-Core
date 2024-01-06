@@ -22,14 +22,13 @@ export class IdentityComponent {
 
   constructor(private idendityService: IdendityService) {
     if (idendityService.isLocalIdentityValid()) {
+      this.posBuddyId = idendityService.getLocalidentity();
       this.idendityService.getIentityById(this.posBuddyId)
         .subscribe(data => {
             this.name = data.surName + " " + data.lastName
             this.revenue = Number(data.balance)
           }
         );
-    } else {
-      //this.qrCodeScanner!.enable = true;
     }
 
   }

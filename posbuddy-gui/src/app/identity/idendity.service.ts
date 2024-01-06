@@ -56,4 +56,8 @@ export class IdendityService {
     localStorage.setItem('posBuddyIdTimestamp', Date.now().toString())
   }
 
+  getLocalidentity(): string {
+    return this.localPosBuddyId;
+  }
+
 }
