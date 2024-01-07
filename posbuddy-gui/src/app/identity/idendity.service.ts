@@ -16,9 +16,11 @@ const httpOptions = {
 })
 export class IdendityService {
 
+  public static UNKNOWN_ID = "Unbekannt";
+
   private identityUrl = 'http://localhost:8080/api/v1/identity/';  // URL to web api
 
-  private localPosBuddyId: string = "UNKNWON";
+  private localPosBuddyId: string = IdendityService.UNKNOWN_ID
 
   constructor(private http: HttpClient) {
 
@@ -37,7 +39,7 @@ export class IdendityService {
     let localPosBuddyId = localStorage.getItem('posBuddyId')
     let localPosBuddyTimestamp = localStorage.getItem('posBuddyIdTimestamp')
     if (localPosBuddyId == null) {
-      this.localPosBuddyId = "UNKNOWN";
+      this.localPosBuddyId = IdendityService.UNKNOWN_ID
       return false;
     }
     if (localPosBuddyTimestamp != null) {

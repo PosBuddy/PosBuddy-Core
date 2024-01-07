@@ -1,4 +1,4 @@
-import {Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
 import {IdendityService} from "./idendity.service";
 import {HttpClientModule} from "@angular/common/http";
@@ -11,14 +11,14 @@ import {HttpClientModule} from "@angular/common/http";
   templateUrl: './identity.component.html',
   styleUrl: './identity.component.css'
 })
-export class IdentityComponent {
+export class IdentityComponent implements AfterViewInit {
 
   @ViewChild(ZXingScannerComponent) qrCodeScanner: ZXingScannerComponent | undefined;
 
-  name: string = "Unbekannt"
+  name: string = "Bitte Scannen"
   revenue: number = 0
   youthLaw: boolean = true
-  posBuddyId: string = ""
+  posBuddyId: string = IdendityService.UNKNOWN_ID
 
   constructor(private idendityService: IdendityService) {
     if (idendityService.isLocalIdentityValid()) {
@@ -31,6 +31,16 @@ export class IdentityComponent {
         );
     }
 
+  }
+
+
+  ngAfterViewInit() {
+    console.log("AfterViewinit:"+ this.posBuddyId)
+    if (this.posBuddyId == IdendityService.UNKNOWN_ID) {
+      console.log("Dä" + this.qrCodeScanner)
+
+      this.qrCodeScanner!.enable = true;
+    }
   }
 
   getYouthLawText(): string {
