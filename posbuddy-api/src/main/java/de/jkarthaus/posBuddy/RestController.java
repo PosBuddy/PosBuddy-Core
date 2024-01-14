@@ -103,9 +103,9 @@ public class RestController {
     }
 
     @Secured(IS_ANONYMOUS)
-    @Post(uri = "/serve/{posId}", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     public HttpResponse serve(
-            String posId,
+            String posBuddyId,
             ServingRequest servingRequest,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
@@ -117,7 +117,7 @@ public class RestController {
             return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
-            partyActionService.serveItems(servingRequest, posId);
+            partyActionService.serveItems(servingRequest, posBuddyId);
         } catch (posBuddyIdNotAllocatedException e) {
             throw new RuntimeException(e);
         }
