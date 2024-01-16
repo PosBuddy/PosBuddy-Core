@@ -30,14 +30,15 @@ public class RevenueRepositoryImpl implements RevenueRepository {
     @ReadOnly
     public List<RevenueEntity> getRevenuesByIdSince(String posBuddyId, LocalDateTime since) {
         TypedQuery<RevenueEntity> query = entityManager.createQuery(
-                """
-                        select r from revenues as r
-                        where r.posbuddyid = :posBuddyId
-                        and r.timeofaction > :since
-                        order by r.timeofaction
-                        """,
-                RevenueEntity.class
-        );
+                        """
+                                select r from revenues as r
+                                where r.posbuddyid = :posBuddyId
+                                and r.timeofaction > :since
+                                order by r.timeofaction
+                                """, RevenueEntity.class
+                )
+                .setParameter("posBuddyId", posBuddyId)
+                .setParameter("since", since);
         return query.getResultList();
     }
 

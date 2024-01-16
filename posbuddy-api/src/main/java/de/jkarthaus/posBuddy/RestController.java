@@ -75,6 +75,20 @@ public class RestController {
     }
 
     @Secured(IS_ANONYMOUS)
+    @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    public RevenueResponse getRevenue(String posBuddyId) {
+        try {
+            return partyActionService.getRevenueResponseByPosBuddyId(posBuddyId);
+        } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        } catch (posBuddyIdNotAllocatedException e) {
+            log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Secured(IS_ANONYMOUS)
     @Post(uri = "/importItems", produces = MediaType.APPLICATION_JSON)
     public HttpResponse importItems(@Nullable X509Authentication x509Authentication,
                                     @Nullable Authentication authentication) {
