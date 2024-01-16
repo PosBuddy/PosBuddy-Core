@@ -28,11 +28,9 @@ public class IdentityRepositoryImpl implements IdentityRepository {
         try {
             TypedQuery<IdentityEntity> query = entityManager.createQuery(
                     """
-                                                    
-                                select i from identity as i where i.posbuddyid = :posBuddyId
+                            select i from identity as i where i.posbuddyid = :posBuddyId
                             and i.startallocation < now() 
                             and i.endallocation is null
-                               
                             """,
                     IdentityEntity.class
             ).setParameter("posBuddyId", posBuddyId);

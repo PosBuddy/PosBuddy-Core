@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
+@Entity(name= "revenues")
 @Table(name = "revenues")
 public class RevenueEntity {
     @Id
@@ -46,5 +46,9 @@ public class RevenueEntity {
     @NotNull
     @Column(name = "timeofaction", nullable = false)
     private LocalDateTime timeofaction;
+
+    @Size(max = 10)
+    @Column(name = "itemid", length = 10)
+    private String itemid;
 
 }

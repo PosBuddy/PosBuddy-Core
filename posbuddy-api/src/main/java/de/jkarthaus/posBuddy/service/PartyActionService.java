@@ -6,12 +6,16 @@ import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
+import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 
 public interface PartyActionService {
 
 
     IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
+
+    RevenueResponse getRevenueResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
     void serveItems(ServingRequest servingRequest, String posBuddyId)
@@ -26,5 +30,7 @@ public interface PartyActionService {
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
     void payment(String posBuddyId, Float value) throws
-             posBuddyIdNotAllocatedException, OutOfBalanceException;
+            posBuddyIdNotAllocatedException, OutOfBalanceException;
+
+
 }

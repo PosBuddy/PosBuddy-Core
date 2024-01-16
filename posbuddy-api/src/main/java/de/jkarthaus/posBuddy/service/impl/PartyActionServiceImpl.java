@@ -8,9 +8,11 @@ import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
 import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
+import de.jkarthaus.posBuddy.mapper.RevenueMapper;
 import de.jkarthaus.posBuddy.model.Constants;
 import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
+import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import io.micronaut.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PartyActionServiceImpl implements PartyActionService {
 
     private final IdentityMapper identityMapper;
+    private final RevenueMapper revenueMapper;
     private final IdentityRepository identityRepository;
     private final RevenueRepository revenueRepository;
     private final ItemRepository itemRepository;
@@ -44,6 +47,26 @@ public class PartyActionServiceImpl implements PartyActionService {
             throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
         }
         return identityMapper.toResponse(identityEntity);
+    }
+
+    @Override
+    public RevenueResponse getRevenueResponseByPosBuddyId(String posBuddyId)
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
+        if (isNotValidUUID(posBuddyId)) {
+            throw new posBuddyIdNotValidException("no valid UUID");
+        }
+        IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
+        if (identityEntity == null) {
+            log.info("Actual valid posBuddy Identity with ID:{} not found in Database", posBuddyId);
+            throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
+        }
+        log.info("get revenue for {}{}", identityEntity.getSurname(), identityEntity.getLastname());
+        return revenueMapper.toResponse(
+                revenueRepository.getRevenuesByIdSince(
+                        posBuddyId,
+                        identityEntity.getStartallocation()
+                )
+        );
     }
 
     @Override
