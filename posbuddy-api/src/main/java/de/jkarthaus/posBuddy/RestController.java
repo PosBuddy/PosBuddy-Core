@@ -127,11 +127,13 @@ public class RestController {
         if (x509Authentication != authentication) {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
-        if (!securityService.isServeStation(x509Authentication)) {
-            return HttpResponse.status(HttpStatus.FORBIDDEN);
-        }
         try {
-            partyActionService.serveItems(servingRequest, posBuddyId);
+            if (securityService.isServeStation(x509Authentication)
+                    || securityService.isCheckoutStation(x509Authentication)) {
+                partyActionService.serveItems(servingRequest, posBuddyId);
+            } else {
+                return HttpResponse.status(HttpStatus.FORBIDDEN);
+            }
         } catch (posBuddyIdNotAllocatedException e) {
             throw new RuntimeException(e);
         }
