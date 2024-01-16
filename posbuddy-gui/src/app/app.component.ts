@@ -4,6 +4,7 @@ import {RouterOutlet} from '@angular/router';
 import {NgbNavModule} from "@ng-bootstrap/ng-bootstrap";
 import {IdentityComponent} from "./identity/identity.component";
 import {HttpClientModule} from "@angular/common/http";
+import {MarkdownComponent} from "ngx-markdown";
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,8 @@ import {HttpClientModule} from "@angular/common/http";
     NgbNavModule,
     CommonModule,
     RouterOutlet,
-    IdentityComponent
+    IdentityComponent,
+    MarkdownComponent
   ],
   templateUrl: './app.component.html',
 })
