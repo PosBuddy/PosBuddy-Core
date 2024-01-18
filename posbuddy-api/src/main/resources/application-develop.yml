@@ -11,7 +11,7 @@ micronaut:
         paths: file:/tmp/
         mapping: /assets/**
   ssl:
-    enabled: true
+    enabled: false
   server:
     cors:
       enabled: true

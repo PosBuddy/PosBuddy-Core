@@ -47,8 +47,5 @@ public class RevenueEntity {
     @Column(name = "timeofaction", nullable = false)
     private LocalDateTime timeofaction;
 
-    @Size(max = 10)
-    @Column(name = "itemid", length = 10)
-    private String itemid;
 
 }

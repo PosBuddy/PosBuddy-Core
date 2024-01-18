@@ -17,8 +17,9 @@ public class RenevueMapperImpl implements RevenueMapper {
                             return new RevenueResponse.RevenueEntry(
                                     revenueEntity.getItemtext(),
                                     revenueEntity.getAmount(),
+                                    revenueEntity.getValue(),
                                     revenueEntity.getPaymentaction(),
-                                    revenueEntity.getTimeofaction().toLocalDate()
+                                    revenueEntity.getTimeofaction()
                             );
                         }
                 ).collect(Collectors.toList())
