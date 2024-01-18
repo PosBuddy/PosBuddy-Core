@@ -2,20 +2,27 @@
   <thead>
   <tr>
     <th scope="col">#</th>
-    <th sortable="name" scope="col" (sort)="onSort($event)">Country</th>
-    <th scope="col" sortable="area" (sort)="onSort($event)">Area</th>
-    <th scope="col" sortable="population" (sort)="onSort($event)">Population</th>
+    <th scope="col">Zeitpunkt</th>
+    <th scope="col">Anzahl</th>
+    <th scope="col">Artikel</th>
+    <th scope="col">Wert</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let country of countries$ | async">
-    <th scope="row">{{ country.id }}</th>
+  <tr *ngFor="let revenue of revenueEntryList ">
+    <th scope="row">x</th>
     <td>
-      <img [src]="'https://upload.wikimedia.org/wikipedia/commons/' + country.flag" class="mr-2" style="width: 20px">
-      <ngb-highlight [result]="country.name" [term]="service.searchTerm"></ngb-highlight>
+      {{ revenue.timeOfAction }}
     </td>
-    <td><ngb-highlight [result]="country.area | number" [term]="service.searchTerm"></ngb-highlight></td>
-    <td><ngb-highlight [result]="country.population | number" [term]="service.searchTerm"></ngb-highlight></td>
+    <td>
+      {{ revenue.amount }}
+    </td>
+    <td>
+      {{ revenue.itemText }}
+    </td>
+    <td>
+      {{ revenue.value }}
+    </td>
   </tr>
   </tbody>
 </table>

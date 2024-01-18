@@ -1,7 +1,7 @@
-export class Identity {
-    posBuddyId: string | undefined;
-    surName: string | undefined;
-    lastName: string | undefined;
-    youthProtectionAct: boolean | undefined;
-    balance: number | undefined;
+export class Revenue {
+  itemText: string | undefined;
+  amount: number | undefined;
+  value: number | undefined;
+  action: string | undefined;
+  timeOfAction: string | undefined;
 }
