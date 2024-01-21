@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -50,7 +51,7 @@ public class PartyActionServiceImpl implements PartyActionService {
     }
 
     @Override
-    public RevenueResponse getRevenueResponseByPosBuddyId(String posBuddyId)
+    public List<RevenueResponse> getRevenueResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
         if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("no valid UUID");

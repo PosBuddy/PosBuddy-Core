@@ -9,13 +9,15 @@ import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
 import de.jkarthaus.posBuddy.model.gui.ServingRequest;
 
+import java.util.List;
+
 public interface PartyActionService {
 
 
     IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
-    RevenueResponse getRevenueResponseByPosBuddyId(String posBuddyId)
+    List<RevenueResponse> getRevenueResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
     void serveItems(ServingRequest servingRequest, String posBuddyId)

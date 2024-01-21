@@ -22,6 +22,8 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
+
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 
 
@@ -76,7 +78,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
-    public RevenueResponse getRevenue(String posBuddyId) {
+    public List<RevenueResponse> getRevenue(String posBuddyId) {
         try {
             return partyActionService.getRevenueResponseByPosBuddyId(posBuddyId);
         } catch (posBuddyIdNotValidException e) {

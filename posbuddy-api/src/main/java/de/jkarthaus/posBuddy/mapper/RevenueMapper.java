@@ -13,5 +13,5 @@ import java.util.List;
 @Singleton
 public interface RevenueMapper {
 
-    RevenueResponse toResponse(List<RevenueEntity> revenueEntities);
+    List<RevenueResponse> toResponse(List<RevenueEntity> revenueEntities);
 }

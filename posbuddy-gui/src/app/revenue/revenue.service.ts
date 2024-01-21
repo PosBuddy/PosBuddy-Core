@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {IdentityService} from "../identity/identity.service";
+import {Revenue} from "../model/Revenue";
+import {Observable} from "rxjs";
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -16,19 +18,18 @@ const httpOptions = {
 export class RevenueService {
 
 
-  private identityUrl = '/api/v1/revenue/';  // URL to web api
-  private localPosBuddyId: string = IdentityService.UNKNOWN_ID
+  private revenueUrl = '/api/v1/revenue/';  // URL to web api
 
-  constructor(private http: HttpClient, private identityService: IdentityService) {
+  constructor(private http: HttpClient) {
 
   }
 
-  getRevenue() {
-    if (this.localPosBuddyId == IdentityService.UNKNOWN_ID
-      && this.identityService.isLocalIdentityValid()) {
-
+  getRevenue(posBuddyId: String) {
+    if (posBuddyId !== IdentityService.UNKNOWN_ID) {
+      return this.http.get<Array<Revenue>>(this.revenueUrl + posBuddyId, httpOptions)
     } else {
-      console.log("no valid posBuddyId - cannot ")
+      console.log("no valid posBuddyId - cannot request Server");
+      return new Observable<Array<Revenue>>()
     }
   }
 

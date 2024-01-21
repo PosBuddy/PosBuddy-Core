@@ -6,8 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,24 +13,13 @@ import java.util.List;
 @Serdeable
 public class RevenueResponse {
 
-    List<RevenueEntry> revenueEntryList = new ArrayList<>();
+    private String itemText;
 
+    private int amount;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Serdeable
-    public static class RevenueEntry {
-        private String itemText;
+    private double value;
 
-        private int amount;
+    private String action;
 
-        private double value;
-
-        private String action;
-
-        private LocalDateTime timeOfAction;
-
-    }
-
+    private LocalDateTime timeOfAction;
 }
