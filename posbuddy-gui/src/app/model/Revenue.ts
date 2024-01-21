@@ -1,4 +1,4 @@
-export class Revenue {
+export interface Revenue {
   itemText: string | undefined;
   amount: number | undefined;
   value: number | undefined;

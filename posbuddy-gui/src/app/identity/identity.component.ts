@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ViewChild} from '@angular/core';
 import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
-import {IdendityService} from "./idendity.service";
+import {IdentityService} from "./identity.service";
 import {HttpClientModule} from "@angular/common/http";
 
 
@@ -18,9 +18,9 @@ export class IdentityComponent implements AfterViewInit {
   name: string = "Bitte Scannen"
   revenue: number = 0
   youthLaw: boolean = true
-  posBuddyId: string = IdendityService.UNKNOWN_ID
+  posBuddyId: string = IdentityService.UNKNOWN_ID
 
-  constructor(private idendityService: IdendityService) {
+  constructor(private idendityService: IdentityService) {
     if (idendityService.isLocalIdentityValid()) {
       this.posBuddyId = idendityService.getLocalidentity();
       this.idendityService.getIentityById(this.posBuddyId)
@@ -36,7 +36,7 @@ export class IdentityComponent implements AfterViewInit {
 
   ngAfterViewInit() {
     console.log("AfterViewinit:"+ this.posBuddyId)
-    if (this.posBuddyId == IdendityService.UNKNOWN_ID) {
+    if (this.posBuddyId == IdentityService.UNKNOWN_ID) {
       console.log("Dä" + this.qrCodeScanner)
 
       this.qrCodeScanner!.enable = true;

@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {Revenue} from "../model/Revenue";
 import {NgbHighlight} from "@ng-bootstrap/ng-bootstrap";
 import {NgForOf} from "@angular/common";
+import {RevenueService} from "./revenue.service";
 
 @Component({
   selector: 'app-revenue',
@@ -17,9 +18,15 @@ import {NgForOf} from "@angular/common";
 
 export class RevenueComponent {
 
-  revenueEntryList: Array<Revenue> | undefined;
+  revenues: Array<Revenue> = [];
+
+  constructor(private revenueService: RevenueService) {
+  }
 
 
-  protected readonly Revenue = Revenue;
+  getRevenues(): void {
+
+  }
+
 }
 

@@ -6,7 +6,6 @@ const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
     'rejectUnauthorized': 'false',
-    'access-control-allow-origin': 'http://localhost:8080'
   })
 };
 
@@ -14,13 +13,13 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-export class IdendityService {
+export class IdentityService {
 
   public static UNKNOWN_ID = "Unbekannt";
 
-  private identityUrl = 'http://localhost:8080/api/v1/identity/';  // URL to web api
+  private identityUrl = '/api/v1/identity/';  // URL to web api
 
-  private localPosBuddyId: string = IdendityService.UNKNOWN_ID
+  private localPosBuddyId: string = IdentityService.UNKNOWN_ID
 
   constructor(private http: HttpClient) {
 
@@ -39,7 +38,7 @@ export class IdendityService {
     let localPosBuddyId = localStorage.getItem('posBuddyId')
     let localPosBuddyTimestamp = localStorage.getItem('posBuddyIdTimestamp')
     if (localPosBuddyId == null) {
-      this.localPosBuddyId = IdendityService.UNKNOWN_ID
+      this.localPosBuddyId = IdentityService.UNKNOWN_ID
       return false;
     }
     if (localPosBuddyTimestamp != null) {
