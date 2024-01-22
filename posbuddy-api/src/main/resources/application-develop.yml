@@ -10,8 +10,10 @@ micronaut:
       assets:
         paths: file:/tmp/
         mapping: /assets/**
-  ssl:
-    enabled: false
   server:
     cors:
       enabled: true
+    port: 8080
+    ssl:
+      enabled: true
+      port: 8443

@@ -27,10 +27,10 @@ import java.util.List;
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 
 
-@Controller(value = "/api/v1", port = "${ micronaut.server.port }")
+@Controller(value = "secure/api/v1", port = "${ micronaut.server.ssl.port }")
 @RequiredArgsConstructor
 @Slf4j
-public class RestController {
+public class SercureRestController {
 
     final ItemMapper itemMapper;
     final ItemRepository itemRepository;
