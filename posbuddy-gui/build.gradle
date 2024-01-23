@@ -13,5 +13,5 @@ node {
 //jar.dependsOn 'npm_run_build'
 
 jar {
-  from 'dist/posbuddy' into 'static'
+  from 'dist/posbuddy-gui' into 'static'
 }
