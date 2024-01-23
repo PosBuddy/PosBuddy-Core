@@ -18,6 +18,7 @@ import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,10 +28,10 @@ import java.util.List;
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 
 
-@Controller(value = "/api/v1", port = "${ micronaut.server.port }")
+@Controller(value = "secure/api/v1", port = "${ micronaut.server.ssl.port }")
 @RequiredArgsConstructor
 @Slf4j
-public class RestController {
+public class SecureRestController {
 
     final ItemMapper itemMapper;
     final ItemRepository itemRepository;
@@ -41,6 +42,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public ItemResponse getItems(String station) {
         log.debug("get items for station:{}", station);
         return itemMapper.toResponse(
@@ -51,6 +53,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/stations", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public ServingStationResponse getStations() {
         log.debug("get stations");
         return new ServingStationResponse(
@@ -62,6 +65,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public IdentityResponse getIdentity(String posBuddyId) {
 
         try {
@@ -77,6 +81,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public List<RevenueResponse> getRevenue(String posBuddyId) {
         try {
             return partyActionService.getRevenueResponseByPosBuddyId(posBuddyId);
@@ -91,6 +96,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/importItems", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public HttpResponse importItems(@Nullable X509Authentication x509Authentication,
                                     @Nullable Authentication authentication) {
         try {
@@ -105,6 +111,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/importDispensingStations", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public HttpResponse importDispensingStations(@Nullable X509Authentication x509Authentication,
                                                  @Nullable Authentication authentication) {
         try {
@@ -119,6 +126,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public HttpResponse serve(
             String posBuddyId,
             ServingRequest servingRequest,
@@ -143,6 +151,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/allocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public HttpResponse allocate(
             String posBuddyId,
             AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
@@ -170,6 +179,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/deAllocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public HttpResponse deAllocate(
             String posBuddyId,
             @Nullable X509Authentication x509Authentication,
@@ -196,6 +206,7 @@ public class RestController {
 
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/payment/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Tag(name = "secure")
     public HttpResponse payment(
             String posBuddyId,
             @QueryValue Float value,

@@ -15,7 +15,11 @@ import io.swagger.v3.oas.annotations.info.License;
                 contact = @Contact(url = "https://github.com/PosBuddy", name = "Joern Karthaus")
 
         )
+
+
+
 )
+
 public class Application {
 
     public static void main(String[] args) {
