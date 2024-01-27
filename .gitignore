@@ -2,3 +2,4 @@
 /.gradle/
 /posbuddy-api/build/
 /posbuddy-gui/build/
+/posbuddy-gui/.gradle/
