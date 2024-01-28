@@ -13,7 +13,6 @@ micronaut:
   server:
     cors:
       enabled: true
-    port: 8080
     ssl:
       enabled: true
       port: 8443

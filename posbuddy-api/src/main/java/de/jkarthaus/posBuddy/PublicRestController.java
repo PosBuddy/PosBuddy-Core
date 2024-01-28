@@ -15,17 +15,15 @@ import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
-import io.micronaut.security.annotation.Secured;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
-import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 
-
-@Controller(value = "/api/v1", port = "${ micronaut.server.port }")
+@Controller(value = "/api/v1", port = "${ micronaut.server.ssl.port }")
 @RequiredArgsConstructor
 @Slf4j
 public class PublicRestController {
@@ -37,10 +35,9 @@ public class PublicRestController {
     final DataImportService dataImportService;
     final SecurityService securityService;
 
-    @Secured(IS_ANONYMOUS)
+    @PermitAll
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
-
     public ItemResponse getItems(String station) {
         log.debug("get items for station:{}", station);
         return itemMapper.toResponse(
@@ -49,7 +46,7 @@ public class PublicRestController {
         );
     }
 
-    @Secured(IS_ANONYMOUS)
+    @PermitAll
     @Get(uri = "/stations", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
     public ServingStationResponse getStations() {
@@ -61,10 +58,9 @@ public class PublicRestController {
         );
     }
 
-    @Secured(IS_ANONYMOUS)
+    @PermitAll
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
-
     public IdentityResponse getIdentity(String posBuddyId) {
 
         try {
@@ -78,10 +74,9 @@ public class PublicRestController {
         }
     }
 
-    @Secured(IS_ANONYMOUS)
+    @PermitAll
     @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
-
     public List<RevenueResponse> getRevenue(String posBuddyId) {
         try {
             return partyActionService.getRevenueResponseByPosBuddyId(posBuddyId);
