@@ -12,7 +12,7 @@ micronaut:
         paths: classpath:META-INF/swagger/views/swagger-ui
         mapping: /swagger-ui/**
       assets:
-        paths: /asset
+        paths: file:/asset/
         mapping: /asset/**
   application:
     name: PosBuddy-core
