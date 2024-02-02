@@ -1,0 +1,27 @@
+<div ngbAccordion [closeOthers]="true" xmlns="http://www.w3.org/1999/html">
+  <div ngbAccordionItem [collapsed]="false">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Person zuordnen</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-allocate-id></app-allocate-id>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  <div ngbAccordionItem [collapsed]="true">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>test2</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          2
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>
+<router-outlet/>
