@@ -9,7 +9,7 @@ import {FormsModule} from "@angular/forms";
   styleUrl: './allocate-id.component.css'
 })
 export class AllocateIdComponent {
-
+  posBuddyId:string = "-";
   surname = '';
   lastname = '';
   birthday = '08.03.1975';

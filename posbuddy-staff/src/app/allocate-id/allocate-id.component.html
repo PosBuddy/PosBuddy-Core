@@ -1,9 +1,29 @@
-<div class="container">
-Vorname: <input type="text" [(ngModel)]="surname"/>
-Nachname:<input type="text" [(ngModel)]="lastname"/>
-Geburtsdatum<input type="text" [(ngModel)]="birthday"/>
-Merkmal 1<input type="text" [(ngModel)]="attribute1"/>
-Merkmal 2<input type="text" [(ngModel)]="attribute2"/>
-Merkmal 3<input type="text" [(ngModel)]="attribute3"/>
-Guthaben  <input type="text" [(ngModel)]="balance"/>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12"><input type="text" readonly [(ngModel)]="posBuddyId"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Vorname:<input type="text" [(ngModel)]="surname"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Nachname:<input type="text" [(ngModel)]="surname"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Geburtstag:<input type="text" [(ngModel)]="surname"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Merkmal 1:<input type="text" [(ngModel)]="attribute1"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Merkmal 2:<input type="text" [(ngModel)]="attribute2"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Merkmal 3:<input type="text" [(ngModel)]="attribute3"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12">Guthaben:<input type="text" [(ngModel)]="balance"/></div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12"><input type="button" text="Scanbnen"><input type="submit"></div>
+  </div>
 </div>
