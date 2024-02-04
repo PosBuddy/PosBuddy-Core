@@ -6,10 +6,10 @@
     <div class="col-sm-12">Vorname:<input type="text" [(ngModel)]="surname"/></div>
   </div>
   <div class="row">
-    <div class="col-sm-12">Nachname:<input type="text" [(ngModel)]="surname"/></div>
+    <div class="col-sm-12">Nachname:<input type="text" [(ngModel)]="lastname"/></div>
   </div>
   <div class="row">
-    <div class="col-sm-12">Geburtstag:<input type="text" [(ngModel)]="surname"/></div>
+    <div class="col-sm-12">Geburtstag:<input type="text" [(ngModel)]="birthday"/></div>
   </div>
   <div class="row">
     <div class="col-sm-12">Merkmal 1:<input type="text" [(ngModel)]="attribute1"/></div>
@@ -24,6 +24,24 @@
     <div class="col-sm-12">Guthaben:<input type="text" [(ngModel)]="balance"/></div>
   </div>
   <div class="row">
-    <div class="col-sm-12"><input type="button" text="Scanbnen"><input type="submit"></div>
+    <div class="col-sm-12">
+      <button class="btn btn-lg btn-outline-primary" (click)="scanQRCode(content)">ID Scannen</button>
+      <input type="submit">
+    </div>
   </div>
 </div>
+
+<ng-template #content let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      Scanner
+    </div>
+  </div>
+  <div class="text-end">
+    <button type="button" class="btn btn-outline-dark" (click)="offcanvas.close('Save click')">Save</button>
+  </div>
+</ng-template>
