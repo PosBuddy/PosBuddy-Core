@@ -13,7 +13,18 @@
   </div>
   <div ngbAccordionItem [collapsed]="true">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton>test2</button>
+      <button ngbAccordionButton>Konto aufladen</button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-add-value></app-add-value>
+        </ng-template>
+      </div>
+    </div>
+  <div ngbAccordionItem [collapsed]="true">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton>Umsatz abfragen</button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>

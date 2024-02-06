@@ -24,9 +24,12 @@
     <div class="col-sm-12">Guthaben:<input type="text" [(ngModel)]="balance"/></div>
   </div>
   <div class="row">
-    <div class="col-sm-12">
-      <button class="btn btn-lg btn-outline-primary" (click)="scanQRCode(content)">ID Scannen</button>
-      <input type="submit">
+    <div class="col-sm-6">
+      <button class="btn btn-lg btn-outline-primary"
+              (click)="scanQRCode(content)">ID Scannen</button>
+      <button class="btn btn-lg btn-outline-primary"
+              (click)="scanQRCode(content)" [disabled]="!formValid">absenden
+      </button>
     </div>
   </div>
 </div>
@@ -38,10 +41,10 @@
   </div>
   <div class="offcanvas-body">
     <div class="mb-3">
-      Scanner
+      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
     </div>
   </div>
   <div class="text-end">
-    <button type="button" class="btn btn-outline-dark" (click)="offcanvas.close('Save click')">Save</button>
+    Bitte QR-code in der Kamera ausrichten.
   </div>
 </ng-template>

@@ -1,20 +1,20 @@
-import {Component, TemplateRef} from '@angular/core';
+import {Component, inject, TemplateRef} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {inject} from "@angular/core/testing";
 import {NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
+import {ZXingScannerModule} from "@zxing/ngx-scanner";
+
 
 @Component({
   selector: 'app-allocate-id',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, ZXingScannerModule],
   templateUrl: './allocate-id.component.html',
   styleUrl: './allocate-id.component.css'
 })
 export class AllocateIdComponent {
-  // @ts-ignore
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
-
+  formValid: boolean = false;
   posBuddyId: string = "-";
   surname = '';
   lastname = '';
@@ -37,6 +37,12 @@ export class AllocateIdComponent {
         this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
       },
     );
+  }
+
+  onScanSuccess(scanResult: string) {
+    this.posBuddyId = scanResult;
+    this.formValid = true
+    this.offcanvasService.dismiss("success");
   }
 
   private getDismissReason(reason: any): string {
