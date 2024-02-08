@@ -2,6 +2,7 @@ import {Component, inject, TemplateRef} from '@angular/core';
 import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
+import {paymentService} from "./payment.service";
 
 @Component({
   selector: 'app-add-value',
@@ -22,10 +23,19 @@ export class AddValueComponent {
   value = '0';
 
 
+  constructor(private paymentService: paymentService) {
+
+  }
+
   send() {
     if (this.posBuddyId != "-") {
       this.formValid = true
     }
+    this.paymentService.addPayment(this.posBuddyId, Number(this.value)).subscribe({
+      next: (v) => console.log(v),
+      error: (e) => console.error(e),
+      complete: () => console.info('complete')
+    })
   }
 
   onScanSuccess(scanResult: string) {
