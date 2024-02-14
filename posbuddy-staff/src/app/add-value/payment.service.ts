@@ -23,7 +23,7 @@ export class paymentService {
 
 
   addPayment(posBuddyId: string, value: number) {
-    return this.http.get<any>(this.serverUrl + posBuddyId + "?value=" + value, httpOptions)
+    return this.http.post<any>(this.serverUrl + posBuddyId + "?value=" + value, httpOptions)
   }
 
   private handleError(error: any): Promise<any> {

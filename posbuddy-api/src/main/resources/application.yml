@@ -5,6 +5,10 @@ micronaut:
         enabled: true
         paths: classpath:guestUi/browser
         mapping: /**
+      staff:
+        enabled: true
+        paths: classpath:staffUi/browser
+        mapping: /staff
       swagger:
         paths: classpath:META-INF/swagger
         mapping: /swagger/**

@@ -17,11 +17,16 @@
     <input class="form-control form-control-lg" type="text" placeholder=".form-control-lg" [(ngModel)]="value">
     <p></p>
   </div>
-  @if (formValid) {
-    <ngb-alert type="success">Einzahlung erfolgreich</ngb-alert>
-  } @else {
-    <ngb-alert type="info">Betrag angeben</ngb-alert>
+  @if (!formValid) {
+    <ngb-alert type="info">{{ formValidText }}</ngb-alert>
   }
+  @if (serverResponse == "OK") {
+    <ngb-alert type="success">Betrag wurde eingezahlt</ngb-alert>
+  }
+  @if (serverResponse == "ERROR") {
+    <ngb-alert [dismissible]="false" type="error">Einzahlung fehlgeschlagen</ngb-alert>
+  }
+
   <button class="btn btn-lg btn-outline-primary"
           (click)="send()" [disabled]="formValid">Einzahlen
   </button>

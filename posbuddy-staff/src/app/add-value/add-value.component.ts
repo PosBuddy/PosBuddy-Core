@@ -19,6 +19,11 @@ export class AddValueComponent {
   private offcanvasService = inject(NgbOffcanvas);
 
   formValid: boolean = false;
+  formValidText: string = "Betrag eingeben"
+
+  serverResponse: string = "-"
+  serverResponseText: string = "";
+
   posBuddyId: string = "-";
   value = '0';
 
@@ -31,11 +36,21 @@ export class AddValueComponent {
     if (this.posBuddyId != "-") {
       this.formValid = true
     }
-    this.paymentService.addPayment(this.posBuddyId, Number(this.value)).subscribe({
-      next: (v) => console.log(v),
-      error: (e) => console.error(e),
-      complete: () => console.info('complete')
-    })
+    this.paymentService
+      .addPayment(this.posBuddyId, Number(this.value))
+      .subscribe({
+          next: (v) => {
+            this.serverResponse="OK"
+            console.log("suceded")
+          },
+          error: (e) => {
+            this.serverResponse="ERROR"
+            this.serverResponseText=e.statusText
+            console.error(e)
+          },
+          complete: () => console.info('complete')
+        }
+      )
   }
 
   onScanSuccess(scanResult: string) {
