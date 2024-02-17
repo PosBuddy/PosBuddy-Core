@@ -15,7 +15,7 @@ const httpOptions = {
 export class paymentService {
 
 
-  private serverUrl = 'secure/api/v1/payment/';  // URL to web api
+  private serverUrl = 'api/v1/payment/';  // URL to web api
 
   constructor(private http: HttpClient) {
 

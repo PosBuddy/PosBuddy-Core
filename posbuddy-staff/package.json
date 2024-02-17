@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.js --ssl --ssl-cert /home/jkarthaus/git/posbuddy-core/posbuddy-api/src/main/resources/ssl/keystore.p12",
-    "build": "ng build",
+    "build": "ng build --base-href=/staff/ ",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

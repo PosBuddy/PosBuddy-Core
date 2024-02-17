@@ -16,3 +16,8 @@ micronaut:
     ssl:
       enabled: true
       port: 8443
+
+
+  http:
+    client:
+      log-level: debug
