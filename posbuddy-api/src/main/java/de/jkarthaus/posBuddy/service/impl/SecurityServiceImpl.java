@@ -1,6 +1,7 @@
 package de.jkarthaus.posBuddy.service.impl;
 
 import de.jkarthaus.posBuddy.model.Constants;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.core.io.ResourceResolver;
 import io.micronaut.core.io.scan.ClassPathResourceLoader;
 import io.micronaut.security.x509.X509Authentication;
@@ -19,6 +20,11 @@ import java.util.Optional;
 public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.SecurityService {
 
     private PublicKey publicKey;
+
+
+    @Value("${micronaut.server.ssl.enabled}")
+    private boolean isSslActive;
+
 
     @PostConstruct
     public void init() {
@@ -57,6 +63,10 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
 
     @Override
     public boolean isServeStation(X509Authentication x509Authentication) {
+        if (!isSslActive) {
+            log.info("SSL disabled -> isServeStation ->> true");
+            return true;
+        }
         if (x509Authentication
                 .getName()
                 .equals(Constants.PERMISSION_SERVE_CERTIFICATE_NAME)) {
@@ -71,6 +81,10 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
 
     @Override
     public boolean isCheckoutStation(X509Authentication x509Authentication) {
+        if (!isSslActive) {
+            log.info("SSL disabled -> isCheckoutStation ->> true");
+            return true;
+        }
         if (x509Authentication
                 .getName()
                 .equals(Constants.PERMISSION_CHECKOUT_CERTIFICATE_NAME)
@@ -82,6 +96,15 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
                 x509Authentication.getName()
         );
         return false;
+    }
+
+    @Override
+    public boolean isServeOrCheckout(X509Authentication x509Authentication) {
+        if (!isSslActive) {
+            log.info("SSL disabled -> serveOrCheckout ->> true");
+            return true;
+        }
+        return isCheckoutStation(x509Authentication) && isServeStation(x509Authentication);
     }
 
 

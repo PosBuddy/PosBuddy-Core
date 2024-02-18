@@ -1,50 +1,73 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12"><input type="text" readonly [(ngModel)]="posBuddyId"/></div>
+<div class="container">
+  <div class="row mx-md-n5">
+    <div class="col-4">ID :</div>
+    <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Vorname:<input type="text" [(ngModel)]="surname"/></div>
+  <div class="row pt-3">
+    <div class="col-4">Vorname :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="surname"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Nachname:<input type="text" [(ngModel)]="lastname"/></div>
+  <div class="row pt-3">
+    <div class="col-4">Nachname :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="lastname"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Geburtstag:<input type="text" [(ngModel)]="birthday"/></div>
+  <div class="row pt-3">
+    <div class="col-4">Geburtstag :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="birthday"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Merkmal 1:<input type="text" [(ngModel)]="attribute1"/></div>
+  <div class="row pt-3">
+    <div class="col-4">Merkmal 1 :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="attribute1"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Merkmal 2:<input type="text" [(ngModel)]="attribute2"/></div>
+  <div class="row pt-2">
+    <div class="col-4">Merkmal 2 :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="attribute2"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Merkmal 3:<input type="text" [(ngModel)]="attribute3"/></div>
+  <div class="row pt-2">
+    <div class="col-4">Merkmal 3 :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="attribute3"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-12">Guthaben:<input type="text" [(ngModel)]="balance"/></div>
+  <div class="row pt-3">
+    <div class="col-4">Guthaben :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="balance"/></div>
   </div>
-  <div class="row">
-    <div class="col-sm-6">
+  <div class="row pt-3">
+    <div class="col-4">
+      <button class="btn btn-lg btn-outline-secondary"
+              (click)="scanQRCode(content)">SCAN
+      </button>
+    </div>
+    <div class="col-8">
       <button class="btn btn-lg btn-outline-primary"
-              (click)="scanQRCode(content)">ID Scannen</button>
-      <button class="btn btn-lg btn-outline-primary"
-              (click)="scanQRCode(content)" [disabled]="!formValid">absenden
+              (click)="checkAndSend()" >zuordnen
       </button>
     </div>
   </div>
-</div>
-
-<ng-template #content let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="mb-3">
-      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+  <div class="row pt-3">
+    <div class="col-12">
+      @if (!formValid) {
+        <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
+      }
+      @if (serverResponse == "OK") {
+        <ngb-alert type="success">Betrag wurde eingezahlt</ngb-alert>
+      }
+      @if (serverResponse == "ERROR") {
+        <ngb-alert type="success">{{ serverResponse }}</ngb-alert>
+      }
     </div>
   </div>
-  <div class="text-end">
-    Bitte QR-code in der Kamera ausrichten.
-  </div>
-</ng-template>
+
+  <ng-template #content let-offcanvas>
+    <div class="offcanvas-header">
+      <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+    </div>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+      </div>
+    </div>
+    <div class="text-end">
+      Bitte QR-code in der Kamera ausrichten.
+    </div>
+  </ng-template>

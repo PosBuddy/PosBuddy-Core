@@ -1,6 +1,6 @@
 module.exports = {
-  '/secure': {
-    target: 'https://localhost:8443',
+  '/api': {
+    target: 'http://localhost:8443/staff',
     secure: false,
     changeOrigin: true,
     logLevel: 'debug'

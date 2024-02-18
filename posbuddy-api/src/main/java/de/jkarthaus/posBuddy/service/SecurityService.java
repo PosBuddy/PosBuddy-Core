@@ -8,4 +8,8 @@ public interface SecurityService {
     boolean isServeStation(X509Authentication x509Authentication);
 
     boolean isCheckoutStation(X509Authentication x509Authentication);
+
+    boolean isServeOrCheckout(X509Authentication x509Authentication);
+
+
 }

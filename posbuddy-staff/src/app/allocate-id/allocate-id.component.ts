@@ -1,13 +1,13 @@
 import {Component, inject, TemplateRef} from '@angular/core';
 import {FormsModule} from "@angular/forms";
-import {NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 
 
 @Component({
   selector: 'app-allocate-id',
   standalone: true,
-  imports: [FormsModule, ZXingScannerModule],
+  imports: [FormsModule, ZXingScannerModule, NgbAlert],
   templateUrl: './allocate-id.component.html',
   styleUrl: './allocate-id.component.css'
 })
@@ -15,6 +15,8 @@ export class AllocateIdComponent {
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
   formValid: boolean = false;
+  formValidText: string = "Min. ID und Wert "
+  serverResponse: string = "-"
   posBuddyId: string = "-";
   surname = '';
   lastname = '';
@@ -41,8 +43,35 @@ export class AllocateIdComponent {
 
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
-    this.formValid = true
+    if (this.isUUID(this.posBuddyId)) {
+      this.formValid = true
+    } else {
+      this.formValidText = "ID ungültig"
+      this.formValid = false
+    }
     this.offcanvasService.dismiss("success");
+  }
+
+  checkAndSend() {
+    let formcheck = true;
+    let errorText = "";
+    if (!this.isUUID(this.posBuddyId)) {
+      formcheck = false;
+      errorText += "ID ungültig"
+    }
+    if (isNaN(Number(this.balance)) || Number(this.balance) <= 0) {
+      formcheck = false;
+      errorText += " / Wert ungültig"
+    }
+
+    if (formcheck) {
+      console.info("formCheck:OK")
+      this.formValid = true;
+      this.formValidText = "";
+    } else {
+      this.formValid = false;
+      this.formValidText = errorText;
+    }
   }
 
   private getDismissReason(reason: any): string {
@@ -54,6 +83,14 @@ export class AllocateIdComponent {
       default:
         return `with: ${reason}`;
     }
+  }
+
+
+  private isUUID(s: string): boolean {
+    if (s.match("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") != null) {
+      return true
+    }
+    return false
   }
 
 }

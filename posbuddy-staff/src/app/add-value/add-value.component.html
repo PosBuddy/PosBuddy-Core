@@ -24,11 +24,11 @@
     <ngb-alert type="success">Betrag wurde eingezahlt</ngb-alert>
   }
   @if (serverResponse == "ERROR") {
-    <ngb-alert [dismissible]="false" type="error">Einzahlung fehlgeschlagen</ngb-alert>
+    <ngb-alert (closed)="resetError()" type="danger">{{ serverResponseText }}</ngb-alert>
   }
 
   <button class="btn btn-lg btn-outline-primary"
-          (click)="send()" [disabled]="formValid">Einzahlen
+          (click)="send()" [disabled]="!formValid || serverResponse!='-'">Einzahlen
   </button>
 </div>
 

@@ -137,8 +137,7 @@ public class SecureRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
         try {
-            if (securityService.isServeStation(x509Authentication)
-                    || securityService.isCheckoutStation(x509Authentication)) {
+            if (securityService.isServeOrCheckout(x509Authentication)) {
                 partyActionService.serveItems(servingRequest, posBuddyId);
             } else {
                 return HttpResponse.status(HttpStatus.FORBIDDEN);

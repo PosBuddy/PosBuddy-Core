@@ -2,7 +2,7 @@ import {Component, inject, TemplateRef} from '@angular/core';
 import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import {paymentService} from "./payment.service";
+import {paymentService} from "../service/payment.service";
 
 @Component({
   selector: 'app-add-value',
@@ -40,12 +40,12 @@ export class AddValueComponent {
       .addPayment(this.posBuddyId, Number(this.value))
       .subscribe({
           next: (v) => {
-            this.serverResponse="OK"
+            this.serverResponse = "OK"
             console.log("suceded")
           },
           error: (e) => {
-            this.serverResponse="ERROR"
-            this.serverResponseText=e.statusText
+            this.serverResponse = "ERROR"
+            this.serverResponseText = e.statusText
             console.error(e)
           },
           complete: () => console.info('complete')
@@ -63,5 +63,10 @@ export class AddValueComponent {
     this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
   }
 
+  resetError() {
+    this.serverResponse = "-"
+    this.value = "0"
+    this.posBuddyId = "-"
+  }
 
 }
