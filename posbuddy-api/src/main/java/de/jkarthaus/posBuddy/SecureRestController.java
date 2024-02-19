@@ -18,6 +18,8 @@ import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
@@ -150,6 +152,12 @@ public class SecureRestController {
 
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/allocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "409", description = "ID already allocated"),
+            @ApiResponse(responseCode = "400", description = "ID not valid"),
+    })
     @Tag(name = "secure")
     public HttpResponse allocate(
             String posBuddyId,
@@ -168,10 +176,10 @@ public class SecureRestController {
             partyActionService.allocatePosBuddyId(posBuddyId, allocatePosBuddyIdRequest);
         } catch (PosBuddyIdNotAllocateableException e) {
             log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.CONFLICT);
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
         }
         return HttpResponse.ok();
     }

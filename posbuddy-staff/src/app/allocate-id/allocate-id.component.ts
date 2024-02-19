@@ -2,6 +2,7 @@ import {Component, inject, TemplateRef} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
+import {AllocateService} from "../service/allocate.service";
 
 
 @Component({
@@ -11,6 +12,7 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
   templateUrl: './allocate-id.component.html',
   styleUrl: './allocate-id.component.css'
 })
+
 export class AllocateIdComponent {
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
@@ -20,11 +22,14 @@ export class AllocateIdComponent {
   posBuddyId: string = "-";
   surname = '';
   lastname = '';
-  birthday = '08.03.1975';
+  birthday = '1975-03-08';
   attribute1 = '';
   attribute2 = '';
   attribute3 = '';
   balance = '0'
+
+  constructor(private allocateService: AllocateService) {
+  }
 
 
   scanQRCode(content: TemplateRef<any>) {
@@ -68,6 +73,31 @@ export class AllocateIdComponent {
       console.info("formCheck:OK")
       this.formValid = true;
       this.formValidText = "";
+      this.allocateService.allocatePosBuddyId(
+        this.posBuddyId,
+        {
+          allocatePosBuddyIdRequest: {
+            attribute1: this.attribute1,
+            attribute2: this.attribute2,
+            attribute3: this.attribute3,
+            balance: Number(this.balance),
+            birthday: this.birthday,
+            lastname: this.lastname,
+            surname: this.surname
+          }
+        }
+      ).subscribe({
+          next: (v) => {
+            this.serverResponse = "OK"
+            console.log("suceded")
+          },
+          error: (e) => {
+            this.serverResponse = "ERROR"
+            console.error("ERROR:" + e)
+          },
+          complete: () => console.info('complete')
+        }
+      )
     } else {
       this.formValid = false;
       this.formValidText = errorText;

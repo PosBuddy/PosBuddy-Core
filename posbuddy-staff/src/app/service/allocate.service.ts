@@ -9,6 +9,18 @@ const httpOptions = {
 };
 
 
+interface AllocatePosBuddyIdRequest {
+  allocatePosBuddyIdRequest: {
+    surname: string | undefined;
+    lastname: string | undefined;
+    birthday: string | undefined;
+    attribute1: string | undefined;
+    attribute2: string | undefined;
+    attribute3: string | undefined;
+    balance: number | undefined;
+  }
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +33,13 @@ export class AllocateService {
   }
 
 
-  allocatePosBuddyId(posBuddyId: string, value: number) {
-    return this.http.post<any>(this.serverUrl + posBuddyId + "?value=" + value, httpOptions)
+  allocatePosBuddyId(posBuddyId: string, allocatePosBuddyIdRequest: AllocatePosBuddyIdRequest) {
+    return this
+      .http
+      .post<AllocatePosBuddyIdRequest>(
+        this.serverUrl + posBuddyId,
+        allocatePosBuddyIdRequest,
+        httpOptions
+      )
   }
 }
