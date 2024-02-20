@@ -3,6 +3,7 @@ import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {paymentService} from "../service/payment.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-add-value',
@@ -17,11 +18,13 @@ import {paymentService} from "../service/payment.service";
 })
 export class AddValueComponent {
   private offcanvasService = inject(NgbOffcanvas);
+  serverResponse: string = "-"
+  confirmError: boolean = false;
+  confirmOK: boolean = false;
 
   formValid: boolean = false;
   formValidText: string = "Betrag eingeben"
 
-  serverResponse: string = "-"
   serverResponseText: string = "";
 
   posBuddyId: string = "-";
@@ -32,26 +35,55 @@ export class AddValueComponent {
 
   }
 
-  send() {
-    if (this.posBuddyId != "-") {
-      this.formValid = true
+  checkAndSend() {
+    let formcheck = true;
+    let errorText = "";
+    if (isNaN(Number(this.value))
+      || Number(this.value) <= 0 || Number(this.value) > 100) {
+      formcheck = false;
+      errorText += " / Wert ungültig 1<-->100 EUR"
     }
-    this.paymentService
-      .addPayment(this.posBuddyId, Number(this.value))
-      .subscribe({
-          next: (v) => {
-            this.serverResponse = "OK"
-            console.log("suceded")
-          },
-          error: (e) => {
-            this.serverResponse = "ERROR"
-            this.serverResponseText = e.statusText
-            console.error(e)
-          },
-          complete: () => console.info('complete')
-        }
-      )
+    if (formcheck) {
+      console.info("formCheck:OK")
+      this.formValid = true;
+      this.formValidText = "";
+      this.paymentService.addDeposit(this.posBuddyId, Number(this.value))
+        .subscribe({
+            next: (v) => {
+              this.serverResponse = "OK"
+              console.log("suceded")
+              this.confirmOK = true;
+            },
+            error: (e: HttpErrorResponse) => {
+              this.confirmError = true;
+              switch (e.status) {
+                case 401 : {
+                  this.serverResponse = "Zugriff verweigert";
+                  break
+                }
+                case 404 : {
+                  this.serverResponse = "ID nicht zugeordnet";
+                  break
+                }
+                case 405 : {
+                  this.serverResponse = "keine Berechtigung";
+                  break
+                }
+                default : {
+                  this.serverResponse = "Fehlercode:" + e.status;
+                  break
+                }
+              }
+            },
+            complete: () => console.info('complete')
+          }
+        )
+    } else {
+      this.formValid = false;
+      this.formValidText = errorText;
+    }
   }
+
 
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
@@ -64,9 +96,15 @@ export class AddValueComponent {
   }
 
   resetError() {
-    this.serverResponse = "-"
-    this.value = "0"
-    this.posBuddyId = "-"
+    this.confirmError = false;
+    this.serverResponse = "-";
+  }
+
+  resetOK() {
+    this.confirmOK = false;
+    this.serverResponse = "-";
+    this.value = "0";
+    this.posBuddyId = "-";
   }
 
 }

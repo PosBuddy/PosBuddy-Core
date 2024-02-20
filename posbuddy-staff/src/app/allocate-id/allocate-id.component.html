@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="row mx-md-n5">
+  <div class="row pt-3">
     <div class="col-4">ID :</div>
     <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
@@ -39,7 +39,7 @@
     </div>
     <div class="col-8">
       <button class="btn btn-lg btn-outline-primary"
-              (click)="checkAndSend()" >zuordnen
+              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">zuordnen
       </button>
     </div>
   </div>
@@ -48,26 +48,26 @@
       @if (!formValid) {
         <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
       }
-      @if (serverResponse == "OK") {
-        <ngb-alert type="success">Betrag wurde eingezahlt</ngb-alert>
+      @if (confirmError) {
+        <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
       }
-      @if (serverResponse == "ERROR") {
-        <ngb-alert type="success">{{ serverResponse }}</ngb-alert>
+      @if (confirmOK) {
+        <ngb-alert type="success" (closed)="resetOK()">Id zugewiesen</ngb-alert>
       }
     </div>
   </div>
-
-  <ng-template #content let-offcanvas>
-    <div class="offcanvas-header">
-      <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
-      <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+</div>
+<ng-template #content let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
     </div>
-    <div class="offcanvas-body">
-      <div class="mb-3">
-        <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
-      </div>
-    </div>
-    <div class="text-end">
-      Bitte QR-code in der Kamera ausrichten.
-    </div>
-  </ng-template>
+  </div>
+  <div class="text-end">
+    Bitte QR-code in der Kamera ausrichten.
+  </div>
+</ng-template>

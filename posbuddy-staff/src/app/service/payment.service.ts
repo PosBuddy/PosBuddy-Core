@@ -15,20 +15,20 @@ const httpOptions = {
 export class paymentService {
 
 
-  private serverUrl = 'api/v1/payment/';  // URL to web api
+  private paymentUrl = 'api/v1/payment/';
+  private depositUrl = 'api/v1/deposit/';
 
   constructor(private http: HttpClient) {
 
   }
 
 
-  addPayment(posBuddyId: string, value: number) {
-    return this.http.post<any>(this.serverUrl + posBuddyId + "?value=" + value, httpOptions)
+  doPayment(posBuddyId: string, value: number) {
+    return this.http.post<any>(this.paymentUrl + posBuddyId + "?value=" + value, httpOptions)
   }
 
-  private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
-    return Promise.reject(error.message || error);
+  addDeposit(posBuddyId: string, value: number) {
+    return this.http.post<any>(this.depositUrl + posBuddyId + "?value=" + value, httpOptions)
   }
 
 }

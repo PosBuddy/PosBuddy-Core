@@ -21,13 +21,6 @@ import {HttpClientModule} from "@angular/common/http";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-  title = 'posbuddy-staff';
-  items = ['Karte zuweisen', 'Einzahlen', 'Auszahlen', 'Karte trennen'];
-
-
-  playerName: string = ""
-
-  onSubmit() {
-    return this.playerName
-  }
+  title = 'PosBuddy &#9400; by JK';
+  version:string ='1.0.0'
 }

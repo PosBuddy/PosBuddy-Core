@@ -3,6 +3,7 @@ import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {AllocateService} from "../service/allocate.service";
+import {HttpErrorResponse} from "@angular/common/http";
 
 
 @Component({
@@ -17,8 +18,10 @@ export class AllocateIdComponent {
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
   formValid: boolean = false;
-  formValidText: string = "Min. ID und Wert "
+  formValidText: string = "Mindestens Id und Wert angeben."
   serverResponse: string = "-"
+  confirmError: boolean = false;
+  confirmOK: boolean = false;
   posBuddyId: string = "-";
   surname = '';
   lastname = '';
@@ -90,10 +93,32 @@ export class AllocateIdComponent {
           next: (v) => {
             this.serverResponse = "OK"
             console.log("suceded")
+            this.confirmOK = true;
           },
-          error: (e) => {
-            this.serverResponse = "ERROR"
-            console.error("ERROR:" + e)
+          error: (e: HttpErrorResponse) => {
+            this.confirmError = true;
+            switch (e.status) {
+              case 400 : {
+                this.serverResponse = "ID ungültig";
+                break
+              }
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              case 409 : {
+                this.serverResponse = "ID bereits zugewiesen";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + e.status;
+                break
+              }
+            }
           },
           complete: () => console.info('complete')
         }
@@ -102,6 +127,18 @@ export class AllocateIdComponent {
       this.formValid = false;
       this.formValidText = errorText;
     }
+  }
+
+  resetError() {
+    this.confirmError = false;
+    this.serverResponse = "-";
+  }
+
+  resetOK() {
+    this.confirmOK = false;
+    this.serverResponse = "-";
+    this.balance = "0";
+    this.posBuddyId = "-";
   }
 
   private getDismissReason(reason: any): string {

@@ -1,7 +1,15 @@
+<div class="container">
+  <div class="row">
+    <div class="col-9">
+      <span class="badge text-bg-primary">PosBuddy &#9400; by JK</span>
+    </div>
+    <div class="col-3">{{ version }}</div>
+  </div>
+</div>
 <div ngbAccordion [closeOthers]="true" xmlns="http://www.w3.org/1999/html">
   <div ngbAccordionItem [collapsed]="false">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton>Person zuordnen</button>
+      <button ngbAccordionButton><i class="bi bi-database-fill-add">&nbsp;Person zuordnen</i></button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -13,7 +21,7 @@
   </div>
   <div ngbAccordionItem [collapsed]="true">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton>Konto aufladen</button>
+      <button ngbAccordionButton><i class="bi bi-currency-euro">&nbsp;Konto aufladen</i></button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -22,15 +30,16 @@
         </ng-template>
       </div>
     </div>
-  <div ngbAccordionItem [collapsed]="true">
-    <h2 ngbAccordionHeader>
-      <button ngbAccordionButton>Umsatz abfragen</button>
-    </h2>
-    <div ngbAccordionCollapse>
-      <div ngbAccordionBody>
-        <ng-template>
-          2
-        </ng-template>
+    <div ngbAccordionItem [collapsed]="true">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton><i class="bi bi-list-columns-reverse">&nbsp;Umsatz abfragen</i></button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            2
+          </ng-template>
+        </div>
       </div>
     </div>
   </div>

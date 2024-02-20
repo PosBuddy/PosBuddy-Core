@@ -1,35 +1,37 @@
-<div class="container-fluid">
-  <div class="row">
-    Bitte Einzahlung in EURO angeben
+<div class="container">
+  <div class="row pt-3">
+    <div class="col-4">ID :</div>
+    <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
-  <div class="row">
-    <div class="row-cols-sm-6">
-      <button class="btn btn-lg btn-outline-primary"
-              (click)="scanQRCode(content)">ID Scannen
+  <div class="row pt-3">
+    <div class="col-4">Wert :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="value"/></div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-4">
+      <button class="btn btn-lg btn-outline-secondary"
+              (click)="scanQRCode(content)">SCAN
       </button>
     </div>
-    <div class="row-cols-sm-6">
-      <input readonly class="form-control form-control-lg" type="text" placeholder=".form-control-lg"
-             [(ngModel)]="posBuddyId"/>
+    <div class="col-8">
+      <button class="btn btn-lg btn-outline-primary"
+              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">Einzahlen
+      </button>
     </div>
   </div>
-  <div class="row">
-    <input class="form-control form-control-lg" type="text" placeholder=".form-control-lg" [(ngModel)]="value">
-    <p></p>
+  <div class="row pt-3">
+    <div class="col-12">
+      @if (!formValid) {
+        <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
+      }
+      @if (confirmError) {
+        <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
+      }
+      @if (confirmOK) {
+        <ngb-alert type="success" (closed)="resetOK()">Einzahlung erfolgreich</ngb-alert>
+      }
+    </div>
   </div>
-  @if (!formValid) {
-    <ngb-alert type="info">{{ formValidText }}</ngb-alert>
-  }
-  @if (serverResponse == "OK") {
-    <ngb-alert type="success">Betrag wurde eingezahlt</ngb-alert>
-  }
-  @if (serverResponse == "ERROR") {
-    <ngb-alert (closed)="resetError()" type="danger">{{ serverResponseText }}</ngb-alert>
-  }
-
-  <button class="btn btn-lg btn-outline-primary"
-          (click)="send()" [disabled]="!formValid || serverResponse!='-'">Einzahlen
-  </button>
 </div>
 
 <ng-template #content let-offcanvas>
