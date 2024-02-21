@@ -5,6 +5,7 @@ import {FormsModule} from "@angular/forms";
 import {AllocateIdComponent} from "./allocate-id/allocate-id.component";
 import {AddValueComponent} from "./add-value/add-value.component";
 import {HttpClientModule} from "@angular/common/http";
+import {PayoutComponent} from "./payout/payout.component";
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,8 @@ import {HttpClientModule} from "@angular/common/http";
     RouterOutlet,
     FormsModule,
     AllocateIdComponent,
-    AddValueComponent
+    AddValueComponent,
+    PayoutComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

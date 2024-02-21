@@ -1,0 +1,50 @@
+<div class="container">
+  <div class="row pt-3">
+    <div class="col-4">ID :</div>
+    <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-4">Wert :</div>
+    <div class="col-8"><input type="text" [(ngModel)]="value"/></div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-4">
+      <button class="btn btn-lg btn-outline-secondary"
+              (click)="scanQRCode(content)">SCAN
+      </button>
+    </div>
+    <div class="col-8">
+      <button class="btn btn-lg btn-outline-primary"
+              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">Einzahlen
+      </button>
+    </div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-12">
+      @if (!formValid) {
+        <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
+      }
+      @if (confirmError) {
+        <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
+      }
+      @if (confirmOK) {
+        <ngb-alert type="success" (closed)="resetOK()">Einzahlung erfolgreich</ngb-alert>
+      }
+    </div>
+  </div>
+</div>
+
+<ng-template #content let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+    </div>
+  </div>
+  <div class="text-end">
+    Bitte QR-code in der Kamera ausrichten.
+  </div>
+</ng-template>

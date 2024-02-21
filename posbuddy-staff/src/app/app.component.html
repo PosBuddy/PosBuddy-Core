@@ -30,16 +30,16 @@
         </ng-template>
       </div>
     </div>
-    <div ngbAccordionItem [collapsed]="true">
-      <h2 ngbAccordionHeader>
-        <button ngbAccordionButton><i class="bi bi-list-columns-reverse">&nbsp;Umsatz abfragen</i></button>
-      </h2>
-      <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
-          <ng-template>
-            2
-          </ng-template>
-        </div>
+  </div>
+  <div ngbAccordionItem [collapsed]="true">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton><i class="bi bi-arrow-90deg-down">&nbsp;Auszahlen</i></button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-payout></app-payout>
+        </ng-template>
       </div>
     </div>
   </div>
