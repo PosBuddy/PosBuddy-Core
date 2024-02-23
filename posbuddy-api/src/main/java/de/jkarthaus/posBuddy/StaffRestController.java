@@ -67,17 +67,33 @@ public class StaffRestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "404", description = "ID not allocated"),
+            @ApiResponse(responseCode = "400", description = "ID not valid"),
+    })
     @Tag(name = "secure")
-    public IdentityResponse getIdentity(String posBuddyId) {
-
+    public HttpResponse<IdentityResponse> getIdentity(
+            String posBuddyId,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication
+    ) {
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        if (!securityService.isServeOrCheckout(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        }
         try {
-            return partyActionService.getIdentityResponseByPosBuddyId(posBuddyId);
+            return HttpResponse.ok(partyActionService.getIdentityResponseByPosBuddyId(posBuddyId));
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
     }
 

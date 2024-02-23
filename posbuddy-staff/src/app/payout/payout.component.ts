@@ -20,7 +20,8 @@ import {paymentService} from "../service/payment.service";
 })
 
 export class PayoutComponent {
-  constructor(private paymentService: paymentService) {  }
+  constructor(private paymentService: paymentService) {
+  }
 
   private offcanvasService = inject(NgbOffcanvas);
   serverResponse: string = "-"
@@ -89,6 +90,37 @@ export class PayoutComponent {
     this.posBuddyId = scanResult;
     this.formValid = true
     this.offcanvasService.dismiss("success");
+
+
+    this.paymentService.getIdentity(this.posBuddyId).subscribe(
+      next => {
+        this.value = "" + next.balance;
+        this.checkAndSend();
+      },
+      err => {
+        this.value = "0";
+        this.confirmError = true;
+        switch (err.status) {
+          case 401 : {
+            this.serverResponse = "Zugriff verweigert";
+            break
+          }
+          case 404 : {
+            this.serverResponse = "ID nicht zugeordnet";
+            break
+          }
+          case 405 : {
+            this.serverResponse = "keine Berechtigung";
+            break
+          }
+          default : {
+            this.serverResponse = "Fehlercode:" + err.status;
+            break
+          }
+        }
+      },
+      () => console.log('HTTP request completed.')
+    );
   }
 
   scanQRCode(content: TemplateRef<any>) {

@@ -5,7 +5,7 @@
   </div>
   <div class="row pt-3">
     <div class="col-4">Wert :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="value"/></div>
+    <div class="col-8"><input type="text" [(ngModel)]="value" readonly/></div>
   </div>
   <div class="row pt-3">
     <div class="col-4">
@@ -15,7 +15,7 @@
     </div>
     <div class="col-8">
       <button class="btn btn-lg btn-outline-primary"
-              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">Einzahlen
+              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">Betrag auszahlen
       </button>
     </div>
   </div>
