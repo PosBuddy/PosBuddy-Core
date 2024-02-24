@@ -68,10 +68,10 @@ public class StaffRestController {
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "400", description = "ID not valid"),
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
-            @ApiResponse(responseCode = "400", description = "ID not valid"),
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
     @Tag(name = "secure")
     public HttpResponse<IdentityResponse> getIdentity(
@@ -228,17 +228,16 @@ public class StaffRestController {
     }
 
     @Secured(IS_ANONYMOUS)
-    @Post(uri = "/payment/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/payout/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "400", description = "Out of Balance"),
+            @ApiResponse(responseCode = "400", description = "No balance"),
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
     @Tag(name = "secure")
-    public HttpResponse payment(
+    public HttpResponse payout(
             String posBuddyId,
-            @QueryValue Float value,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
         log.info("payout {} EUR from posBuddyId:", posBuddyId);
@@ -250,7 +249,7 @@ public class StaffRestController {
             return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
-            partyActionService.payment(posBuddyId, value);
+            partyActionService.payout(posBuddyId);
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
             return HttpResponse.notFound();

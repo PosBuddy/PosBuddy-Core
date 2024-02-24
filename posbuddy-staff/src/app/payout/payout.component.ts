@@ -24,65 +24,66 @@ export class PayoutComponent {
   }
 
   private offcanvasService = inject(NgbOffcanvas);
+  payoutPossible = false;
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
-
   formValid: boolean = false;
-  formValidText: string = "Betrag eingeben"
-
+  formValidText: string = "ID zur Auszahlung scannen"
   serverResponseText: string = "";
 
   posBuddyId: string = "-";
   value = '0';
 
-  checkAndSend() {
-    let formcheck = true;
-    let errorText = "";
+
+  check() {
+    // -- Check if balance is valid
     if (isNaN(Number(this.value))
-      || Number(this.value) <= 0 || Number(this.value) > 100) {
-      formcheck = false;
-      errorText += " / Wert ungültig 1<-->100 EUR"
-    }
-    if (formcheck) {
-      console.info("formCheck:OK")
-      this.formValid = true;
-      this.formValidText = "";
-      this.paymentService.addDeposit(this.posBuddyId, Number(this.value))
-        .subscribe({
-            next: (v) => {
-              this.serverResponse = "OK"
-              console.log("suceded")
-              this.confirmOK = true;
-            },
-            error: (e: HttpErrorResponse) => {
-              this.confirmError = true;
-              switch (e.status) {
-                case 401 : {
-                  this.serverResponse = "Zugriff verweigert";
-                  break
-                }
-                case 404 : {
-                  this.serverResponse = "ID nicht zugeordnet";
-                  break
-                }
-                case 405 : {
-                  this.serverResponse = "keine Berechtigung";
-                  break
-                }
-                default : {
-                  this.serverResponse = "Fehlercode:" + e.status;
-                  break
-                }
-              }
-            },
-            complete: () => console.info('complete')
-          }
-        )
+      || Number(this.value) <= 0 || Number(this.value) > 200) {
+      this.payoutPossible = false;
+      this.serverResponse = "Guthaben ungültig 0.1<-->200 EUR"
+      this.confirmError = true;
     } else {
-      this.formValid = false;
-      this.formValidText = errorText;
+      this.payoutPossible = true;
     }
+  }
+
+  doPayout() {
+    this.paymentService.doPayout(this.posBuddyId)
+      .subscribe({
+          next: (v) => {
+            this.serverResponse = "OK"
+            console.log("suceded")
+            this.confirmOK = true;
+          },
+          error: (e: HttpErrorResponse) => {
+            this.confirmError = true;
+            switch (e.status) {
+              case 400 : {
+                this.serverResponse = "Kein Guthaben";
+                break
+              }
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 404 : {
+                this.serverResponse = "ID nicht zugeordnet";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + e.status;
+                break
+              }
+            }
+          },
+          complete: () => console.info('complete')
+        }
+      )
   }
 
 
@@ -95,12 +96,19 @@ export class PayoutComponent {
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
         this.value = "" + next.balance;
-        this.checkAndSend();
+        if (this.value.indexOf(".") > 0) {
+          this.value = this.value.substring(0, this.value.indexOf(".") + 2)
+        }
+        this.check();
       },
       err => {
         this.value = "0";
         this.confirmError = true;
         switch (err.status) {
+          case 400 : {
+            this.serverResponse = "Ungültige ID";
+            break
+          }
           case 401 : {
             this.serverResponse = "Zugriff verweigert";
             break
@@ -137,6 +145,7 @@ export class PayoutComponent {
     this.serverResponse = "-";
     this.value = "0";
     this.posBuddyId = "-";
+    this.payoutPossible = false;
   }
 
 

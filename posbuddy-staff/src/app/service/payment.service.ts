@@ -25,26 +25,23 @@ interface identity {
 })
 
 export class paymentService {
-  private paymentUrl = 'api/v1/payment/';
-  private depositUrl = 'api/v1/deposit/';
-  private identityUrl = 'api/v1/xidentity/';
-
+  private baseUrl = "api/v1/";
 
   constructor(private http: HttpClient) {
 
   }
 
 
-  doPayout(posBuddyId: string, value: number) {
-    return this.http.post<any>(this.paymentUrl + posBuddyId + "?value=" + value, httpOptions)
+  doPayout(posBuddyId: string) {
+    return this.http.post<any>(this.baseUrl + "payout/" + posBuddyId, httpOptions)
   }
 
   getIdentity(posBuddyId: string): Observable<identity> {
-    return this.http.get<any>(this.identityUrl + posBuddyId, httpOptions)
+    return this.http.get<any>(this.baseUrl + "identity/" + posBuddyId, httpOptions)
   }
 
   addDeposit(posBuddyId: string, value: number) {
-    return this.http.post<any>(this.depositUrl + posBuddyId + "?value=" + value, httpOptions)
+    return this.http.post<any>(this.baseUrl + "deposit/" + posBuddyId + "?value=" + value, httpOptions)
   }
 
 }

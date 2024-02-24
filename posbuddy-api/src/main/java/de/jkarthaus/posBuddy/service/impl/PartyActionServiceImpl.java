@@ -150,25 +150,21 @@ public class PartyActionServiceImpl implements PartyActionService {
 
     @Override
     @Transactional
-    public void payment(String posBuddyId, Float value) throws
-            posBuddyIdNotAllocatedException, OutOfBalanceException {
+    public void payout(String posBuddyId) throws posBuddyIdNotAllocatedException, OutOfBalanceException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
-        if (identityEntity.getBalance() < 0) {
+        if (identityEntity.getBalance() <= 0) {
             throw new OutOfBalanceException("Balance is already negativ");
-        }
-        if (identityEntity.getBalance() - value < 0) {
-            throw new OutOfBalanceException("insufficient credit");
         }
         // persist revenue
         RevenueEntity revenueEntity = new RevenueEntity();
         revenueEntity.setPaymentaction(Constants.PAYMENT);
         revenueEntity.setPosbuddyid(posBuddyId);
         revenueEntity.setAmount(1);
-        revenueEntity.setValue(value);
+        revenueEntity.setValue(identityEntity.getBalance());
         revenueEntity.setTimeofaction(LocalDateTime.now());
         revenueRepository.addRevenue(revenueEntity);
         // update new balance
-        identityEntity.setBalance(identityEntity.getBalance() - value);
+        identityEntity.setBalance(0f);
         identityRepository.updateIdentityEntity(identityEntity);
     }
 

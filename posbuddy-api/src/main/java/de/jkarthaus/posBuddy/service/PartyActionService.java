@@ -31,7 +31,7 @@ public interface PartyActionService {
     void deAllocatePosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
-    void payment(String posBuddyId, Float value) throws
+    void payout(String posBuddyId) throws
             posBuddyIdNotAllocatedException, OutOfBalanceException;
 
 
