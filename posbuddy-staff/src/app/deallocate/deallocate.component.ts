@@ -42,15 +42,17 @@ export class DeallocateComponent {
       this.serverResponse = "Es ist noch Guthaben vorhanden"
       this.confirmError = true;
     } else {
+      this.serverResponse = "Freigabe kann erfolgen"
       this.deallocatePossible = true;
     }
+    console.info("deallocate possible:" + this.deallocatePossible)
   }
 
   doDeallocate() {
-    this.paymentService.doPayout(this.posBuddyId)
+    this.paymentService.doDeallocate(this.posBuddyId)
       .subscribe({
           next: (v) => {
-            this.serverResponse = "OK"
+            this.serverResponse = "Freigabe durchgeführt"
             console.log("suceded")
             this.confirmOK = true;
           },
@@ -95,9 +97,11 @@ export class DeallocateComponent {
         if (this.value.indexOf(".") > 0) {
           this.value = this.value.substring(0, this.value.indexOf(".") + 2)
         }
+        console.log("balance:" + next.balance);
         this.check();
       },
       err => {
+        console.error(err.status)
         this.value = "0";
         this.confirmError = true;
         switch (err.status) {

@@ -55,5 +55,17 @@
       </div>
     </div>
   </div>
+  <div ngbAccordionItem [collapsed]="true">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton><i class="bi bi-list-columns-reverse">&nbsp;ID Umsätze anzeigen</i></button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-revenue></app-revenue>
+        </ng-template>
+      </div>
+    </div>
+  </div>
 </div>
 <router-outlet/>

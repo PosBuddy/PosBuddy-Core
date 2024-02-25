@@ -4,18 +4,9 @@
     <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
   <div class="row pt-3">
-    <div class="col-4">Guthaben :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="value" readonly/></div>
-  </div>
-  <div class="row pt-3">
     <div class="col-4">
       <button class="btn btn-lg btn-outline-secondary"
               (click)="scanQRCode(content)">SCAN
-      </button>
-    </div>
-    <div class="col-8">
-      <button class="btn btn-lg btn-outline-primary"
-              (click)="doDeallocate()" [disabled]="deallocatePossible==false">ID freigeben
       </button>
     </div>
   </div>
@@ -28,7 +19,7 @@
         <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
       }
       @if (confirmOK) {
-        <ngb-alert type="success" (closed)="resetOK()">Zuordnung erfolgreich aufgehoben</ngb-alert>
+        <ngb-alert type="success" (closed)="resetOK()">Auszahlung erfolgreich</ngb-alert>
       }
     </div>
   </div>

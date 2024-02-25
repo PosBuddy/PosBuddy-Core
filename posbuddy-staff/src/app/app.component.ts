@@ -7,6 +7,7 @@ import {AddValueComponent} from "./add-value/add-value.component";
 import {HttpClientModule} from "@angular/common/http";
 import {PayoutComponent} from "./payout/payout.component";
 import {DeallocateComponent} from "./deallocate/deallocate.component";
+import {RevenueComponent} from "./revenue/revenue.component";
 
 @Component({
   selector: 'app-root',
@@ -19,12 +20,13 @@ import {DeallocateComponent} from "./deallocate/deallocate.component";
     AllocateIdComponent,
     AddValueComponent,
     PayoutComponent,
-    DeallocateComponent
+    DeallocateComponent,
+    RevenueComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'PosBuddy &#9400; by JK';
-  version:string ='1.0.0'
+  version: string = '1.0.0'
 }

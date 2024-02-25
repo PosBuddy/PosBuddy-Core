@@ -31,9 +31,12 @@ export class paymentService {
 
   }
 
-
   doPayout(posBuddyId: string) {
     return this.http.post<any>(this.baseUrl + "payout/" + posBuddyId, httpOptions)
+  }
+
+  doDeallocate(posBuddyId: string) {
+    return this.http.post<any>(this.baseUrl + "deAllocate/" + posBuddyId, httpOptions)
   }
 
   getIdentity(posBuddyId: string): Observable<identity> {
