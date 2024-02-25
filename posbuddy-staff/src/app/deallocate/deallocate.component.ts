@@ -5,9 +5,8 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {HttpErrorResponse} from "@angular/common/http";
 import {paymentService} from "../service/payment.service";
 
-
 @Component({
-  selector: 'app-payout',
+  selector: 'app-deallocate',
   standalone: true,
   imports: [
     NgbAlert,
@@ -15,41 +14,42 @@ import {paymentService} from "../service/payment.service";
     ZXingScannerModule,
     FormsModule
   ],
-  templateUrl: './payout.component.html',
-  styleUrl: './payout.component.css'
+  templateUrl: './deallocate.component.html',
+  styleUrl: './deallocate.component.css'
 })
 
-export class PayoutComponent {
+
+export class DeallocateComponent {
   constructor(private paymentService: paymentService) {
   }
 
   private offcanvasService = inject(NgbOffcanvas);
-  payoutPossible = false;
+  deallocatePossible = false;
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
   formValid: boolean = false;
-  formValidText: string = "ID zur Auszahlung scannen"
+  formValidText: string = "ID zur Freigabe scannen"
+
   posBuddyId: string = "-";
   value = '0';
 
 
   check() {
     // -- Check if balance is valid
-    if (isNaN(Number(this.value))
-      || Number(this.value) <= 0 || Number(this.value) > 200) {
-      this.payoutPossible = false;
-      this.serverResponse = "Guthaben ungültig 0.1<-->200 EUR"
+    if (isNaN(Number(this.value)) || Number(this.value) != 0) {
+      this.deallocatePossible = false;
+      this.serverResponse = "Es ist noch Guthaben vorhanden"
       this.confirmError = true;
     } else {
-      this.payoutPossible = true;
+      this.deallocatePossible = true;
     }
   }
 
-  doPayout() {
+  doDeallocate() {
     this.paymentService.doPayout(this.posBuddyId)
       .subscribe({
-          next: () => {
+          next: (v) => {
             this.serverResponse = "OK"
             console.log("suceded")
             this.confirmOK = true;
@@ -89,8 +89,6 @@ export class PayoutComponent {
     this.posBuddyId = scanResult;
     this.formValid = true
     this.offcanvasService.dismiss("success");
-
-
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
         this.value = "" + next.balance;
@@ -143,7 +141,7 @@ export class PayoutComponent {
     this.serverResponse = "-";
     this.value = "0";
     this.posBuddyId = "-";
-    this.payoutPossible = false;
+    this.deallocatePossible = false;
   }
 
 

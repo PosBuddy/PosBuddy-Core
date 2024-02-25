@@ -136,7 +136,7 @@ public class PartyActionServiceImpl implements PartyActionService {
 
     @Override
     public void deAllocatePosBuddyId(String posBuddyId)
-            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException, OutOfBalanceException {
         if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("PosBuddy ID is not valid");
         }
@@ -144,6 +144,9 @@ public class PartyActionServiceImpl implements PartyActionService {
             throw new posBuddyIdNotAllocatedException("posBuddyId is Not allocated");
         }
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
+        if (identityEntity.getBalance() > 0) {
+            throw new OutOfBalanceException("balance is > 0");
+        }
         identityEntity.setEndallocation(LocalDateTime.now());
         identityRepository.updateIdentityEntity(identityEntity);
     }

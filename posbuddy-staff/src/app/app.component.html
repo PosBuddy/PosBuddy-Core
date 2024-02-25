@@ -43,5 +43,17 @@
       </div>
     </div>
   </div>
+  <div ngbAccordionItem [collapsed]="true">
+    <h2 ngbAccordionHeader>
+      <button ngbAccordionButton><i class="bi bi-arrow-bar-right">&nbsp;Personenzuordnung aufheben</i></button>
+    </h2>
+    <div ngbAccordionCollapse>
+      <div ngbAccordionBody>
+        <ng-template>
+          <app-deallocate></app-deallocate>
+        </ng-template>
+      </div>
+    </div>
+  </div>
 </div>
 <router-outlet/>

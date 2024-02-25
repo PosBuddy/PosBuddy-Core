@@ -202,6 +202,12 @@ public class StaffRestController {
 
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/deAllocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404", description = "ID is not allocated"),
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "400", description = "Balance not 0"),
+    })
     @Tag(name = "secure")
     public HttpResponse deAllocate(
             String posBuddyId,
@@ -217,12 +223,12 @@ public class StaffRestController {
         }
         try {
             partyActionService.deAllocatePosBuddyId(posBuddyId);
-        } catch (posBuddyIdNotValidException e) {
-            log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            throw new RuntimeException(e);
-        } catch (posBuddyIdNotAllocatedException e) {
+        } catch (posBuddyIdNotAllocatedException | posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.notFound();
+        } catch (OutOfBalanceException e) {
+            log.error("OutOfBalanceException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
         }
         return HttpResponse.ok();
     }

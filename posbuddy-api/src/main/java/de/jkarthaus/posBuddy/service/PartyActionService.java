@@ -29,7 +29,7 @@ public interface PartyActionService {
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;
 
     void deAllocatePosBuddyId(String posBuddyId)
-            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException, OutOfBalanceException;
 
     void payout(String posBuddyId) throws
             posBuddyIdNotAllocatedException, OutOfBalanceException;
