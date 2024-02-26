@@ -6,28 +6,25 @@
   <div class="row pt-3">
     <div class="col-4">
       <button class="btn btn-lg btn-outline-secondary"
-              (click)="scanQRCode(content)">SCAN
+              (click)="scanQRCode(scanIdOC)">SCAN
       </button>
     </div>
   </div>
   <div class="row pt-3">
     <div class="col-12">
-      @if (!formValid) {
-        <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
-      }
       @if (confirmError) {
         <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
       }
       @if (confirmOK) {
-        <ngb-alert type="success" (closed)="resetOK()">Auszahlung erfolgreich</ngb-alert>
+        <ngb-alert type="success" (closed)="resetOK()">{{ formValidText }}</ngb-alert>
       }
     </div>
   </div>
 </div>
 
-<ng-template #content let-offcanvas>
+<ng-template #scanIdOC let-offcanvas>
   <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
+    <h4 class="offcanvas-title" id="scanID">Id Scannen</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
   </div>
   <div class="offcanvas-body">
@@ -37,5 +34,64 @@
   </div>
   <div class="text-end">
     Bitte QR-code in der Kamera ausrichten.
+  </div>
+</ng-template>
+
+<ng-template #revenueOC let-offcanvas disable-scolling="false">
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="revenue">Umsätze</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="alert alert-primary" role="alert">
+      Kontostand:
+      <h5>{{ balance | number }}<h5>
+    </div>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">S/H</th>
+        <th scope="col">Anzahl</th>
+        <th scope="col">Artikel</th>
+        <th scope="col">EUR</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (revenue of revenues; track revenue.timeOfAction; let i = $index) {
+          <tr>
+            <th scope="row">{{ i + 1 }}</th>
+            <td>
+              @if (revenue.action == "+") {
+                <i class="bi bi-plus-circle-fill"></i>
+              } @else if (revenue.action == "-") {
+                <i class="bi bi-dash-circle-fill"></i>
+              } @else {
+                <i class="bi bi-arrow-bar-right"></i>
+              }
+            </td>
+            <td>
+              {{ revenue.amount | number }}
+            </td>
+            <td>
+              @if (revenue.action == "+") {
+                <em>Einzahlung</em>
+              }
+              @if (revenue.action == "-") {
+                <em>Auszahlung</em>
+              }
+              {{ revenue.itemText }}
+            </td>
+            <td>
+              {{ revenue.value | number }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <div class="text-end">
+    <hr>
+    Ende Umsätze
   </div>
 </ng-template>

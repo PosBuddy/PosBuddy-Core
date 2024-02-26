@@ -9,7 +9,7 @@ const httpOptions = {
   })
 };
 
-interface identity {
+export interface identity {
   "posBuddyId": "string",
   "surName": "string",
   "lastName": "string",
@@ -18,6 +18,14 @@ interface identity {
   "attribute2": "string",
   "attribute3": "string",
   "balance": number
+}
+
+export interface revenue {
+  "itemText": string,
+  "amount": number,
+  "value": number,
+  "action": string,
+  "timeOfAction": string
 }
 
 @Injectable({
@@ -41,6 +49,10 @@ export class paymentService {
 
   getIdentity(posBuddyId: string): Observable<identity> {
     return this.http.get<any>(this.baseUrl + "identity/" + posBuddyId, httpOptions)
+  }
+
+  getRevenue(posBuddyId: string): Observable<revenue[]> {
+    return this.http.get<any>(this.baseUrl + "revenue/" + posBuddyId, httpOptions)
   }
 
   addDeposit(posBuddyId: string, value: number) {

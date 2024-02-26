@@ -90,7 +90,6 @@ export class PayoutComponent {
     this.formValid = true
     this.offcanvasService.dismiss("success");
 
-
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
         this.value = "" + next.balance;
