@@ -27,6 +27,13 @@ export interface revenue {
   "action": string,
   "timeOfAction": string
 }
+export interface item {
+  "id": string,
+  "itemtext": number,
+  "value": number,
+  "action": string,
+  "timeOfAction": string
+}
 
 @Injectable({
   providedIn: 'root'
@@ -54,6 +61,11 @@ export class paymentService {
   getRevenue(posBuddyId: string): Observable<revenue[]> {
     return this.http.get<any>(this.baseUrl + "revenue/" + posBuddyId, httpOptions)
   }
+
+  getItem(station: string): Observable<revenue[]> {
+    return this.http.get<any>(this.baseUrl + "items/" + station, httpOptions)
+  }
+
 
   addDeposit(posBuddyId: string, value: number) {
     return this.http.post<any>(this.baseUrl + "deposit/" + posBuddyId + "?value=" + value, httpOptions)

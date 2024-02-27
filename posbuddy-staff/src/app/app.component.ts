@@ -8,6 +8,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {PayoutComponent} from "./payout/payout.component";
 import {DeallocateComponent} from "./deallocate/deallocate.component";
 import {RevenueComponent} from "./revenue/revenue.component";
+import {ServeComponent} from "./serve/serve.component";
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ import {RevenueComponent} from "./revenue/revenue.component";
     AddValueComponent,
     PayoutComponent,
     DeallocateComponent,
-    RevenueComponent
+    RevenueComponent,
+    ServeComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
