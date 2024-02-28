@@ -30,10 +30,14 @@ export interface revenue {
 
 export interface item {
   "id": string,
-  "itemtext": number,
-  "value": number,
+  "unit": string,
+  "minAge": number,
   "action": string,
-  "timeOfAction": string
+  "dispensingStation": {
+    "id": string,
+    "name": string
+  },
+  "price": number
 }
 
 export interface dispensingStation {
@@ -69,8 +73,13 @@ export class paymentService {
     return this.http.get<any>(this.baseUrl + "revenue/" + posBuddyId, httpOptions)
   }
 
-  getItem(station: string): Observable<revenue[]> {
-    return this.http.get<any>(this.baseUrl + "items/" + station, httpOptions)
+  getItems(dispensingStation?: string): Observable<item[]> {
+    let url = this.baseUrl + "items"
+    if (typeof dispensingStation != 'undefined') {
+      url += "/" + dispensingStation
+    }
+    console.info("url:" + url)
+    return this.http.get<any>(url, httpOptions)
   }
 
   getDispensingStations(): Observable<dispensingStation[]> {

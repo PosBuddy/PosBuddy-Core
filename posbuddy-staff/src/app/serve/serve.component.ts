@@ -1,6 +1,6 @@
-import {Component, inject, TemplateRef} from '@angular/core';
+import {Component, inject, TemplateRef, ViewChild} from '@angular/core';
 import {DecimalPipe} from "@angular/common";
-import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAlert, NgbCollapse, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {dispensingStation, item, paymentService} from "../service/payment.service";
@@ -14,12 +14,15 @@ import {dispensingStation, item, paymentService} from "../service/payment.servic
     ReactiveFormsModule,
     ZXingScannerModule,
     FormsModule,
-    DecimalPipe
+    DecimalPipe,
+    NgbCollapse
   ],
   templateUrl: './serve.component.html',
   styleUrl: './serve.component.css'
 })
 export class ServeComponent {
+  @ViewChild('serveOC') revenueOCTemplate: TemplateRef<any> | undefined;
+
   constructor(private paymentService: paymentService) {
 
   }
@@ -33,6 +36,8 @@ export class ServeComponent {
   formValidText: string = "ID zur Anzeige der Umsätze scannen"
   posBuddyId: string = "-";
   balance = '0';
+
+  orderValue: number = 0;
 
   items: Array<item> = [];
   dispensingStations: Array<dispensingStation> = [];
@@ -48,11 +53,19 @@ export class ServeComponent {
           this.serverResponse = "Fehler bei laden der Ausgabestationen"
         }
       )
-
-
+    this.paymentService
+      .getItems()
+      .subscribe(items => {
+          this.items = items;
+        }, err => {
+          this.confirmError = true;
+          this.serverResponse = "Fehler bei laden der Artikel"
+        }
+      )
   }
 
   scanQRCode(content: TemplateRef<any>) {
+    //this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
     this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
   }
 

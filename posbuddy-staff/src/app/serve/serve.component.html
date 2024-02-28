@@ -37,17 +37,26 @@
   </div>
 </ng-template>
 
-<ng-template #revenueOC let-offcanvas disable-scolling="false">
+<ng-template #serveOC let-offcanvas>
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="revenue">Umsätze</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
   </div>
   <div class="offcanvas-body">
+    <!--                                                                  Order HEAD                                 -->
     <div class="alert alert-primary" role="alert">
       Kontostand:
-      <h5>{{ balance | number }}</h5>
+      <h5>{{ balance | number }}</h5> / <h5>{{ orderValue | number }}</h5>
     </div>
-
+    <!--                                                                  Dispensing Stations                        -->
+    @for (dispensingStation of dispensingStations; track dispensingStation) {
+      <div [(ngbCollapse)]=false>
+        <div class="card">
+          <div class="card-body">dispensingStation.id</div>
+        </div>
+      </div>
+    }
+    <!--                                                                  Order HEAD                                 -->
   </div>
   <div class="text-end">
     <hr>
