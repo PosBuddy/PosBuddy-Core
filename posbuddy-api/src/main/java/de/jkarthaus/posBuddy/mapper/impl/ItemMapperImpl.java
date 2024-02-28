@@ -14,29 +14,25 @@ public class ItemMapperImpl implements ItemMapper {
 
 
     @Override
-    public ItemResponse toResponse(List<ItemEntity> itemEntityList, List<DispensingStationEntity> dispensingStationEntities) {
-        return new ItemResponse(
-                itemEntityList.stream().map(itemEntity -> {
-                            return new ItemResponse.Item(
-                                    itemEntity.getId(),
-                                    itemEntity.getUnit(),
-                                    itemEntity.getMinAge(),
-                                    new ItemResponse.DispensingStation(
-                                            itemEntity.getDispensingStationId(),
-                                            dispensingStationEntities
-                                                    .stream()
-                                                    .filter(dispensingStationEntity ->
-                                                            dispensingStationEntity
-                                                                    .getId()
-                                                                    .equals(itemEntity.getDispensingStationId())
-                                                    )
-                                                    .findAny()
-                                                    .get()
-                                                    .getName()),
-                                    itemEntity.getPrice()
-                            );
-                        }
-                ).collect(Collectors.toList())
-        );
+    public List<ItemResponse> toResponse(List<ItemEntity> itemEntityList, List<DispensingStationEntity> dispensingStationEntities) {
+        return itemEntityList.stream().map(itemEntity -> new ItemResponse(
+                        itemEntity.getId(),
+                        itemEntity.getUnit(),
+                        itemEntity.getMinAge(),
+                        new ItemResponse.DispensingStation(
+                                itemEntity.getDispensingStationId(),
+                                dispensingStationEntities
+                                        .stream()
+                                        .filter(dispensingStationEntity ->
+                                                dispensingStationEntity
+                                                        .getId()
+                                                        .equals(itemEntity.getDispensingStationId())
+                                        )
+                                        .findAny()
+                                        .get()
+                                        .getName()),
+                        itemEntity.getPrice()
+                )
+        ).collect(Collectors.toList());
     }
 }

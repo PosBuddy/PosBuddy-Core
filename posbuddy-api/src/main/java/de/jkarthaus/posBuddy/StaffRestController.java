@@ -3,6 +3,7 @@ package de.jkarthaus.posBuddy;
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
 import de.jkarthaus.posBuddy.exception.*;
+import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.DataImportService;
@@ -36,6 +37,7 @@ import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 public class StaffRestController {
 
     final ItemMapper itemMapper;
+    final DispensingStationMapper dispensingStationMapper;
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
     final PartyActionService partyActionService;
@@ -43,25 +45,29 @@ public class StaffRestController {
     final SecurityService securityService;
 
     @Secured(IS_ANONYMOUS)
-    @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/items/{dispensingStation}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "item list for given station"),
+    })
     @Tag(name = "secure")
-    public ItemResponse getItems(String station) {
-        log.debug("get items for station:{}", station);
+    public List<ItemResponse> getItems(String dispensingStation) {
+        log.debug("get items for station:{}", dispensingStation);
         return itemMapper.toResponse(
-                itemRepository.findByStation(station),
+                itemRepository.findByStation(dispensingStation),
                 dispensingStationRepository.getDispensingStations()
         );
     }
 
     @Secured(IS_ANONYMOUS)
-    @Get(uri = "/stations", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/dispensingStations", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "dispensing ststation list"),
+    })
     @Tag(name = "secure")
-    public ServingStationResponse getStations() {
-        log.debug("get stations");
-        return new ServingStationResponse(
-                "ckB",
-                "Cocktail Bar",
-                "right to the DJ"
+    public List<DispensingStationResponse> getStations() {
+        log.debug("get all dispensing stations");
+        return dispensingStationMapper.toResponse(
+                dispensingStationRepository.getDispensingStations()
         );
     }
 
@@ -115,8 +121,9 @@ public class StaffRestController {
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/importItems", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
-    public HttpResponse importItems(@Nullable X509Authentication x509Authentication,
-                                    @Nullable Authentication authentication) {
+    public HttpResponse<String> importItems(
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
         try {
             // TODO : implement Security
             dataImportService.importItemCsv();
@@ -145,7 +152,7 @@ public class StaffRestController {
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
-    public HttpResponse serve(
+    public HttpResponse<String> serve(
             String posBuddyId,
             ServingRequest servingRequest,
             @Nullable X509Authentication x509Authentication,

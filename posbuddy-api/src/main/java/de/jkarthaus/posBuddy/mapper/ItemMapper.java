@@ -11,5 +11,7 @@ import java.util.List;
 @Singleton
 public interface ItemMapper {
 
-    ItemResponse toResponse(List<ItemEntity> itemEntityList, List<DispensingStationEntity> dispensingStationEntities);
+    List<ItemResponse> toResponse(List<ItemEntity> itemEntityList, List<DispensingStationEntity> dispensingStationEntities);
+
+
 }

@@ -3,7 +3,7 @@ import {DecimalPipe} from "@angular/common";
 import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import {item, paymentService} from "../service/payment.service";
+import {dispensingStation, item, paymentService} from "../service/payment.service";
 
 @Component({
   selector: 'app-serve',
@@ -33,7 +33,24 @@ export class ServeComponent {
   formValidText: string = "ID zur Anzeige der Umsätze scannen"
   posBuddyId: string = "-";
   balance = '0';
-  revenues: Array<item> = [];
+
+  items: Array<item> = [];
+  dispensingStations: Array<dispensingStation> = [];
+
+  ngAfterViewInit() {
+    console.log("get items and dispensing stations")
+    this.paymentService
+      .getDispensingStations()
+      .subscribe(dispensingStations => {
+          this.dispensingStations = dispensingStations;
+        }, err => {
+          this.confirmError = true;
+          this.serverResponse = "Fehler bei laden der Ausgabestationen"
+        }
+      )
+
+
+  }
 
   scanQRCode(content: TemplateRef<any>) {
     this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})

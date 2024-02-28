@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Serdeable
-public class ServingStationResponse {
+public class DispensingStationResponse {
 
     private String id;
     private String name;

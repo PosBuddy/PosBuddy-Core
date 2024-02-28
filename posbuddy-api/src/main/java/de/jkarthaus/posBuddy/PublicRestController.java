@@ -8,7 +8,7 @@ import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.ItemResponse;
 import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
-import de.jkarthaus.posBuddy.model.gui.ServingStationResponse;
+import de.jkarthaus.posBuddy.model.gui.DispensingStationResponse;
 import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.service.SecurityService;
@@ -38,7 +38,7 @@ public class PublicRestController {
     @PermitAll
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
-    public ItemResponse getItems(String station) {
+    public List<ItemResponse> getItems(String station) {
         log.debug("get items for station:{}", station);
         return itemMapper.toResponse(
                 itemRepository.findByStation(station),
@@ -49,9 +49,9 @@ public class PublicRestController {
     @PermitAll
     @Get(uri = "/stations", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
-    public ServingStationResponse getStations() {
+    public DispensingStationResponse getStations() {
         log.debug("get stations");
-        return new ServingStationResponse(
+        return new DispensingStationResponse(
                 "ckB",
                 "Cocktail Bar",
                 "right to the DJ"

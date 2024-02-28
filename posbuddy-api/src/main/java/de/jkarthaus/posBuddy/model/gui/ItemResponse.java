@@ -15,19 +15,11 @@ import java.util.List;
 @Introspected
 public class ItemResponse {
 
-    List<Item> itemList;
-
-    @Data
-    @Serdeable
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Item {
-        private String id;
-        private String unit;
-        private Integer minAge;
-        private DispensingStation dispensingStation;
-        private Double price;
-    }
+    private String id;
+    private String unit;
+    private Integer minAge;
+    private DispensingStation dispensingStation;
+    private Double price;
 
     @Data
     @Serdeable
