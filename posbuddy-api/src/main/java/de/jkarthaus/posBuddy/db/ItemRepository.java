@@ -9,7 +9,11 @@ import java.util.List;
 
 
 public interface ItemRepository {
+    @ReadOnly
     List<ItemEntity> findByStation(String stationId);
+
+    @ReadOnly
+    List<ItemEntity> findAll();
 
     @ReadOnly
     ItemEntity findItemById(String itemId) throws ItemNotFoundException;

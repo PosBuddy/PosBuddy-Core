@@ -45,13 +45,26 @@ public class StaffRestController {
     final SecurityService securityService;
 
     @Secured(IS_ANONYMOUS)
+    @Get(uri = "/items", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "item list"),
+    })
+    @Tag(name = "secure")
+    public List<ItemResponse> getItems() {
+        log.debug("get all items");
+        return itemMapper.toResponse(
+                itemRepository.findAll(),
+                dispensingStationRepository.getDispensingStations()
+        );
+    }
+
+    @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{dispensingStation}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "item list for given station"),
     })
     @Tag(name = "secure")
-    public List<ItemResponse> getItems(String dispensingStation) {
-        log.debug("get items for station:{}", dispensingStation);
+    public List<ItemResponse> getFilterdItems(String dispensingStation) {
         return itemMapper.toResponse(
                 itemRepository.findByStation(dispensingStation),
                 dispensingStationRepository.getDispensingStations()

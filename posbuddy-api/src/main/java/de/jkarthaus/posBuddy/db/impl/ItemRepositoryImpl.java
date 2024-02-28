@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.List;
 
-@Singleton
 @RequiredArgsConstructor
+@Singleton
 public class ItemRepositoryImpl implements ItemRepository {
 
     private final EntityManager entityManager;
@@ -27,6 +27,16 @@ public class ItemRepositoryImpl implements ItemRepository {
                 "select i from items as i where i.dispensingStationId = :dispensingStation",
                 ItemEntity.class
         ).setParameter("dispensingStation", stationId);
+        return query.getResultList();
+    }
+
+    @ReadOnly
+    @Override
+    public List<ItemEntity> findAll() {
+        TypedQuery<ItemEntity> query = entityManager.createQuery(
+                "select i from items as i order by i.dispensingStationId,i.itemText",
+                ItemEntity.class
+        );
         return query.getResultList();
     }
 
