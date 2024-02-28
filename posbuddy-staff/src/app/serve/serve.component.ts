@@ -21,7 +21,7 @@ import {dispensingStation, item, paymentService} from "../service/payment.servic
   styleUrl: './serve.component.css'
 })
 export class ServeComponent {
-  @ViewChild('serveOC') revenueOCTemplate: TemplateRef<any> | undefined;
+  @ViewChild('serveOC') serveOCTemplate: TemplateRef<any> | undefined;
 
   constructor(private paymentService: paymentService) {
 
@@ -32,7 +32,7 @@ export class ServeComponent {
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
-  formValid: boolean = false;
+  iscollapsed: boolean = false;
   formValidText: string = "ID zur Anzeige der Umsätze scannen"
   posBuddyId: string = "-";
   balance = '0';
@@ -66,12 +66,11 @@ export class ServeComponent {
 
   scanQRCode(content: TemplateRef<any>) {
     //this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
-    this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
+    this.offcanvasService.open(this.serveOCTemplate, {ariaLabelledBy: 'scanId'})
   }
 
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
-    this.formValid = true
     this.offcanvasService.dismiss("success");
   }
 

@@ -8,6 +8,9 @@
       <button class="btn btn-lg btn-outline-secondary"
               (click)="scanQRCode(scanIdOC)">SCAN
       </button>
+      <button class="btn btn-lg btn-outline-secondary"
+              (click)="scanQRCode(scanIdOC)">SCAN
+      </button>
     </div>
   </div>
   <div class="row pt-3">
@@ -37,6 +40,7 @@
   </div>
 </ng-template>
 
+<!--                                            ITEMS OffCanvas                                                     -->
 <ng-template #serveOC let-offcanvas>
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="revenue">Umsätze</h4>
@@ -50,9 +54,20 @@
     </div>
     <!--                                                                  Dispensing Stations                        -->
     @for (dispensingStation of dispensingStations; track dispensingStation) {
-      <div [(ngbCollapse)]=false>
+      <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
         <div class="card">
-          <div class="card-body">dispensingStation.id</div>
+          <div class="card-body">
+            <div class="container">
+              @for (item of items; track item) {
+                @if (item.dispensingStation.id == dispensingStation.id) {
+                  <div class="row pt-3">
+                    <div class="col-4">{{ item.unit }}</div>
+                    <div class="col-4">Bratwurst</div>
+                  </div>
+                }
+              }
+            </div>
+          </div>
         </div>
       </div>
     }
