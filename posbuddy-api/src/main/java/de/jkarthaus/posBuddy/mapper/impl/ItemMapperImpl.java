@@ -19,6 +19,7 @@ public class ItemMapperImpl implements ItemMapper {
                         itemEntity.getId(),
                         itemEntity.getUnit(),
                         itemEntity.getMinAge(),
+                        itemEntity.getItemText(),
                         new ItemResponse.DispensingStation(
                                 itemEntity.getDispensingStationId(),
                                 dispensingStationEntities

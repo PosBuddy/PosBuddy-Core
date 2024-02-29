@@ -32,12 +32,18 @@ export interface item {
   "id": string,
   "unit": string,
   "minAge": number,
+  "itemText": string,
   "action": string,
   "dispensingStation": {
     "id": string,
     "name": string
   },
   "price": number
+}
+
+export interface serve {
+  "itemId": string,
+  "count": number
 }
 
 export interface dispensingStation {

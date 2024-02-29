@@ -18,6 +18,7 @@ public class ItemResponse {
     private String id;
     private String unit;
     private Integer minAge;
+    private String itemText;
     private DispensingStation dispensingStation;
     private Double price;
 

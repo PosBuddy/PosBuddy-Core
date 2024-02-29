@@ -3,7 +3,7 @@ import {DecimalPipe} from "@angular/common";
 import {NgbAlert, NgbCollapse, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import {dispensingStation, item, paymentService} from "../service/payment.service";
+import {dispensingStation, item, paymentService, serve} from "../service/payment.service";
 
 @Component({
   selector: 'app-serve',
@@ -41,6 +41,7 @@ export class ServeComponent {
 
   items: Array<item> = [];
   dispensingStations: Array<dispensingStation> = [];
+  serveitems: Array<serve> = [];
 
   ngAfterViewInit() {
     console.log("get items and dispensing stations")
@@ -72,6 +73,18 @@ export class ServeComponent {
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
     this.offcanvasService.dismiss("success");
+  }
+
+  incServeItemCount(itemId: string) {
+
+  }
+
+  decServeItemCount(itemId: string) {
+
+  }
+
+  getServeItemCount(itemId: string) {
+
   }
 
 

@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container" xmlns="http://www.w3.org/1999/html">
   <div class="row pt-3">
     <div class="col-4">ID :</div>
     <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
@@ -56,13 +56,27 @@
     @for (dispensingStation of dispensingStations; track dispensingStation) {
       <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
         <div class="card">
+          <div class="card-header">
+            {{ dispensingStation.name }}
+          </div>
           <div class="card-body">
             <div class="container">
               @for (item of items; track item) {
                 @if (item.dispensingStation.id == dispensingStation.id) {
                   <div class="row pt-3">
-                    <div class="col-4">{{ item.unit }}</div>
-                    <div class="col-4">Bratwurst</div>
+                    <div class="col-2">
+                      <input class="form-control form-control-lg" type="text" readonly value="0"/>
+                    </div>
+                    <div class="col-3">{{ item.unit }}</div>
+                    <div class="col-4">{{ item.itemText }}</div>
+                    <div class="col-2S">
+                      <button class="btn btn-lg btn-outline-info"
+                              (click)="scanQRCode(scanIdOC)"><i class="bi bi-plus-circle-fill"></i>
+                      </button>
+                      <button class="btn btn-lg btn-outline-primary"
+                              (click)="scanQRCode(scanIdOC)"><i class="bi bi-dash-circle-fill"></i>
+                      </button>
+                    </div>
                   </div>
                 }
               }
