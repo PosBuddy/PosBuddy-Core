@@ -61,20 +61,22 @@
           </div>
           <div class="card-body">
             <div class="container">
+              <!--                                                        Items per Station                          -->
               @for (item of items; track item) {
                 @if (item.dispensingStation.id == dispensingStation.id) {
                   <div class="row pt-3">
                     <div class="col-2">
-                      <input class="form-control form-control-lg" type="text" readonly value="0"/>
+                      <input class="form-control form-control-lg" type="text" readonly
+                             value="{{ getServeItemCount(item.id) }}"/>
                     </div>
                     <div class="col-3">{{ item.unit }}</div>
                     <div class="col-4">{{ item.itemText }}</div>
                     <div class="col-2S">
                       <button class="btn btn-lg btn-outline-info"
-                              (click)="scanQRCode(scanIdOC)"><i class="bi bi-plus-circle-fill"></i>
+                              (click)="incServeItemCount(item.id)"><i class="bi bi-plus-circle-fill"></i>
                       </button>
                       <button class="btn btn-lg btn-outline-primary"
-                              (click)="scanQRCode(scanIdOC)"><i class="bi bi-dash-circle-fill"></i>
+                              (click)="decServeItemCount(item.id)"><i class="bi bi-dash-circle-fill"></i>
                       </button>
                     </div>
                   </div>

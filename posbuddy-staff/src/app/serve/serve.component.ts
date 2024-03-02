@@ -58,7 +58,10 @@ export class ServeComponent {
       .getItems()
       .subscribe(items => {
           this.items = items;
+          this.serveitems.length = 0;
+          this.items.map(value => this.serveitems.push({"itemId": value.id, "count": 0}))
         }, err => {
+          this.serveitems.length = 0;
           this.confirmError = true;
           this.serverResponse = "Fehler bei laden der Artikel"
         }
@@ -76,15 +79,17 @@ export class ServeComponent {
   }
 
   incServeItemCount(itemId: string) {
-
+    this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count += 1} : value));
   }
 
   decServeItemCount(itemId: string) {
-
+    if (this.serveitems.find(value => value.itemId == itemId && value.count > 0)) {
+      this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count -= 1} : value));
+    }
   }
 
-  getServeItemCount(itemId: string) {
-
+  getServeItemCount(itemId: string): number {
+    return this.serveitems.find(value => value.itemId == itemId) ? 0 : 0;
   }
 
 
