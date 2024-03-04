@@ -28,14 +28,14 @@ export class ServeComponent {
   }
 
   private offcanvasService = inject(NgbOffcanvas);
-
+  canAddItems = true
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
   iscollapsed: boolean = false;
   formValidText: string = "ID zur Anzeige der Umsätze scannen"
   posBuddyId: string = "-";
-  balance = '0';
+  balance = '12';
 
   orderValue: number = 0;
 
@@ -78,18 +78,29 @@ export class ServeComponent {
     this.offcanvasService.dismiss("success");
   }
 
-  incServeItemCount(itemId: string) {
-    this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count += 1} : value));
-  }
 
-  decServeItemCount(itemId: string) {
-    if (this.serveitems.find(value => value.itemId == itemId && value.count > 0)) {
-      this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count -= 1} : value));
+  incServeItemCount(itemId: string) {
+    const cost = this.items.find(sitem => sitem.id == itemId)?.price ?? 0;
+    if (cost <= 0 || this.orderValue + cost > Number(this.balance)) {
+      this.canAddItems = false;
+    } else {
+      this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count += 1} : value));
+      this.orderValue += cost;
+      this.canAddItems = true;
     }
   }
 
-  getServeItemCount(itemId: string): number {
-    return this.serveitems.find(value => value.itemId == itemId) ? 0 : 0;
+  decServeItemCount(itemId: string) {
+    const cost = this.items.find(sitem => sitem.id == itemId)?.price ?? 0;
+    if (this.serveitems.find(value => value.itemId == itemId && value.count > 0)) {
+      this.orderValue -= cost;
+      this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count -= 1} : value));
+
+    }
+  }
+
+  getServeItemCount(itemId: string) {
+    return this.serveitems.find(value => value.itemId == itemId)?.count
   }
 
 
