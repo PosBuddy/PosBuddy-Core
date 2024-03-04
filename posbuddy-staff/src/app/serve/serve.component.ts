@@ -28,12 +28,11 @@ export class ServeComponent {
   }
 
   private offcanvasService = inject(NgbOffcanvas);
-  canAddItems = true
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
   iscollapsed: boolean = false;
-  formValidText: string = "ID zur Anzeige der Umsätze scannen"
+  formValidText: string = "ID für Bestellung scannen"
   posBuddyId: string = "-";
   balance = '12';
 
@@ -68,6 +67,17 @@ export class ServeComponent {
       )
   }
 
+  doServe() {
+    let postServeitems: Array<serve> = [];
+    this.serveitems.map(value => {
+      if (value.count > 0) {
+        postServeitems.push(value)
+      }
+    })
+    console.log(postServeitems)
+    //this.paymentService.serve()
+  }
+
   scanQRCode(content: TemplateRef<any>) {
     //this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
     this.offcanvasService.open(this.serveOCTemplate, {ariaLabelledBy: 'scanId'})
@@ -79,15 +89,17 @@ export class ServeComponent {
   }
 
 
+  checkDisableAddItem(price: number): boolean {
+    if (this.orderValue + price > Number(this.balance)) {
+      return true;
+    }
+    return false;
+  }
+
   incServeItemCount(itemId: string) {
     const cost = this.items.find(sitem => sitem.id == itemId)?.price ?? 0;
-    if (cost <= 0 || this.orderValue + cost > Number(this.balance)) {
-      this.canAddItems = false;
-    } else {
-      this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count += 1} : value));
-      this.orderValue += cost;
-      this.canAddItems = true;
-    }
+    this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count += 1} : value));
+    this.orderValue += cost;
   }
 
   decServeItemCount(itemId: string) {
@@ -95,7 +107,6 @@ export class ServeComponent {
     if (this.serveitems.find(value => value.itemId == itemId && value.count > 0)) {
       this.orderValue -= cost;
       this.serveitems.map(value => (value.itemId === itemId ? {"count": value.count -= 1} : value));
-
     }
   }
 

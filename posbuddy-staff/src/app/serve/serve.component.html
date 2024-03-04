@@ -4,93 +4,103 @@
     <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
   <div class="row pt-3">
-    <div class="col-4">
-      <button class="btn btn-lg btn-outline-secondary"
-              (click)="scanQRCode(scanIdOC)">SCAN
-      </button>
-      <button class="btn btn-lg btn-outline-secondary"
-              (click)="scanQRCode(scanIdOC)">SCAN
-      </button>
+    <div class="col-4">Bestellwert :</div>
+    <div class="col-8">
+      <p class="text-nowrap fs-4">{{ orderValue | number: '1.2-2' }} <i class="bi bi-currency-euro"></i></p>
     </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-12">
-      @if (confirmError) {
-        <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
-      }
-      @if (confirmOK) {
-        <ngb-alert type="success" (closed)="resetOK()">{{ formValidText }}</ngb-alert>
-      }
-    </div>
-  </div>
-</div>
+    <div class="row pt-3">
+      <div class="col-4">
+        <button class="btn btn-lg btn-outline-secondary"
+                (click)="scanQRCode(scanIdOC)">SCAN
+        </button>
+      </div>
+      <div class="col-8 align-content-end">
 
-<ng-template #scanIdOC let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="scanID">Id Scannen</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="mb-3">
-      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+        <button class="btn btn-lg btn-outline-primary" [disabled]="orderValue == 0"
+                (click)="doServe()">Abbuchen
+        </button>
+      </div>
+    </div>
+    <div class="row pt-3">
+      <div class="col-12">
+        @if (confirmError) {
+          <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
+        }
+        @if (confirmOK) {
+          <ngb-alert type="success" (closed)="resetOK()">{{ formValidText }}</ngb-alert>
+        }
+      </div>
     </div>
   </div>
-  <div class="text-end">
-    Bitte QR-code in der Kamera ausrichten.
-  </div>
-</ng-template>
 
-<!--                                            ITEMS OffCanvas                                                     -->
-<ng-template #serveOC let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="revenue">Umsätze</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
-  </div>
-  <div class="offcanvas-body">
-    <!--                                                                  Order HEAD                                 -->
-    <div class="alert alert-primary" role="alert">
-      Kontostand:
-      <h5>{{ balance | number }}</h5> / <h5>{{ orderValue | number }}</h5>
+  <ng-template #scanIdOC let-offcanvas>
+    <div class="offcanvas-header">
+      <h4 class="offcanvas-title" id="scanID">Id Scannen</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
     </div>
-    <!--                                                                  Dispensing Stations                        -->
-    @for (dispensingStation of dispensingStations; track dispensingStation) {
-      <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
-        <div class="card">
-          <div class="card-header">
-            {{ dispensingStation.name }}
-          </div>
-          <div class="card-body">
-            <div class="container">
-              <!--                                                        Items per Station                          -->
-              @for (item of items; track item) {
-                @if (item.dispensingStation.id == dispensingStation.id) {
-                  <div class="row pt-3">
-                    <div class="col-2">xx {{ getServeItemCount(item.id) }}
-                      <input class="form-control form-control-lg" type="text" readonly
-                             [(ngModel)]="item.id" />
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+      </div>
+    </div>
+    <div class="text-end">
+      Bitte QR-code in der Kamera ausrichten.
+    </div>
+  </ng-template>
+
+  <!--                                            ITEMS OffCanvas                                                     -->
+  <ng-template #serveOC let-offcanvas>
+    <div class="offcanvas-header">
+      <h4 class="offcanvas-title" id="revenue">Bestellung</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+    </div>
+    <div class="offcanvas-body">
+      <!--                                                                  Dispensing Stations                        -->
+      @for (dispensingStation of dispensingStations; track dispensingStation) {
+        <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
+          <div class="card">
+            <div class="card-header">
+              {{ dispensingStation.name }}
+            </div>
+            <div class="card-body">
+              <div class="container">
+                <!--                                                        Items per Station                          -->
+                @for (item of items; track item) {
+                  @if (item.dispensingStation.id == dispensingStation.id) {
+                    <div class="row pt-3 border-top">
+                      <div class="col-2"><h3>{{ getServeItemCount(item.id) }}</h3></div>
+                      <div class="col-3">{{ item.unit }}</div>
+                      <div class="col-7">{{ item.itemText }}</div>
                     </div>
-                    <div class="col-3">{{ item.unit }}</div>
-                    <div class="col-4">{{ item.itemText }}</div>
-                    <div class="col-2S">
-                      <button class="btn btn-lg btn-outline-info" [disabled]="!canAddItems"
-                              (click)="incServeItemCount(item.id)"><i class="bi bi-plus-circle-fill"></i>
-                      </button>
-                      <button class="btn btn-lg btn-outline-primary"
-                              (click)="decServeItemCount(item.id)"><i class="bi bi-dash-circle-fill"></i>
-                      </button>
+                    <div class="row pt-3">
+                      <div class="col-6 justify-content-start">
+                        <button class="btn btn-lg btn-outline-info" [disabled]="checkDisableAddItem(item.price)"
+                                (click)="incServeItemCount(item.id)"><i class="bi bi-plus-circle-fill"></i>
+                        </button>
+                      </div>
+                      <div class="col-6 justify-content-end">
+                        <button class="btn btn-lg btn-outline-primary"
+                                (click)="decServeItemCount(item.id)"><i class="bi bi-dash-circle-fill"></i>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  }
                 }
-              }
+              </div>
             </div>
           </div>
         </div>
+        <p></p>
+      }
+    </div>
+    <!--                                                                  Order Footer                                 -->
+    <div class="text-end">
+      <hr/>
+      <div class="alert alert-primary" role="alert">
+        <p class="text-nowrap fs-4">
+          Bestellwert: {{ orderValue | number: '1.2-2' }}     / {{ balance | number : '1.2-2' }}
+          <i class="bi bi-currency-euro"></i>
+        </p>
       </div>
-    }
-    <!--                                                                  Order HEAD                                 -->
-  </div>
-  <div class="text-end">
-    <hr>
-    Ende Umsätze
-  </div>
-</ng-template>
+    </div>
+  </ng-template>
