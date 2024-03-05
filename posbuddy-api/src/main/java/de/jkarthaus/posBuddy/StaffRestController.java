@@ -44,6 +44,7 @@ public class StaffRestController {
     final DataImportService dataImportService;
     final SecurityService securityService;
 
+    //-----------------------------------------------------------------------------------------------------------------items
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -58,6 +59,7 @@ public class StaffRestController {
         );
     }
 
+    //-----------------------------------------------------------------------------------------------------dispensingSTation
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{dispensingStation}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -71,6 +73,7 @@ public class StaffRestController {
         );
     }
 
+    //----------------------------------------------------------------------------------------------------dispensingStations
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/dispensingStations", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -84,6 +87,7 @@ public class StaffRestController {
         );
     }
 
+    //--------------------------------------------------------------------------------------------------------------identity
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -116,6 +120,7 @@ public class StaffRestController {
         }
     }
 
+    //---------------------------------------------------------------------------------------------------------------revenue
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
@@ -131,6 +136,7 @@ public class StaffRestController {
         }
     }
 
+    //----------------------------------------------------------------------------------------------------------ImportItems
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/importItems", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
@@ -147,6 +153,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
+    //-------------------------------------------------------------------------------------------------------ImportStations
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/importDispensingStations", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
@@ -162,6 +169,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
+    //-----------------------------------------------------------------------------------------------------------------Serve
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
@@ -196,6 +204,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
+    //--------------------------------------------------------------------------------------------------------------Allocate
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/allocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -230,6 +239,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
+    //------------------------------------------------------------------------------------------------------------deAllocate
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/deAllocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -263,6 +273,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
+    //----------------------------------------------------------------------------------------------------------------Payout
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/payout/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -296,6 +307,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
+    //---------------------------------------------------------------------------------------------------------------deposit
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/deposit/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
