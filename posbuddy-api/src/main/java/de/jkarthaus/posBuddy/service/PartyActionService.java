@@ -7,7 +7,7 @@ import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
-import de.jkarthaus.posBuddy.model.gui.ServingRequest;
+import de.jkarthaus.posBuddy.model.gui.ServeItem;
 
 import java.util.List;
 
@@ -20,8 +20,11 @@ public interface PartyActionService {
     List<RevenueResponse> getRevenueResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
-    void serveItems(ServingRequest servingRequest, String posBuddyId)
+    void serveItems(ServeItem serveItem, String posBuddyId)
             throws posBuddyIdNotAllocatedException;
+
+    void serveItems(List<ServeItem> servItems, String posBuddyId)
+            throws posBuddyIdNotAllocatedException, OutOfBalanceException;
 
     void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException;
 

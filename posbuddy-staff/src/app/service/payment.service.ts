@@ -88,6 +88,10 @@ export class paymentService {
     return this.http.get<any>(url, httpOptions)
   }
 
+  serve (serveItems:Array<serve>){
+    return this.http.post<any>(this.baseUrl + "dispensingStations/", httpOptions)
+  }
+
   getDispensingStations(): Observable<dispensingStation[]> {
     return this.http.get<any>(this.baseUrl + "dispensingStations/", httpOptions)
   }

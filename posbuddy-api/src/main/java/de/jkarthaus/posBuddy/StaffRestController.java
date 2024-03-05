@@ -165,23 +165,33 @@ public class StaffRestController {
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "balance to low"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "404", description = "ID not allocated"),
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+    })
     public HttpResponse<String> serve(
             String posBuddyId,
-            ServingRequest servingRequest,
+            List<ServeItem> serveItems,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
-        log.info("add {} items for revenue", servingRequest.getServeItems().size());
+        log.info("add {} items for revenue", serveItems.size());
         if (x509Authentication != authentication) {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
         try {
             if (securityService.isServeOrCheckout(x509Authentication)) {
-                partyActionService.serveItems(servingRequest, posBuddyId);
+                partyActionService.serveItems(serveItems, posBuddyId);
             } else {
                 return HttpResponse.status(HttpStatus.FORBIDDEN);
             }
         } catch (posBuddyIdNotAllocatedException e) {
-            throw new RuntimeException(e);
+            log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
+        } catch (OutOfBalanceException e) {
+            log.error("out of balance exception:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
         }
         return HttpResponse.ok();
     }

@@ -13,7 +13,7 @@ import de.jkarthaus.posBuddy.model.Constants;
 import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
-import de.jkarthaus.posBuddy.model.gui.ServingRequest;
+import de.jkarthaus.posBuddy.model.gui.ServeItem;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
@@ -71,29 +72,50 @@ public class PartyActionServiceImpl implements PartyActionService {
     }
 
     @Override
-    public void serveItems(ServingRequest servingRequest, String posBuddyId)
-            throws posBuddyIdNotAllocatedException {
+    public void serveItems(List<ServeItem> serveItems, String posBuddyId)
+            throws posBuddyIdNotAllocatedException, OutOfBalanceException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         AtomicReference<Float> actBalance = new AtomicReference<>(identityEntity.getBalance());
-        servingRequest.getServeItems().forEach(serveItem -> {
-            try {
-                ItemEntity itemEntity = itemRepository.findItemById(serveItem.getItemId());
-                RevenueEntity revenueEntity = new RevenueEntity();
-                revenueEntity.setAmount(serveItem.getCount());
-                revenueEntity.setTimeofaction(LocalDateTime.now());
-                revenueEntity.setValue(Double.valueOf(serveItem.getCount() * itemEntity.getPrice()).floatValue());
-                revenueEntity.setPosbuddyid(posBuddyId);
-                revenueEntity.setItemtext(itemEntity.getItemText());
-                revenueEntity.setPaymentaction(Constants.REVENUE);
-                revenueRepository.addRevenue(revenueEntity);
-                actBalance.set(actBalance.get() - revenueEntity.getValue());
-            } catch (ItemNotFoundException e) {
-                log.error("Item with id:{} not exists. -> no revenue for this item", serveItem.getItemId());
+        record serveItemRecord(String itemText, double price) {
+        }
+        HashMap<String, serveItemRecord> priceMap = new HashMap<>();
+        AtomicReference<Double> summ = new AtomicReference<>(0.0);
+        serveItems.forEach(serveItem -> {
+            if (!priceMap.containsKey(serveItem.getItemId())) {
+                ItemEntity itemEntity = new ItemEntity();
+                try {
+                    itemEntity = itemRepository.findItemById(serveItem.getItemId());
+                } catch (ItemNotFoundException e) {
+                    log.error("No Item:{} found", serveItem.getItemId());
+                    itemEntity.setPrice(0.0);
+                    itemEntity.setItemText("UNKNOWN");
+                }
+                priceMap.put(
+                        serveItem.getItemId(),
+                        new serveItemRecord(itemEntity.getItemText(), itemEntity.getPrice())
+                );
             }
-            identityEntity.setBalance(actBalance.get());
-            identityRepository.updateIdentityEntity(identityEntity);
+            summ.updateAndGet(v -> v + (serveItem.getCount() * priceMap.get(serveItem.getItemId()).price));
         });
-
+        if (summ.get().compareTo(actBalance.get().doubleValue()) > 0) {
+            log.error("Summ of order is grater than actual balance");
+            throw new OutOfBalanceException("Summ of order is grater than actual balance");
+        }
+        // add revenue Entry
+        serveItems.forEach(serveItem -> {
+                    RevenueEntity revenueEntity = new RevenueEntity();
+                    revenueEntity.setAmount(serveItem.getCount());
+                    revenueEntity.setTimeofaction(LocalDateTime.now());
+                    revenueEntity.setValue(Double.valueOf(priceMap.get(serveItem.getItemId()).price).floatValue());
+                    revenueEntity.setPosbuddyid(posBuddyId);
+                    revenueEntity.setItemtext(priceMap.get(serveItem.getItemId()).itemText);
+                    revenueEntity.setPaymentaction(Constants.REVENUE);
+                    revenueRepository.addRevenue(revenueEntity);
+                }
+        );
+        // update balance
+        identityEntity.setBalance(actBalance.get() - summ.get().floatValue());
+        identityRepository.updateIdentityEntity(identityEntity);
     }
 
 
