@@ -9,6 +9,6 @@ echo "Step 2 -> build App with gradle"
 echo "Step 3 -> build Docker Image with gradle"
 ./gradlew dockerBuild
 echo "Step 4 -> Restart Docker image"
-docker-compose up -d -f /opt/posBuddy/docker-compose.yml
+docker-compose  -f /opt/posBuddy/docker-compose.yml up -d
 echo "---------------------------------------------------------------------"
 
