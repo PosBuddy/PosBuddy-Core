@@ -20,8 +20,6 @@ public interface PartyActionService {
     List<RevenueResponse> getRevenueResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
 
-    void serveItems(ServeItem serveItem, String posBuddyId)
-            throws posBuddyIdNotAllocatedException;
 
     void serveItems(List<ServeItem> servItems, String posBuddyId)
             throws posBuddyIdNotAllocatedException, OutOfBalanceException;

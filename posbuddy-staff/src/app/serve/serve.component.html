@@ -10,13 +10,12 @@
     </div>
     <div class="row pt-3">
       <div class="col-4">
-        <button class="btn btn-lg btn-outline-secondary"
+        <button class="btn btn-lg btn-outline-secondary" [disabled]="confirmOK || confirmError"
                 (click)="scanQRCode(scanIdOC)">SCAN
         </button>
       </div>
       <div class="col-8 align-content-end">
-
-        <button class="btn btn-lg btn-outline-primary" [disabled]="orderValue == 0"
+        <button class="btn btn-lg btn-outline-primary" [disabled]="orderValue == 0 || confirmOK || confirmError"
                 (click)="doServe()">Abbuchen
         </button>
       </div>

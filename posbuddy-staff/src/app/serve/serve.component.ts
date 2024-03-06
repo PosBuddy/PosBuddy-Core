@@ -75,12 +75,41 @@ export class ServeComponent {
       }
     })
     console.log(postServeitems)
-    //this.paymentService.serve()
+    this.paymentService.serve(postServeitems, this.posBuddyId)
+      .subscribe(
+        value => {
+          this.confirmOK = true;
+        },
+        error => {
+          this.confirmError = true;
+          switch (error.status) {
+            case 400 : {
+              this.serverResponse = "Guthaben zu gering";
+              break
+            }
+            case 401 : {
+              this.serverResponse = "Zugriff verweigert";
+              break
+            }
+            case 404 : {
+              this.serverResponse = "ID nicht zugeordnet";
+              break
+            }
+            case 405 : {
+              this.serverResponse = "keine Berechtigung";
+              break
+            }
+            default : {
+              this.serverResponse = "Fehlercode:" + error.status;
+              break
+            }
+          }
+        }
+      )
   }
 
   scanQRCode(content: TemplateRef<any>) {
-    //this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
-    this.offcanvasService.open(this.serveOCTemplate, {ariaLabelledBy: 'scanId'})
+    this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
   }
 
   onScanSuccess(scanResult: string) {
@@ -115,16 +144,23 @@ export class ServeComponent {
   }
 
 
+  resetServeData() {
+    this.orderValue = 0;
+    this.serveitems.map(value => value.count = 0)
+  }
+
   resetError() {
     this.confirmError = false;
     this.serverResponse = "-";
     this.posBuddyId = "-";
+    this.resetServeData();
   }
 
   resetOK() {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.posBuddyId = "-";
+    this.resetServeData();
   }
 
 
