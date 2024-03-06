@@ -63,6 +63,7 @@ micronaut:
         password: posBuddy
         type: JKS
       port: 443
+      enabled: true
 
 datasources:
   default:
