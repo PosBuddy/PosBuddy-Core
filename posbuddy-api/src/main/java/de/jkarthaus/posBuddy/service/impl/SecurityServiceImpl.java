@@ -67,6 +67,10 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
             log.info("SSL disabled -> isServeStation ->> true");
             return true;
         }
+        if (x509Authentication == null) {
+            log.warn("try to access without certificate");
+            return false;
+        }
         if (x509Authentication
                 .getName()
                 .equals(Constants.PERMISSION_SERVE_CERTIFICATE_NAME)) {
@@ -84,6 +88,10 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
         if (!isSslActive) {
             log.info("SSL disabled -> isCheckoutStation ->> true");
             return true;
+        }
+        if (x509Authentication == null) {
+            log.warn("try to access without certificate");
+            return false;
         }
         if (x509Authentication
                 .getName()
