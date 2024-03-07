@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 @Serdeable
 @Introspected
 public class PermissionResponse {
-
     boolean servePermission;
     boolean checkoutPermission;
-
 }

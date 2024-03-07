@@ -5,6 +5,7 @@ import de.jkarthaus.posBuddy.db.ItemRepository;
 import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
+import de.jkarthaus.posBuddy.mapper.PermissionMapper;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.PartyActionService;
@@ -38,6 +39,7 @@ public class StaffRestController {
 
     final ItemMapper itemMapper;
     final DispensingStationMapper dispensingStationMapper;
+    final PermissionMapper permissionMapper;
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
     final PartyActionService partyActionService;
@@ -49,14 +51,15 @@ public class StaffRestController {
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/permissions", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "item list"),
+            @ApiResponse(responseCode = "200", description = "get permissions by certificate"),
     })
     @Tag(name = "secure")
-    public PermissionResponse getPermissons() {
+    public PermissionResponse getPermissions(
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
         log.debug("get Permissions based on client Certificate");
-        return itemMapper.toResponse(
-                itemRepository.findAll(),
-                dispensingStationRepository.getDispensingStations()
+        return permissionMapper.toResponse(
+                securityService.getPermissions(x509Authentication)
         );
     }
 

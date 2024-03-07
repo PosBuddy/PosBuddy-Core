@@ -18,13 +18,10 @@ import java.util.Optional;
 @Singleton
 @Slf4j
 public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.SecurityService {
-
     private PublicKey publicKey;
-
 
     @Value("${micronaut.server.ssl.enabled}")
     private boolean isSslActive;
-
 
     @PostConstruct
     public void init() {
@@ -43,7 +40,13 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
         }
     }
 
-
+    @Override
+    public permissionRecord getPermissions(X509Authentication x509Authentication) {
+        return new permissionRecord(
+                isServeStation(x509Authentication),
+                isCheckoutStation(x509Authentication)
+        );
+    }
 
     @Override
     public void verifyX509Certificate(X509Authentication x509Authentication) {

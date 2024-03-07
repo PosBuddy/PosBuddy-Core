@@ -28,6 +28,11 @@ export interface revenue {
   "timeOfAction": string
 }
 
+export interface permissions {
+  "servePermission": boolean,
+  "checkoutPermission": boolean
+}
+
 export interface item {
   "id": string,
   "unit": string,
@@ -77,6 +82,10 @@ export class paymentService {
 
   getRevenue(posBuddyId: string): Observable<revenue[]> {
     return this.http.get<any>(this.baseUrl + "revenue/" + posBuddyId, httpOptions)
+  }
+
+  getPermissions(): Observable<permissions> {
+    return this.http.get<any>(this.baseUrl + "permissions", httpOptions)
   }
 
   getItems(dispensingStation?: string): Observable<item[]> {

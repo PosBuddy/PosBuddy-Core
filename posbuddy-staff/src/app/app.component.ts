@@ -9,6 +9,7 @@ import {PayoutComponent} from "./payout/payout.component";
 import {DeallocateComponent} from "./deallocate/deallocate.component";
 import {RevenueComponent} from "./revenue/revenue.component";
 import {ServeComponent} from "./serve/serve.component";
+import {paymentService} from "./service/payment.service";
 
 @Component({
   selector: 'app-root',
@@ -36,5 +37,20 @@ export class AppComponent {
   servePermission: boolean = false;
   checkoutPermission: boolean = false;
 
+  constructor(private paymentService: paymentService) {
 
+  }
+
+  ngAfterViewInit() {
+    console.log("get permissions from backend based on certificate")
+    this.paymentService
+      .getPermissions()
+      .subscribe(permissions => {
+          this.checkoutPermission = permissions.checkoutPermission;
+          this.servePermission = permissions.servePermission;
+        }, err => {
+          console.error("Error at getting permissions from backend:" + err)
+        }
+      )
+  }
 }
