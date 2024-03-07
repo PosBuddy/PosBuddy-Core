@@ -91,7 +91,6 @@ public class StaffRestController {
                 dispensingStationRepository.getDispensingStations()
         );
     }
-
     //----------------------------------------------------------------------------------------------------dispensingStations
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/dispensingStations", produces = MediaType.APPLICATION_JSON)
