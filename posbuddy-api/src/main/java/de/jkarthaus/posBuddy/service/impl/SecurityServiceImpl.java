@@ -43,6 +43,8 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
         }
     }
 
+
+
     @Override
     public void verifyX509Certificate(X509Authentication x509Authentication) {
         try {

@@ -44,6 +44,22 @@ public class StaffRestController {
     final DataImportService dataImportService;
     final SecurityService securityService;
 
+
+    //-----------------------------------------------------------------------------------------------------------------permissions
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/permissions", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "item list"),
+    })
+    @Tag(name = "secure")
+    public PermissionResponse getPermissons() {
+        log.debug("get Permissions based on client Certificate");
+        return itemMapper.toResponse(
+                itemRepository.findAll(),
+                dispensingStationRepository.getDispensingStations()
+        );
+    }
+
     //-----------------------------------------------------------------------------------------------------------------items
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items", produces = MediaType.APPLICATION_JSON)

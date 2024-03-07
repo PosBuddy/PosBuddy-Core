@@ -20,14 +20,20 @@
 </nav>
 <!--------------------------------------------------------------------------------------------------------------Actions-->
 <div ngbAccordion [closeOthers]="true" xmlns="http://www.w3.org/1999/html">
-  <div ngbAccordionItem [collapsed]="false">
+  <div ngbAccordionItem [collapsed]="!checkoutPermission">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton><i class="bi bi-database-fill-add">&nbsp;Person zuordnen</i></button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
         <ng-template>
-          <app-allocate-id></app-allocate-id>
+          @if (checkoutPermission) {
+            <app-allocate-id></app-allocate-id>
+          } @else {
+            <ngb-alert [dismissible]="false" type="danger">
+              <strong>Keine Berechtigung!</strong>
+            </ngb-alert>
+          }
         </ng-template>
       </div>
     </div>
@@ -39,7 +45,13 @@
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
         <ng-template>
-          <app-add-value></app-add-value>
+          @if (checkoutPermission) {
+            <app-add-value></app-add-value>
+          } @else {
+            <ngb-alert [dismissible]="false" type="danger">
+              <strong>Keine Berechtigung!</strong>
+            </ngb-alert>
+          }
         </ng-template>
       </div>
     </div>
@@ -51,7 +63,13 @@
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
         <ng-template>
-          <app-payout></app-payout>
+          @if (checkoutPermission) {
+            <app-payout></app-payout>
+          } @else {
+            <ngb-alert [dismissible]="false" type="danger">
+              <strong>Keine Berechtigung!</strong>
+            </ngb-alert>
+          }
         </ng-template>
       </div>
     </div>
@@ -63,7 +81,13 @@
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
         <ng-template>
-          <app-deallocate></app-deallocate>
+          @if (checkoutPermission) {
+            <app-deallocate></app-deallocate>
+          } @else {
+            <ngb-alert [dismissible]="false" type="danger">
+              <strong>Keine Berechtigung!</strong>
+            </ngb-alert>
+          }
         </ng-template>
       </div>
     </div>
@@ -75,19 +99,31 @@
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
         <ng-template>
-          <app-revenue></app-revenue>
+          @if (checkoutPermission || servePermission) {
+            <app-revenue></app-revenue>
+          } @else {
+            <ngb-alert [dismissible]="false" type="danger">
+              <strong>Keine Berechtigung!</strong>
+            </ngb-alert>
+          }
         </ng-template>
       </div>
     </div>
   </div>
-  <div ngbAccordionItem [collapsed]="true">
+  <div ngbAccordionItem [collapsed]="checkoutPermission">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton><i class="bi bi-cart-check">&nbsp;Ausgabe</i></button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
         <ng-template>
-          <app-serve></app-serve>
+          @if (checkoutPermission || servePermission) {
+            <app-serve></app-serve>
+          } @else {
+            <ngb-alert [dismissible]="false" type="danger">
+              <strong>Keine Berechtigung!</strong>
+            </ngb-alert>
+          }
         </ng-template>
       </div>
     </div>
