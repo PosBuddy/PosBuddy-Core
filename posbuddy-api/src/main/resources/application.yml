@@ -64,7 +64,7 @@ micronaut:
         type: JKS
       port: 443
       enabled: true
-
+    port : 443
 datasources:
   default:
     url: jdbc:postgresql://localhost:5432/posbuddy
