@@ -10,6 +10,7 @@ import {DeallocateComponent} from "./deallocate/deallocate.component";
 import {RevenueComponent} from "./revenue/revenue.component";
 import {ServeComponent} from "./serve/serve.component";
 import {paymentService} from "./service/payment.service";
+import {version} from '../../package.json';
 
 @Component({
   selector: 'app-root',
@@ -31,8 +32,8 @@ import {paymentService} from "./service/payment.service";
   styleUrl: './app.component.css'
 })
 export class AppComponent {
+
   title = 'PosBuddy &#9400; by JK';
-  version: string = '1.0.0'
 
   servePermission: boolean = false;
   checkoutPermission: boolean = false;
@@ -53,4 +54,6 @@ export class AppComponent {
         }
       )
   }
+
+  protected readonly version = version;
 }
