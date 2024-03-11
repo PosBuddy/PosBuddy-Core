@@ -32,7 +32,6 @@ export class ServeComponent {
   confirmError: boolean = false;
   confirmOK: boolean = false;
   iscollapsed: boolean = false;
-  formValidText: string = "ID für Bestellung scannen"
   posBuddyId: string = "-";
   balance = '12';
 
@@ -109,12 +108,49 @@ export class ServeComponent {
   }
 
   scanQRCode(content: TemplateRef<any>) {
+    this.resetServeData()
     this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
   }
 
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
     this.offcanvasService.dismiss("success");
+    this.paymentService.getIdentity(this.posBuddyId).subscribe(
+      next => {
+        this.balance = "" + next.balance;
+        if (this.balance.indexOf(".") > 0) {
+          this.balance = this.balance.substring(0, this.balance.indexOf(".") + 2)
+        }
+        this.offcanvasService.open(this.serveOCTemplate, {ariaLabelledBy: 'revenue'})
+      },
+      err => {
+        this.balance = "0";
+        this.confirmError = true;
+        switch (err.status) {
+          case 400 : {
+            this.serverResponse = "Ungültige ID";
+            break
+          }
+          case 401 : {
+            this.serverResponse = "Zugriff verweigert";
+            break
+          }
+          case 404 : {
+            this.serverResponse = "ID nicht zugeordnet";
+            break
+          }
+          case 405 : {
+            this.serverResponse = "keine Berechtigung";
+            break
+          }
+          default : {
+            this.serverResponse = "Fehlercode:" + err.status;
+            break
+          }
+        }
+      },
+      () => console.log('HTTP request completed.')
+    );
   }
 
 
@@ -145,6 +181,7 @@ export class ServeComponent {
 
 
   resetServeData() {
+    this.balance = "0";
     this.orderValue = 0;
     this.serveitems.map(value => value.count = 0)
   }

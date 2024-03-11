@@ -4,9 +4,15 @@
     <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
   <div class="row pt-3">
-    <div class="col-4">Bestellwert :</div>
-    <div class="col-8">
-      <p class="text-nowrap fs-4">{{ orderValue | number: '1.2-2' }} <i class="bi bi-currency-euro"></i></p>
+    <div class="col-6">
+      <p class="text-nowrap fs-4">
+        Wert:{{ orderValue | number: '1.2-2' }} <i class="bi bi-currency-euro"></i> /
+      </p>
+    </div>
+    <div class="col-6">
+      <p class="text-nowrap fs-4">
+        Guthaben: {{ balance | number: '1.2-2' }} <i class="bi bi-currency-euro"></i>
+      </p>
     </div>
     <div class="row pt-3">
       <div class="col-4">
@@ -26,7 +32,7 @@
           <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
         }
         @if (confirmOK) {
-          <ngb-alert type="success" (closed)="resetOK()">{{ formValidText }}</ngb-alert>
+          <ngb-alert type="success" (closed)="resetOK()">Bestellung wurde verbucht</ngb-alert>
         }
       </div>
     </div>

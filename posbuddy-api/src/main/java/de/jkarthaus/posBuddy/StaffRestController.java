@@ -13,10 +13,7 @@ import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
@@ -91,6 +88,7 @@ public class StaffRestController {
                 dispensingStationRepository.getDispensingStations()
         );
     }
+
     //----------------------------------------------------------------------------------------------------dispensingStations
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/dispensingStations", produces = MediaType.APPLICATION_JSON)
@@ -199,7 +197,7 @@ public class StaffRestController {
     })
     public HttpResponse<String> serve(
             String posBuddyId,
-            List<ServeItem> serveItems,
+            @Body List<ServeItem> serveItems,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
         log.info("add {} items for revenue", serveItems.size());

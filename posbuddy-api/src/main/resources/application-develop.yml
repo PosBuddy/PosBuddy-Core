@@ -11,6 +11,7 @@ micronaut:
         paths: file:/tmp/
         mapping: /assets/**
   server:
+    port: 8443
     cors:
       enabled: true
     ssl:
