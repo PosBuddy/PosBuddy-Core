@@ -86,7 +86,7 @@ export class ServeComponent {
               this.serverResponse = "Guthaben zu gering";
               break
             }
-            case 401 : {
+            case 403 : {
               this.serverResponse = "Zugriff verweigert";
               break
             }
