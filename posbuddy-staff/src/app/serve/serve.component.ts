@@ -33,7 +33,7 @@ export class ServeComponent {
   confirmOK: boolean = false;
   iscollapsed: boolean = false;
   posBuddyId: string = "-";
-  balance = '12';
+  balance = '0';
 
   orderValue: number = 0;
 
