@@ -208,6 +208,7 @@ public class StaffRestController {
             if (securityService.isServeOrCheckout(x509Authentication)) {
                 partyActionService.serveItems(serveItems, posBuddyId);
             } else {
+                log.warn("forbidden access to serve endpoint");
                 return HttpResponse.status(HttpStatus.FORBIDDEN);
             }
         } catch (posBuddyIdNotAllocatedException e) {

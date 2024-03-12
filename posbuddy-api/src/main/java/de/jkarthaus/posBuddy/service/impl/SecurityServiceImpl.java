@@ -117,7 +117,7 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
             log.info("SSL disabled -> serveOrCheckout ->> true");
             return true;
         }
-        return isCheckoutStation(x509Authentication) && isServeStation(x509Authentication);
+        return isCheckoutStation(x509Authentication) || isServeStation(x509Authentication);
     }
 
 
