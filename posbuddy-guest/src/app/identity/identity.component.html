@@ -1,14 +1,37 @@
-<div class="card" style="width: 12rem;">
+<div class="container" xmlns="http://www.w3.org/1999/html">
+
+  <div class="card" style="width: 12rem;">
     <img class="card-img-top" src="assets/guest.png" alt="Card image cap">
     <div class="card-body">
-        <h5 class="card-title">{{ name }}</h5>
-        <p class="card-text">Aktueller Kontostand: {{ revenue }} EUR</p>
-        <p class="card-text">Jugendschutzgesetz: {{ getYouthLawText() }}</p>
-        <button (click)="scanQRCode()">ID Scannen</button>
+      <h5 class="card-title">{{ name }}</h5>
+      <p class="card-text">Aktueller Kontostand: {{ revenue | number : '1.2-2' }} EUR</p>
+      <p class="card-text">Jugendschutzgesetz: {{ getYouthLawText() }}</p>
+      <button class="btn btn-lg btn-outline-secondary" (click)="scanQRCode(scanIdOC)">
+        Scannen
+      </button>
     </div>
+  </div>
+
+  @if (confirmError) {
+    <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
+  }
 </div>
 
-<zxing-scanner  [enable]='false' (scanSuccess)="onScanSuccess($event)">
+<!--                                            SCAN OffCanvas                                                     -->
+<ng-template #scanIdOC let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="scanID">Karte Scannen</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+    </div>
+  </div>
+  <div class="text-end">
+    Bitte QR-code in der Kamera ausrichten.
+  </div>
+</ng-template>
 
-</zxing-scanner>
+
 

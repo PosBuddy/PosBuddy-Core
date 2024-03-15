@@ -1,24 +1,30 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
-import {ZXingScannerComponent, ZXingScannerModule} from '@zxing/ngx-scanner';
+import {AfterViewInit, Component, inject, TemplateRef, ViewChild} from '@angular/core';
+import {ZXingScannerModule} from '@zxing/ngx-scanner';
 import {IdentityService} from "./identity.service";
 import {HttpClientModule} from "@angular/common/http";
+import {DecimalPipe} from "@angular/common";
+import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 
 
 @Component({
   selector: 'app-identity',
   standalone: true,
-  imports: [ZXingScannerModule, HttpClientModule],
+  imports: [ZXingScannerModule, HttpClientModule, DecimalPipe, ZXingScannerModule, NgbAlert],
   templateUrl: './identity.component.html',
   styleUrl: './identity.component.css'
 })
+
 export class IdentityComponent implements AfterViewInit {
+  @ViewChild('revenueOC') revenueOCTemplate: TemplateRef<any> | undefined;
+  private offcanvasService = inject(NgbOffcanvas);
 
-  @ViewChild(ZXingScannerComponent) qrCodeScanner: ZXingScannerComponent | undefined;
+  name: string = "Bitte Scannen";
+  revenue: number = 0;
+  youthLaw: boolean = true;
+  posBuddyId: string = IdentityService.UNKNOWN_ID;
+  serverResponse: string = "";
+  confirmError: boolean = false;
 
-  name: string = "Bitte Scannen"
-  revenue: number = 0
-  youthLaw: boolean = true
-  posBuddyId: string = IdentityService.UNKNOWN_ID
 
   constructor(private idendityService: IdentityService) {
     if (idendityService.isLocalIdentityValid()) {
@@ -27,6 +33,30 @@ export class IdentityComponent implements AfterViewInit {
         .subscribe(data => {
             this.name = data.surName + " " + data.lastName
             this.revenue = Number(data.balance)
+          }, error => {
+            this.confirmError = true;
+            switch (error.status) {
+              case 400 : {
+                this.serverResponse = "Ungültige ID";
+                break
+              }
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 404 : {
+                this.serverResponse = "ID nicht zugeordnet";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + error.status;
+                break
+              }
+            }
           }
         );
     }
@@ -35,11 +65,9 @@ export class IdentityComponent implements AfterViewInit {
 
 
   ngAfterViewInit() {
-    console.log("AfterViewinit:"+ this.posBuddyId)
+    console.log("AfterViewinit:" + this.posBuddyId)
     if (this.posBuddyId == IdentityService.UNKNOWN_ID) {
-      console.log("Dä" + this.qrCodeScanner)
-
-      this.qrCodeScanner!.enable = true;
+      console.log("No ID in Localcache")
     }
   }
 
@@ -51,28 +79,58 @@ export class IdentityComponent implements AfterViewInit {
     }
   }
 
-  scanQRCode(): void {
-    if (this.qrCodeScanner!.enable == true) {
-      this.qrCodeScanner!.enable = false;
-    } else {
-      this.qrCodeScanner!.enable = true;
-    }
+  scanQRCode(content: TemplateRef<any>): void {
+    this.offcanvasService.open(content, {ariaLabelledBy: 'scanId'})
   }
 
   scanError(error: Error) {
     console.error("Scan error:" + error);
   }
 
+  resetError() {
+    this.confirmError = false;
+    this.serverResponse = "-";
+    this.posBuddyId = "-";
+    this.revenue = 0;
+    this.youthLaw = false;
+  }
+
+
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
-    this.qrCodeScanner!.enable = false;
+    this.offcanvasService.dismiss("success");
+    
     this.idendityService.getIentityById(this.posBuddyId)
       .subscribe(data => {
           this.name = data.surName + " " + data.lastName
           this.revenue = Number(data.balance)
+          this.idendityService.setLocalIdentity(this.posBuddyId)
+        }, error => {
+          this.confirmError = true;
+          switch (error.status) {
+            case 400 : {
+              this.serverResponse = "Ungültige ID";
+              break
+            }
+            case 401 : {
+              this.serverResponse = "Zugriff verweigert";
+              break
+            }
+            case 404 : {
+              this.serverResponse = "ID nicht zugeordnet";
+              break
+            }
+            case 405 : {
+              this.serverResponse = "keine Berechtigung";
+              break
+            }
+            default : {
+              this.serverResponse = "Fehlercode:" + error.status;
+              break
+            }
+          }
         }
       );
-    this.idendityService.setLocalIdentity(this.posBuddyId)
   }
 
 }
