@@ -1,7 +1,7 @@
 import {AfterViewInit, Component} from '@angular/core';
 import {Revenue} from "../model/Revenue";
 import {NgbHighlight} from "@ng-bootstrap/ng-bootstrap";
-import {NgForOf} from "@angular/common";
+import {DatePipe, DecimalPipe, NgForOf} from "@angular/common";
 import {RevenueService} from "./revenue.service";
 import {IdentityService} from "../identity/identity.service";
 
@@ -10,7 +10,9 @@ import {IdentityService} from "../identity/identity.service";
   standalone: true,
   imports: [
     NgbHighlight,
-    NgForOf
+    NgForOf,
+    DecimalPipe,
+    DatePipe
   ],
   templateUrl: './revenue.component.html',
   styleUrl: './revenue.component.css'

@@ -2,17 +2,17 @@
   <thead>
   <tr>
     <th scope="col">#</th>
-    <th scope="col">Zeitpunkt</th>
-    <th scope="col">Anzahl</th>
+    <th scope="col">Zeit</th>
+    <th scope="col">M.</th>
     <th scope="col">Artikel</th>
     <th scope="col">Wert</th>
   </tr>
   </thead>
   <tbody>
-  <tr *ngFor="let revenue of revenues ">
-    <th scope="row">x</th>
+  <tr *ngFor="let revenue of revenues; let i = index ">
+    <th scope="row">{{ i+1 }}</th>
     <td>
-      {{ revenue.timeOfAction }}
+      {{ revenue.timeOfAction | date:'mediumTime' }}
     </td>
     <td>
       {{ revenue.amount }}
@@ -21,7 +21,7 @@
       {{ revenue.itemText }}
     </td>
     <td>
-      {{ revenue.value }}
+      {{ revenue.value | number : '1.2-2' }}
     </td>
   </tr>
   </tbody>

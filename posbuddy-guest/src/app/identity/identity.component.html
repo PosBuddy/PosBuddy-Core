@@ -1,11 +1,17 @@
-<div class="container" xmlns="http://www.w3.org/1999/html">
-
-  <div class="card" style="width: 12rem;">
-    <img class="card-img-top" src="assets/guest.png" alt="Card image cap">
+<div class="container" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+  <div class="card" style="width: 23rem;">
+    <div class="card-header">
+      Personidentifikation
+    </div>
     <div class="card-body">
       <h5 class="card-title">{{ name }}</h5>
-      <p class="card-text">Aktueller Kontostand: {{ revenue | number : '1.2-2' }} EUR</p>
-      <p class="card-text">Jugendschutzgesetz: {{ getYouthLawText() }}</p>
+
+      <p class="card-text">Aktueller Kontostand:
+        <strong> {{ revenue | number : '1.2-2' }} EUR</strong>
+      </p>
+      <p class="card-text">Jugendschutzgesetz:
+        <strong> {{ getYouthLawText() }}</strong>
+      </p>
       <button class="btn btn-lg btn-outline-secondary" (click)="scanQRCode(scanIdOC)">
         Scannen
       </button>
