@@ -22,3 +22,6 @@ micronaut:
   http:
     client:
       log-level: debug
+
+posbuddy:
+  configDir: /tmp
