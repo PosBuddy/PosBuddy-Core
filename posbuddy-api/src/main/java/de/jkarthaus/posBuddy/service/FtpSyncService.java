@@ -13,7 +13,7 @@ public interface FtpSyncService {
 
     void putFtpServerConfig(ftoConfigRecord ftoConfigRecord);
 
-    ftoConfigRecord getFtpServerConfig();
+    void getFtpServerConfig();
 
     void startSync();
 
