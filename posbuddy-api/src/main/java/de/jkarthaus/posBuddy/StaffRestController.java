@@ -40,7 +40,6 @@ public class StaffRestController {
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
     final PartyActionService partyActionService;
-    final DataImportService dataImportService;
     final SecurityService securityService;
 
 
@@ -152,38 +151,6 @@ public class StaffRestController {
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------ImportItems
-    @Secured(IS_ANONYMOUS)
-    @Post(uri = "/importItems", produces = MediaType.APPLICATION_JSON)
-    @Tag(name = "secure")
-    public HttpResponse<String> importItems(
-            @Nullable X509Authentication x509Authentication,
-            @Nullable Authentication authentication) {
-        try {
-            // TODO : implement Security
-            dataImportService.importItemCsv();
-        } catch (ParseImportException e) {
-            log.error("ParseImportException:{}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-        return HttpResponse.ok();
-    }
-
-    //-------------------------------------------------------------------------------------------------------ImportStations
-    @Secured(IS_ANONYMOUS)
-    @Post(uri = "/importDispensingStations", produces = MediaType.APPLICATION_JSON)
-    @Tag(name = "secure")
-    public HttpResponse importDispensingStations(@Nullable X509Authentication x509Authentication,
-                                                 @Nullable Authentication authentication) {
-        try {
-            // TODO : implement Security
-            dataImportService.importDispensingStationCsv();
-        } catch (ParseImportException e) {
-            log.error("ParseImportException:{}", e.getMessage());
-            throw new RuntimeException(e);
-        }
-        return HttpResponse.ok();
-    }
 
     //-----------------------------------------------------------------------------------------------------------------Serve
     @Secured(IS_ANONYMOUS)

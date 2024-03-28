@@ -112,6 +112,29 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
     }
 
     @Override
+    public boolean isAdmin(X509Authentication x509Authentication) {
+        if (!isSslActive) {
+            log.info("SSL disabled -> isAdmin ->> true");
+            return true;
+        }
+        if (x509Authentication == null) {
+            log.warn("try to access without certificate");
+            return false;
+        }
+        if (x509Authentication
+                .getName()
+                .equals(Constants.PERMISSION_ADMIN_CERTIFICATE_NAME)
+        ) {
+            return true;
+        }
+        log.warn("need CN:{} in client certificate found:{}",
+                Constants.PERMISSION_ADMIN_CERTIFICATE_NAME,
+                x509Authentication.getName()
+        );
+        return false;
+    }
+
+    @Override
     public boolean isServeOrCheckout(X509Authentication x509Authentication) {
         if (!isSslActive) {
             log.info("SSL disabled -> serveOrCheckout ->> true");

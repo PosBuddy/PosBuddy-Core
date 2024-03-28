@@ -16,6 +16,7 @@ public interface SecurityService {
     boolean isCheckoutStation(X509Authentication x509Authentication);
 
     boolean isServeOrCheckout(X509Authentication x509Authentication);
+    boolean isAdmin(X509Authentication x509Authentication);
 
 
 }

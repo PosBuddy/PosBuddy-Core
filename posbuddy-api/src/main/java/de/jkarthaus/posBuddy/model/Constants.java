@@ -8,5 +8,6 @@ public class Constants {
     // --
     public static final String PERMISSION_CHECKOUT_CERTIFICATE_NAME = "checkout";
     public static final String PERMISSION_SERVE_CERTIFICATE_NAME = "serve";
+    public static final String PERMISSION_ADMIN_CERTIFICATE_NAME = "admin";
 
 }
