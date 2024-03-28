@@ -1,19 +1,17 @@
 package de.jkarthaus.posBuddy.service;
 
+import de.jkarthaus.posBuddy.model.FtpConfig;
+import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
+
+import java.io.IOException;
+
 public interface FtpSyncService {
 
-    String getLastLog();
+    FtpSyncLogResponse getLastLog();
 
-    static record ftoConfigRecord(
-            String server,
-            String username,
-            String password
-    ) {
-    }
+    void putFtpServerConfig(FtpConfig ftpConfig) throws IOException;
 
-    void putFtpServerConfig(ftoConfigRecord ftoConfigRecord);
-
-    void getFtpServerConfig();
+    FtpConfig getFtpServerConfig();
 
     void startSync();
 

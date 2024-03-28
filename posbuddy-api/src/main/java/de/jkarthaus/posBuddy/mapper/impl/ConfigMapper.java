@@ -3,6 +3,7 @@ package de.jkarthaus.posBuddy.mapper.impl;
 import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
 import de.jkarthaus.posBuddy.model.FtpConfig;
 import de.jkarthaus.posBuddy.model.enums.ConfigID;
+import de.jkarthaus.posBuddy.model.gui.FtpConfigDto;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -23,5 +24,33 @@ public class ConfigMapper implements de.jkarthaus.posBuddy.mapper.ConfigMapper {
             );
         }
         return objectMapper.readValue(configEntity.getJsonConfig(), FtpConfig.class);
+    }
+
+    @Override
+    public ConfigEntity toConfigEntity(FtpConfig ftpConfig) throws IOException {
+        ConfigEntity configEntity = new ConfigEntity();
+        configEntity.setId(ConfigID.FTP_CONFIG);
+        configEntity.setJsonConfig(
+                objectMapper.writeValueAsString(ftpConfig)
+        );
+        return configEntity;
+    }
+
+    @Override
+    public FtpConfigDto toFtpConfigDto(FtpConfig ftpConfig) {
+        return new FtpConfigDto(
+                ftpConfig.getHost(),
+                ftpConfig.getUsername(),
+                ftpConfig.getPassword()
+        );
+    }
+
+    @Override
+    public FtpConfig toFtpConfig(FtpConfigDto ftpConfigDto) {
+        return new FtpConfig(
+                ftpConfigDto.getHost(),
+                ftpConfigDto.getUsername(),
+                ftpConfigDto.getPassword()
+        );
     }
 }
