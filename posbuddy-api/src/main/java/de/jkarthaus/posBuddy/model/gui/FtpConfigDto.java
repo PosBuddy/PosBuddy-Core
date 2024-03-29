@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FtpConfigDto {
+    private boolean enabled;
     private String host;
     private String username;
     private String password;
-
+    private String destination;
 }

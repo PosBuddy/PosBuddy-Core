@@ -39,18 +39,22 @@ public class ConfigMapper implements de.jkarthaus.posBuddy.mapper.ConfigMapper {
     @Override
     public FtpConfigDto toFtpConfigDto(FtpConfig ftpConfig) {
         return new FtpConfigDto(
+                ftpConfig.isEnabled(),
                 ftpConfig.getHost(),
                 ftpConfig.getUsername(),
-                ftpConfig.getPassword()
+                ftpConfig.getPassword(),
+                ftpConfig.getDestination()
         );
     }
 
     @Override
     public FtpConfig toFtpConfig(FtpConfigDto ftpConfigDto) {
         return new FtpConfig(
+                ftpConfigDto.isEnabled(),
                 ftpConfigDto.getHost(),
                 ftpConfigDto.getUsername(),
-                ftpConfigDto.getPassword()
+                ftpConfigDto.getPassword(),
+                ftpConfigDto.getDestination()
         );
     }
 }

@@ -11,7 +11,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -57,6 +56,8 @@ public class IdentityEntity {
     @Column(name = "endallocation")
     private LocalDateTime endallocation;
 
+    @Column(name = "static_identity")
+    private boolean staticIdentity;
 
     @NotNull
     @Column(name = "balance", nullable = false)

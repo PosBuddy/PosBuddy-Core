@@ -1,5 +1,6 @@
 package de.jkarthaus.posBuddy.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.micronaut.serde.annotation.Serdeable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +10,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Serdeable
+@JsonInclude(JsonInclude.Include.ALWAYS)
 public class FtpConfig {
-    private String host;
-    private String username;
-    private String password;
+    private boolean enabled = false;
+    private String host = "";
+    private String username = "";
+    private String password = "";
+    private String destination = "";
 }

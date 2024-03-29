@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Singleton
@@ -57,6 +58,10 @@ public class IdentityRepositoryImpl implements IdentityRepository {
             log.debug("id:{} is assignable becuase id not exists");
             return true;
         }
+        if (identityEntity.isStaticIdentity()) {
+            log.debug("id:{} is static", posBuddyId);
+            return false;
+        }
         if (identityEntity.getEndallocation() == null) {
             log.debug("id:{} already assigned", posBuddyId);
             return false;
@@ -69,11 +74,24 @@ public class IdentityRepositoryImpl implements IdentityRepository {
         return false;
     }
 
+    @Override
+    public List<IdentityEntity> getAllocatedIdentitys() {
+        TypedQuery<IdentityEntity> query = entityManager.createQuery(
+                """
+                        select i from identity as i 
+                        where startallocation is not null 
+                        and (endallocation is null or endallocation < now())
+                        """,
+                IdentityEntity.class
+        );
+        return query.getResultList();
+    }
+
     @Transactional
     @Override
     public void updateIdentityEntity(IdentityEntity identityEntity) {
         entityManager.merge(identityEntity);
-        }
+    }
 
     @Transactional
     @Override
