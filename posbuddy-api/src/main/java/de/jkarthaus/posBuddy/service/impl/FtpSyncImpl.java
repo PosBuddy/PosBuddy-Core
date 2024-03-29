@@ -21,6 +21,8 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class FtpSyncImpl implements FtpSyncService {
 
+    private static String FTP_HASH_FILE = "posBuddySync.obj";
     private HashMap<String, Integer> lastUploadHashValue;
 
     private FtpConfig posBuddyFtpConfig;
@@ -88,7 +91,7 @@ public class FtpSyncImpl implements FtpSyncService {
             return;
         }
         try {
-            log.info("check FTP connection to host:{]", posBuddyFtpConfig.getHost());
+            log.info("check FTP connection to host:{}", posBuddyFtpConfig.getHost());
             ftpClient.connect(posBuddyFtpConfig.getHost());
             int ftpReplycode = ftpClient.getReplyCode();
             if (!FTPReply.isPositiveCompletion(ftpReplycode)) {
@@ -96,11 +99,48 @@ public class FtpSyncImpl implements FtpSyncService {
                 ftpClient.disconnect();
                 isServerResponsible = false;
             }
-            ftpClient.login(posBuddyFtpConfig.getUsername(),posBuddyFtpConfig.getPassword());
-            ftpClient.changeWorkingDirectory(posBuddyFtpConfig.getDestination());
+            boolean loggedIn = ftpClient.login(
+                    posBuddyFtpConfig.getUsername(),
+                    posBuddyFtpConfig.getPassword()
+            );
+            if (!loggedIn) {
+                log.error("FTP login failed");
+                isServerResponsible = false;
+                this.ftpSyncLogResponse = new FtpSyncLogResponse(
+                        LocalDateTime.now(),
+                        "**Ftp login failed...**"
+                );
+                ftpClient.disconnect();
+                return;
+            }
+            boolean chdir = ftpClient.changeWorkingDirectory(posBuddyFtpConfig.getDestination());
+            if (!chdir) {
+                log.error("FTP chdir to {} failed", posBuddyFtpConfig.getDestination());
+                isServerResponsible = false;
+                this.ftpSyncLogResponse = new FtpSyncLogResponse(
+                        LocalDateTime.now(),
+                        "**Ftp change to directory " + posBuddyFtpConfig.getDestination() + " failed...**"
+                );
+                ftpClient.logout();
+                ftpClient.disconnect();
+                return;
+            }
+            try {
+                ObjectInputStream in = new ObjectInputStream(ftpClient.retrieveFileStream(FTP_HASH_FILE));
+                lastUploadHashValue = (HashMap<String, Integer>) in.readObject();
+                in.close();
+            } catch (Exception e) {
+                ObjectOutputStream out = new ObjectOutputStream(ftpClient.storeFileStream(FTP_HASH_FILE));
+                log.warn("Error reading :{} create new...", FTP_HASH_FILE);
+                out.writeObject(lastUploadHashValue);
+                out.flush();
+                out.close();
+            }
 
         } catch (IOException e) {
             log.error("IoException when trying to connect FTP Server:{}", e.getMessage());
+        } catch (Exception e) {
+            log.error("ClassNotFoundException :{}", e.getMessage());
         }
     }
 
