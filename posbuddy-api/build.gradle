@@ -29,6 +29,7 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.swagger.core.v3:swagger-annotations")
     implementation("io.micronaut.security:micronaut-security")
+    implementation 'commons-net:commons-net:3.10.0'
 
     compileOnly("org.apache.commons:commons-csv:1.10.0")
     compileOnly("org.projectlombok:lombok")

@@ -17,6 +17,8 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -32,7 +34,10 @@ public class FtpSyncImpl implements FtpSyncService {
 
     private HashMap<String, Integer> lastUploadHashValue;
 
-    private FtpConfig ftpConfig;
+    private FtpConfig posBuddyFtpConfig;
+    private FTPClient ftpClient;
+
+    private boolean isServerResponsible = false;
 
     private FtpSyncLogResponse ftpSyncLogResponse;
 
@@ -51,8 +56,11 @@ public class FtpSyncImpl implements FtpSyncService {
     @Override
     @PostConstruct
     public FtpConfig getFtpServerConfig() {
+        // init the ftp client
+        ftpClient = new FTPClient();
+        // -- try to get ftpConfig from database
         log.info("Try to read ftp Server config from Database");
-        ftpConfig = new FtpConfig();
+        posBuddyFtpConfig = new FtpConfig();
         Optional<ConfigEntity> optionalConfigEntity = configRepository
                 .findById(ConfigID.FTP_CONFIG);
         try {
@@ -62,31 +70,45 @@ public class FtpSyncImpl implements FtpSyncService {
                         LocalDateTime.now(),
                         "**Default config created**"
                 );
-                configRepository.updateConfig(configMapper.toConfigEntity(ftpConfig));
-                return ftpConfig;
+                configRepository.updateConfig(configMapper.toConfigEntity(posBuddyFtpConfig));
+                return posBuddyFtpConfig;
             }
-            ftpConfig = configMapper.toFtpConfig(optionalConfigEntity.get());
+            posBuddyFtpConfig = configMapper.toFtpConfig(optionalConfigEntity.get());
         } catch (IOException e) {
             log.error("error reading FTP config from database");
-            return ftpConfig;
+            return posBuddyFtpConfig;
         }
         log.info("succesfully read FTP config from database");
-        return ftpConfig;
+        checkFtp();
+        return posBuddyFtpConfig;
     }
 
     private void checkFtp() {
-        if (!ftpConfig.isEnabled()) {
+        if (!posBuddyFtpConfig.isEnabled()) {
             return;
         }
-        log.info("check configured FTP connection");
+        try {
+            log.info("check FTP connection to host:{]", posBuddyFtpConfig.getHost());
+            ftpClient.connect(posBuddyFtpConfig.getHost());
+            int ftpReplycode = ftpClient.getReplyCode();
+            if (!FTPReply.isPositiveCompletion(ftpReplycode)) {
+                log.error("Ftp Server gives negative reply code :{}", ftpReplycode);
+                ftpClient.disconnect();
+                isServerResponsible = false;
+            }
+            ftpClient.login(posBuddyFtpConfig.getUsername(),posBuddyFtpConfig.getPassword());
+            ftpClient.changeWorkingDirectory(posBuddyFtpConfig.getDestination());
 
+        } catch (IOException e) {
+            log.error("IoException when trying to connect FTP Server:{}", e.getMessage());
+        }
     }
 
 
     @Scheduled(fixedDelay = "60s", initialDelay = "5s")
     @Override
     public void startSync() {
-        if (!ftpConfig.isEnabled()) {
+        if (!posBuddyFtpConfig.isEnabled()) {
             log.debug("Ftp static sync disabled.");
             this.ftpSyncLogResponse = new FtpSyncLogResponse(
                     LocalDateTime.now(),
