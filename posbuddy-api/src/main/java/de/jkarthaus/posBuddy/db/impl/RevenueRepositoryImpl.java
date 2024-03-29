@@ -50,8 +50,10 @@ public class RevenueRepositoryImpl implements RevenueRepository {
                         select r from revenues as r
                         where r.posbuddyid = :posBuddyId
                         order by r.timeofaction desc
-                        """, RevenueEntity.class
-        );
+                        """,
+                RevenueEntity.class
+        ).setParameter("posBuddyId", posBuddyId);
+
         return query.getResultList();
     }
 

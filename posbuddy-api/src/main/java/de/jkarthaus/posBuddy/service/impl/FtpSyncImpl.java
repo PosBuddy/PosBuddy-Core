@@ -13,6 +13,7 @@ import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
 import de.jkarthaus.posBuddy.service.FtpSyncService;
 import io.micronaut.scheduling.annotation.Scheduled;
+import io.micronaut.serde.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import java.util.Optional;
 public class FtpSyncImpl implements FtpSyncService {
 
     private static String FTP_HASH_FILE = "posBuddySync.obj";
-    private HashMap<String, Integer> lastUploadHashValue;
+    private HashMap<String, Integer> lastUploadHashValue = new HashMap<>();
 
     private FtpConfig posBuddyFtpConfig;
     private FTPClient ftpClient;
@@ -48,6 +48,7 @@ public class FtpSyncImpl implements FtpSyncService {
     private final RevenueRepository revenueRepository;
     private final IdentityRepository identityRepository;
     private final ConfigMapper configMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public void putFtpServerConfig(FtpConfig ftpConfig) throws IOException {
@@ -129,14 +130,17 @@ public class FtpSyncImpl implements FtpSyncService {
                 ObjectInputStream in = new ObjectInputStream(ftpClient.retrieveFileStream(FTP_HASH_FILE));
                 lastUploadHashValue = (HashMap<String, Integer>) in.readObject();
                 in.close();
+                log.info("get lastUploadHashValue from Ftp Server.");
             } catch (Exception e) {
                 ObjectOutputStream out = new ObjectOutputStream(ftpClient.storeFileStream(FTP_HASH_FILE));
-                log.warn("Error reading :{} create new...", FTP_HASH_FILE);
+                log.warn("Error reading :{} create new on Ftp server...", FTP_HASH_FILE);
                 out.writeObject(lastUploadHashValue);
                 out.flush();
                 out.close();
             }
-
+            isServerResponsible = true;
+            ftpClient.logout();
+            ftpClient.disconnect();
         } catch (IOException e) {
             log.error("IoException when trying to connect FTP Server:{}", e.getMessage());
         } catch (Exception e) {
@@ -156,6 +160,13 @@ public class FtpSyncImpl implements FtpSyncService {
             );
             return;
         }
+        if (!isServerResponsible) {
+            this.ftpSyncLogResponse = new FtpSyncLogResponse(
+                    LocalDateTime.now(),
+                    "Ftp Server is NOT responsible..."
+            );
+            return;
+        }
         List<StaticIdData> staticIdDataList = new ArrayList<>();
         List<IdentityEntity> identityEntityList = identityRepository.getAllocatedIdentitys();
         identityEntityList.forEach(identityEntity -> {
@@ -172,8 +183,39 @@ public class FtpSyncImpl implements FtpSyncService {
     }
 
     private void doUpload(List<StaticIdData> staticIdDataList) {
+        if (staticIdDataList.isEmpty()) {
+            log.info("Ftp Server is full snyced - nothing to upload");
+            return;
+        }
         log.info("upload {} identitys to ftp Server", staticIdDataList.size());
-        //TODO : implement upload
+        try {
+            ftpClient.connect(posBuddyFtpConfig.getHost());
+            ftpClient.login(
+                    posBuddyFtpConfig.getUsername(),
+                    posBuddyFtpConfig.getPassword()
+            );
+            ftpClient.changeWorkingDirectory(posBuddyFtpConfig.getDestination());
+            for (StaticIdData staticIdData : staticIdDataList) {
+                log.info("upload id:{}", staticIdData.getPosBuddyId());
+                OutputStream outputStream = ftpClient.storeFileStream(staticIdData.getPosBuddyId() + ".json");
+                PrintStream out = new PrintStream(outputStream, true, StandardCharsets.UTF_8);
+                out.write(objectMapper.writeValueAsString(staticIdData).getBytes());
+                out.flush();
+                out.close();
+                outputStream.flush();
+                outputStream.close();
+                ftpClient.completePendingCommand();
+            }
+            log.info("Store new SyncState");
+            ObjectOutputStream out = new ObjectOutputStream(ftpClient.storeFileStream(FTP_HASH_FILE));
+            out.writeObject(lastUploadHashValue);
+            out.flush();
+            out.close();
+            ftpClient.logout();
+            ftpClient.disconnect();
+        } catch (IOException e) {
+            log.error("IOException try to upload staticIdData");
+        }
     }
 
     private boolean isObjectModified(StaticIdData staticIdData) {

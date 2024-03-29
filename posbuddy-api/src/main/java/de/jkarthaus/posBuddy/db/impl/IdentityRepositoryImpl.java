@@ -75,12 +75,13 @@ public class IdentityRepositoryImpl implements IdentityRepository {
     }
 
     @Override
+    @ReadOnly
     public List<IdentityEntity> getAllocatedIdentitys() {
         TypedQuery<IdentityEntity> query = entityManager.createQuery(
                 """
                         select i from identity as i 
                         where startallocation is not null 
-                        and (endallocation is null or endallocation < now())
+                        and (endallocation is null or endallocation > now())
                         """,
                 IdentityEntity.class
         );
