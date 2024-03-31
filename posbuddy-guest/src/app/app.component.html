@@ -23,13 +23,16 @@
       </p>
     </ng-template>
   </li>
+  <li [ngbNavItem]="4">
+    <button ngbNavLink>Umsätze</button>
+    <ng-template ngbNavContent>
+      <app-identity></app-identity>
+      <app-revenue></app-revenue>
+    </ng-template>
+  </li>
 </ul>
-
 <div [ngbNavOutlet]="nav" class="mt-2"></div>
 
-<app-identity></app-identity>
-
-<app-revenue></app-revenue>
 
 <router-outlet></router-outlet>
 
