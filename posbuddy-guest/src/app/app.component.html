@@ -1,33 +1,35 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-tabs">
+<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills">
   <li [ngbNavItem]="1">
     <button ngbNavLink>Willkommen</button>
     <ng-template ngbNavContent>
-      <p>
-        <markdown [src]="'assets/welcome.md'"></markdown>
-      </p>
+      <div class="p-3 mb-2 bg-light text-dark border border-primary">
+        <markdown [src]="'asset/welcome.md'"></markdown>
+      </div>
     </ng-template>
   </li>
   <li [ngbNavItem]="2">
     <button ngbNavLink>Speisekarte</button>
     <ng-template ngbNavContent>
-      <p>
-        <markdown [src]="'assets/menue.md'"></markdown>
-      </p>
+      <div class="p-3 mb-2 bg-light text-dark border border-info">
+        <markdown [src]="'asset/menue.md'"></markdown>
+      </div>
     </ng-template>
   </li>
   <li [ngbNavItem]="3">
     <button ngbNavLink>Info</button>
     <ng-template ngbNavContent>
-      <p>
-        <markdown [src]="'assets/info.md'"></markdown>
-      </p>
+      <div class="p-3 mb-2 bg-light text-dark border border-black">
+        <markdown [src]="'/asset/info.md'"></markdown>
+      </div>
     </ng-template>
   </li>
   <li [ngbNavItem]="4">
     <button ngbNavLink>Umsätze</button>
     <ng-template ngbNavContent>
-      <app-identity></app-identity>
-      <app-revenue></app-revenue>
+      <div class="p-3 mb-2 bg-light text-dark border border-danger">
+        <app-identity></app-identity>
+        <app-revenue></app-revenue>
+      </div>
     </ng-template>
   </li>
 </ul>
