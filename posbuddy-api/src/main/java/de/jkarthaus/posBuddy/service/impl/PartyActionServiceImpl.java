@@ -10,11 +10,9 @@ import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.mapper.RevenueMapper;
 import de.jkarthaus.posBuddy.model.Constants;
-import de.jkarthaus.posBuddy.model.gui.AllocatePosBuddyIdRequest;
-import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
-import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
-import de.jkarthaus.posBuddy.model.gui.ServeItem;
+import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
+import de.jkarthaus.posBuddy.tools.Tools;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -191,6 +190,39 @@ public class PartyActionServiceImpl implements PartyActionService {
         // update new balance
         identityEntity.setBalance(0f);
         identityRepository.updateIdentityEntity(identityEntity);
+    }
+
+    @Override
+    public IdDataResponse getIdDataResponse(String posBuddyId) throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
+        if (isNotValidUUID(posBuddyId)) {
+            throw new posBuddyIdNotValidException("no valid UUID");
+        }
+        IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
+        if (identityEntity == null) {
+            log.info("Actual valid posBuddy Identity with ID:{} not found in Database", posBuddyId);
+            throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
+        }
+        List<IdDataResponse.Revenue> revenueList = revenueRepository
+                .getRevenuesByIdDescending(posBuddyId)
+                .stream()
+                .map(revenueEntity -> new IdDataResponse.Revenue(
+                                revenueEntity.getItemtext(),
+                                revenueEntity.getAmount(),
+                                revenueEntity.getValue(),
+                                revenueEntity.getPaymentaction(),
+                                revenueEntity.getTimeofaction()
+                        )
+                ).collect(Collectors.toList());
+        return new IdDataResponse(
+                posBuddyId,
+                identityEntity.getSurname(),
+                identityEntity.getLastname(),
+                Tools.isAgeUnderYouthProtection(
+                        identityEntity.getBirthday()
+                ),
+                identityEntity.getBalance(),
+                revenueList
+        );
     }
 
     private boolean isNotValidUUID(String posBuddyId) {

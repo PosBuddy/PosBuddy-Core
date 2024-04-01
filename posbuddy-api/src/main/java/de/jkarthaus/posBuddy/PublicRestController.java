@@ -5,10 +5,10 @@ import de.jkarthaus.posBuddy.db.ItemRepository;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
 import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
+import de.jkarthaus.posBuddy.model.gui.DispensingStationResponse;
+import de.jkarthaus.posBuddy.model.gui.IdDataResponse;
 import de.jkarthaus.posBuddy.model.gui.IdentityResponse;
 import de.jkarthaus.posBuddy.model.gui.ItemResponse;
-import de.jkarthaus.posBuddy.model.gui.RevenueResponse;
-import de.jkarthaus.posBuddy.model.gui.DispensingStationResponse;
 import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.service.SecurityService;
@@ -75,11 +75,11 @@ public class PublicRestController {
     }
 
     @PermitAll
-    @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/idData/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "public")
-    public List<RevenueResponse> getRevenue(String posBuddyId) {
+    public IdDataResponse getIdData(String posBuddyId) {
         try {
-            return partyActionService.getRevenueResponseByPosBuddyId(posBuddyId);
+            return partyActionService.getIdDataResponse(posBuddyId);
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
             throw new RuntimeException(e);
