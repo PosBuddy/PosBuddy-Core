@@ -1,5 +1,6 @@
 package de.jkarthaus.posBuddy.service.impl;
 
+import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.IdentityRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
 import de.jkarthaus.posBuddy.db.RevenueRepository;
@@ -7,6 +8,7 @@ import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
 import de.jkarthaus.posBuddy.exception.*;
+import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.mapper.RevenueMapper;
 import de.jkarthaus.posBuddy.model.Constants;
@@ -32,9 +34,11 @@ public class PartyActionServiceImpl implements PartyActionService {
 
     private final IdentityMapper identityMapper;
     private final RevenueMapper revenueMapper;
+    private final DispensingStationMapper dispensingStationMapper;
     private final IdentityRepository identityRepository;
     private final RevenueRepository revenueRepository;
     private final ItemRepository itemRepository;
+    private final DispensingStationRepository dispensingStationRepository;
 
     @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
@@ -154,6 +158,14 @@ public class PartyActionServiceImpl implements PartyActionService {
         }
         throw new PosBuddyIdNotAllocateableException("posBuddyId is not assignable");
     }
+
+    @Override
+    public List<DispensingStationResponse> getDispensingStations() {
+        return dispensingStationMapper.toResponse(
+                dispensingStationRepository.getDispensingStations()
+        );
+    }
+
 
     @Override
     public void deAllocatePosBuddyId(String posBuddyId)

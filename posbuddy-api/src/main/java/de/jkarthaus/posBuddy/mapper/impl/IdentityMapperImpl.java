@@ -20,10 +20,7 @@ public class IdentityMapperImpl implements IdentityMapper {
                 identityEntity.getPosbuddyid(),
                 identityEntity.getSurname(),
                 identityEntity.getLastname(),
-                Tools.isAgeUnderYouthProtection(
-                        identityEntity.getBirthday(),
-                        identityEntity.getPosbuddyid()
-                ),
+                Tools.isAgeUnderYouthProtection(identityEntity.getBirthday()),
                 identityEntity.getAtribute1(),
                 identityEntity.getAtribute2(),
                 identityEntity.getAtribute3(),

@@ -26,6 +26,8 @@ public interface PartyActionService {
     void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;
 
+    List<DispensingStationResponse> getDispensingStations();
+
     void deAllocatePosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException, OutOfBalanceException;
 

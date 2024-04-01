@@ -12,9 +12,13 @@ import de.jkarthaus.posBuddy.model.gui.ItemResponse;
 import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.service.SecurityService;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +41,9 @@ public class PublicRestController {
 
     @PermitAll
     @Get(uri = "/items/{station}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "get all Items for given station"),
+    })
     @Tag(name = "public")
     public List<ItemResponse> getItems(String station) {
         log.debug("get items for station:{}", station);
@@ -48,46 +55,56 @@ public class PublicRestController {
 
     @PermitAll
     @Get(uri = "/stations", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "get all dispensingStations"),
+    })
     @Tag(name = "public")
-    public DispensingStationResponse getStations() {
-        log.debug("get stations");
-        return new DispensingStationResponse(
-                "ckB",
-                "Cocktail Bar",
-                "right to the DJ"
-        );
+    public List<DispensingStationResponse> getStations() {
+        log.debug("get dispensingStations");
+        return partyActionService.getDispensingStations();
     }
 
     @PermitAll
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "get all dispensingstations"),
+            @ApiResponse(responseCode = "400", description = "posbuddy id is not valid"),
+            @ApiResponse(responseCode = "404", description = "posbuddy id is not allocated"),
+    })
     @Tag(name = "public")
-    public IdentityResponse getIdentity(String posBuddyId) {
-
+    public HttpResponse<IdentityResponse> getIdentity(String posBuddyId) {
         try {
-            return partyActionService.getIdentityResponseByPosBuddyId(posBuddyId);
+            return HttpResponse.ok(
+                    partyActionService.getIdentityResponseByPosBuddyId(posBuddyId)
+            );
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
     }
 
     @PermitAll
-    @Get(uri = "/idData/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/identityData/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "get all dispensingstations"),
+            @ApiResponse(responseCode = "400", description = "posbuddy id is not valid"),
+            @ApiResponse(responseCode = "404", description = "posbuddy id is not allocated"),
+    })
     @Tag(name = "public")
-    public IdDataResponse getIdData(String posBuddyId) {
+    public HttpResponse<IdDataResponse> getIdData(String posBuddyId) {
         try {
-            return partyActionService.getIdDataResponse(posBuddyId);
+            return HttpResponse.ok(
+                    partyActionService.getIdDataResponse(posBuddyId)
+            );
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
         }
     }
-
-
 }
