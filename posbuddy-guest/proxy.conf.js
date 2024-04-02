@@ -6,7 +6,7 @@ module.exports = {
     logLevel: 'debug'
   },
   '/asset': {
-    target: 'https://posbuddy.gve.elsenroth',
+    target: 'https://elsenroth.de',
     secure: false,
     changeOrigin: true,
     logLevel: 'debug'

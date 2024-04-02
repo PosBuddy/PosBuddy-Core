@@ -4,6 +4,8 @@ import {IdentityService} from "./identity.service";
 import {HttpClientModule} from "@angular/common/http";
 import {DecimalPipe} from "@angular/common";
 import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
+import {StaticIdService} from "../services/static-id.service";
+import {environment} from "../../environments/environment";
 
 
 @Component({
@@ -26,15 +28,15 @@ export class IdentityComponent implements AfterViewInit {
   confirmError: boolean = false;
 
 
-  constructor(private idendityService: IdentityService) {
-    if (idendityService.isLocalIdentityValid()) {
-      this.posBuddyId = idendityService.getLocalidentity();
-      this.idendityService.getIentityById(this.posBuddyId)
+  constructor(private identityService: IdentityService, staticIdService: StaticIdService) {
+    if (identityService.isLocalIdentityValid()) {
+      this.posBuddyId = identityService.getLocalidentity();
+      this.identityService.getIentityById(this.posBuddyId)
         .subscribe(data => {
             this.name = data.surName + " " + data.lastName
             this.revenue = Number(data.balance)
           }, error => {
-            this.confirmError = true;
+            console.info("api not reachable")
             switch (error.status) {
               case 400 : {
                 this.serverResponse = "Ungültige ID";
@@ -60,7 +62,6 @@ export class IdentityComponent implements AfterViewInit {
           }
         );
     }
-
   }
 
 
@@ -99,12 +100,12 @@ export class IdentityComponent implements AfterViewInit {
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
     this.offcanvasService.dismiss("success");
-    
-    this.idendityService.getIentityById(this.posBuddyId)
+
+    this.identityService.getIentityById(this.posBuddyId)
       .subscribe(data => {
           this.name = data.surName + " " + data.lastName
           this.revenue = Number(data.balance)
-          this.idendityService.setLocalIdentity(this.posBuddyId)
+          this.identityService.setLocalIdentity(this.posBuddyId)
         }, error => {
           this.confirmError = true;
           switch (error.status) {
@@ -133,4 +134,8 @@ export class IdentityComponent implements AfterViewInit {
       );
   }
 
+  refreshData() {
+    console.log("UseStaticApi:" + environment.callStaticApi);
+    //this.staticIdService.subscribe(this)
+  }
 }
