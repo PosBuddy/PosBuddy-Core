@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {DecimalPipe} from "@angular/common";
+import {DatePipe, DecimalPipe, NgForOf} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {staticIdData, StaticIdService} from "../services/static-id.service";
 import {NgbAlert} from "@ng-bootstrap/ng-bootstrap";
@@ -10,7 +10,9 @@ import {NgbAlert} from "@ng-bootstrap/ng-bootstrap";
   imports: [
     DecimalPipe,
     ReactiveFormsModule,
-    NgbAlert
+    NgbAlert,
+    DatePipe,
+    NgForOf
   ],
   templateUrl: './static-data.component.html',
   styleUrl: './static-data.component.css'
@@ -20,7 +22,18 @@ export class StaticDataComponent {
   serverResponse: string = "";
   balance: number = 0;
   syncDate: string = "";
-  staticData!: staticIdData;
+  staticData: staticIdData = {
+    posBuddyId: "",
+    syncTimeStamp: "",
+    balance: 0,
+    revenueList: [{
+      action: "",
+      amount: 0,
+      itemText: "",
+      timeOfAction: "",
+      value: 0
+    }]
+  }
 
   constructor(private staticIdService: StaticIdService) {
   }

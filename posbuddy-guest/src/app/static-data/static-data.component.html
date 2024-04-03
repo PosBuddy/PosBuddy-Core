@@ -1,18 +1,51 @@
-<div class="container" xmlns="http://www.w3.org/1999/html">
+<div class="container-fluid" xmlns="http://www.w3.org/1999/html">
   @if (serverResponse != "") {
     <ngb-alert type="danger" [dismissible]="false">{{ serverResponse }}</ngb-alert>
   }
-  <div class="row pt-3">
-    <div class="col-6">
-      <p class="text-nowrap fs-4">
-        Guthaben: {{ balance | number: '1.2-2' }} <i class="bi bi-currency-euro"></i>
-      </p>
-    </div>
-    <div class="col-6">
-      <p class="text-nowrap fs-4">
-        vom:{{ syncDate }}
-      </p>
-    </div>
-  </div>
+  <p class="text-nowrap fs-4">
+    Guthaben:
+    <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
+    <i class="bi bi-currency-euro"></i>
+  </p>
 
+  <table class="table table-striped">
+    <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Zeit</th>
+      <th scope="col">M.</th>
+      <th scope="col">Artikel</th>
+      <th scope="col">Wert</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let revenue of staticData.revenueList; let i = index ">
+      <th scope="row">{{ i + 1 }}</th>
+      <td>
+        {{ revenue.timeOfAction | date:'hh:mm:ss' }}
+      </td>
+      <td>
+        {{ revenue.amount }}
+      </td>
+      <td>
+        @if (revenue.action == "+") {
+          <i class="bi bi-plus-circle-fill"></i>
+          Einzahlung
+        }
+        @if (revenue.action == "-") {
+          <i class="bi bi-minus-circle-fill"></i>
+          Auszahlung
+        }
+        {{ revenue.itemText }}
+      </td>
+      <td>
+        {{ revenue.value * revenue.amount | number : '1.2-2' }}
+      </td>
+    </tr>
+    </tbody>
+  </table>
+  <p class="text-nowrap fs-5">
+    Stand:
+    <mark>{{ staticData.syncTimeStamp | date:'medium' }}</mark>
+  </p>
 </div>
