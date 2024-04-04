@@ -10,6 +10,8 @@ const httpOptions = {
   })
 };
 
+export const UNKNOWN_ID = "-";
+
 export interface staticIdData {
   "posBuddyId": string,
   "balance": number,

@@ -2,50 +2,76 @@
   @if (serverResponse != "") {
     <ngb-alert type="danger" [dismissible]="false">{{ serverResponse }}</ngb-alert>
   }
-  <p class="text-nowrap fs-4">
-    Guthaben:
-    <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
-    <i class="bi bi-currency-euro"></i>
-  </p>
-
-  <table class="table table-striped">
-    <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Zeit</th>
-      <th scope="col">M.</th>
-      <th scope="col">Artikel</th>
-      <th scope="col">Wert</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let revenue of staticData.revenueList; let i = index ">
-      <th scope="row">{{ i + 1 }}</th>
-      <td>
-        {{ revenue.timeOfAction | date:'hh:mm:ss' }}
-      </td>
-      <td>
-        {{ revenue.amount }}
-      </td>
-      <td>
-        @if (revenue.action == "+") {
-          <i class="bi bi-plus-circle-fill"></i>
-          Einzahlung
-        }
-        @if (revenue.action == "-") {
-          <i class="bi bi-minus-circle-fill"></i>
-          Auszahlung
-        }
-        {{ revenue.itemText }}
-      </td>
-      <td>
-        {{ revenue.value * revenue.amount | number : '1.2-2' }}
-      </td>
-    </tr>
-    </tbody>
-  </table>
-  <p class="text-nowrap fs-5">
-    Stand:
-    <mark>{{ staticData.syncTimeStamp | date:'medium' }}</mark>
-  </p>
+  @if (!isLocalIdentityValid()) {
+    <ngb-alert type="primary" [dismissible]="false">Bitte ID scannen</ngb-alert>
+  }
+  <div class="row pt-3">
+    <div class="col-4">
+      <button class="btn btn-lg btn-outline-secondary"
+              (click)="scanQRCode(scanIdOC)">SCAN
+      </button>
+    </div>
+  </div>
+  @if (posBuddyId != UNKNOWN_ID) {
+    <p class="text-nowrap fs-4">
+      Guthaben:
+      <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
+      <i class="bi bi-currency-euro"></i>
+    </p>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Zeit</th>
+        <th scope="col">M.</th>
+        <th scope="col">Artikel</th>
+        <th scope="col">Wert</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let revenue of staticData.revenueList; let i = index ">
+        <th scope="row">{{ i + 1 }}</th>
+        <td>
+          {{ revenue.timeOfAction | date:'hh:mm:ss' }}
+        </td>
+        <td>
+          {{ revenue.amount }}
+        </td>
+        <td>
+          @if (revenue.action == "+") {
+            <i class="bi bi-plus-circle-fill"></i>
+            Einzahlung
+          }
+          @if (revenue.action == "-") {
+            <i class="bi bi-minus-circle-fill"></i>
+            Auszahlung
+          }
+          {{ revenue.itemText }}
+        </td>
+        <td>
+          {{ revenue.value * revenue.amount | number : '1.2-2' }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+    <p class="text-nowrap fs-5">
+      Stand:
+      <mark>{{ staticData.syncTimeStamp | date:'medium' }}</mark>
+    </p>
+  }
 </div>
+
+<ng-template #scanIdOC let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="scanID">Karte Scannen</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+    </div>
+  </div>
+  <div class="text-end">
+    Bitte QR-code in der Kamera ausrichten.
+  </div>
+</ng-template>
