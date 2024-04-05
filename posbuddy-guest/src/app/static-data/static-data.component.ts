@@ -23,7 +23,7 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 export class StaticDataComponent {
   @ViewChild('revenueOC') revenueOCTemplate: TemplateRef<any> | undefined;
   private offcanvasService = inject(NgbOffcanvas);
-  posBuddyId: string = UNKNOWN_ID;
+  protected actPosBuddyId: string = UNKNOWN_ID;
 
   serverResponse: string = "";
   staticData: staticIdData = {
@@ -37,15 +37,16 @@ export class StaticDataComponent {
   }
 
   onScanSuccess(scanResult: string) {
-    this.posBuddyId = scanResult;
-    console.log("scan success:" + this.posBuddyId)
+    this.actPosBuddyId = scanResult;
+    console.log("scan success:" + this.actPosBuddyId)
     this.offcanvasService.dismiss("success");
     this.loadData()
   }
 
   ngAfterViewInit() {
-    console.log(this.posBuddyId)
-    if (this.posBuddyId != UNKNOWN_ID) {
+    console.log("ngAfterViewInit" + this.actPosBuddyId)
+    this.checkLocalStorage()
+    if (this.actPosBuddyId != UNKNOWN_ID) {
       this.loadData();
     }
   }
@@ -56,13 +57,14 @@ export class StaticDataComponent {
 
 
   private loadData() {
-    this.staticIdService.getIdentity(this.posBuddyId + ".json")
+    this.staticIdService.getIdentity(this.actPosBuddyId + ".json")
       .subscribe(data => {
+          this.setLocalIdentity();
           this.staticData = data;
-          this.setLocalIdentity(this.posBuddyId);
+          this.serverResponse = "";
         }, error => {
-          console.error(error)
-          this.posBuddyId = UNKNOWN_ID;
+          console.error("Server response error" + error)
+          this.actPosBuddyId = UNKNOWN_ID;
           this.unSetLocalIdentity();
           switch (error.status) {
             case 404 : {
@@ -78,27 +80,27 @@ export class StaticDataComponent {
       );
   }
 
-  isLocalIdentityValid(): boolean {
+  checkLocalStorage() {
     let localPosBuddyId = localStorage.getItem('posBuddyId')
     let localPosBuddyTimestamp = localStorage.getItem('posBuddyIdTimestamp')
     if (localPosBuddyId == null) {
-      this.posBuddyId = UNKNOWN_ID
-      return false;
+      console.log("localposbuddyID is null")
+      this.actPosBuddyId = UNKNOWN_ID
+      return;
     }
     if (localPosBuddyTimestamp != null) {
       if (Date.now() - Number(localPosBuddyTimestamp) > (24 * 60 * 60 * 1000)) {
         console.log("posBuddyId is to old");
-        this.posBuddyId = UNKNOWN_ID;
-        return false;
+        this.actPosBuddyId = UNKNOWN_ID;
+        return;
       }
     }
-    this.posBuddyId = localPosBuddyId;
-    return true;
+    this.actPosBuddyId = localPosBuddyId;
   }
 
-  setLocalIdentity(posBuddyId: string) {
-    console.log("set local id to :" + posBuddyId)
-    localStorage.setItem('posBuddyId', posBuddyId)
+  setLocalIdentity() {
+    console.log("set local id to :" + this.actPosBuddyId)
+    localStorage.setItem('posBuddyId', this.actPosBuddyId)
     localStorage.setItem('posBuddyIdTimestamp', Date.now().toString())
   }
 

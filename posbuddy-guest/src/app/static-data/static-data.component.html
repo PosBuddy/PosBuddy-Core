@@ -1,18 +1,37 @@
-<div class="container-fluid" xmlns="http://www.w3.org/1999/html">
+<!--                                    HEADER                                                           -->
+<div class="container text-center">
+  <div class="row">
+    <div class="col gy-1">
+      &nbsp;
+    </div>
+  </div>
   @if (serverResponse != "") {
-    <ngb-alert type="danger" [dismissible]="false">{{ serverResponse }}</ngb-alert>
+    <div class="row">
+      <div class="col">
+        <ngb-alert type="danger" [dismissible]="false">{{ serverResponse }}</ngb-alert>
+      </div>
+    </div>
   }
-  @if (!isLocalIdentityValid()) {
-    <ngb-alert type="primary" [dismissible]="false">Bitte ID scannen</ngb-alert>
+  @if (actPosBuddyId == UNKNOWN_ID) {
+    <div class="row">
+      <div class="col">
+        <ngb-alert type="primary" [dismissible]="false">Bitte ID scannen</ngb-alert>
+      </div>
+    </div>
   }
-  <div class="row pt-3">
-    <div class="col-4">
-      <button class="btn btn-lg btn-outline-secondary"
-              (click)="scanQRCode(scanIdOC)">SCAN
+  <div class="row">
+    <div class="col">
+      <button class="btn btn-lg btn-outline-primary"
+              (click)="scanQRCode(scanIdOC)">SCAN ID KARTE
       </button>
     </div>
   </div>
-  @if (posBuddyId != UNKNOWN_ID) {
+  <p></p>
+</div>
+<!--                                     REVENUE AND BALANCE                                                         -->
+@if (actPosBuddyId != UNKNOWN_ID) {
+  <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
+
     <p class="text-nowrap fs-4">
       Guthaben:
       <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
@@ -58,9 +77,10 @@
       Stand:
       <mark>{{ staticData.syncTimeStamp | date:'medium' }}</mark>
     </p>
-  }
-</div>
+  </div>
+}
 
+<!--                                    SCANNER OFF CANVAS                                                           -->
 <ng-template #scanIdOC let-offcanvas>
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="scanID">Karte Scannen</h4>
