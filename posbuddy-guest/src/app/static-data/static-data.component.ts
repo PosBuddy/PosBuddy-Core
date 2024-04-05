@@ -21,7 +21,7 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 })
 
 export class StaticDataComponent {
-  @ViewChild('scanIdOC') revenueOCTemplate: TemplateRef<any> | undefined;
+  @ViewChild('scanIdOC') scanIdOCTemplate: TemplateRef<any> | undefined;
   private offcanvasService = inject(NgbOffcanvas);
   protected actPosBuddyId: string = UNKNOWN_ID;
 
