@@ -8,6 +8,7 @@ import {MarkdownComponent} from "ngx-markdown";
 import {RevenueComponent} from "./revenue/revenue.component";
 import {StaticDataComponent} from "./static-data/static-data.component";
 import {environment} from "../environments/environment";
+import {Title} from "@angular/platform-browser";
 
 @Component({
   selector: 'app-root',
@@ -25,9 +26,14 @@ import {environment} from "../environments/environment";
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  title = 'posbuddy-gui';
   active = 1;
 
 
   protected readonly environment = environment;
+
+  public constructor(private titleService: Title) {
+    titleService.setTitle(environment.applicationTitle)
+  }
+
+
 }

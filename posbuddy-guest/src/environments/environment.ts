@@ -1,3 +1,4 @@
 export const environment = {
-  callStaticApi: false
+  callStaticApi: false,
+  applicationTitle: "Elsenroth Card"
 };
