@@ -2,7 +2,7 @@ import {Component, inject, TemplateRef, ViewChild} from '@angular/core';
 import {DatePipe, DecimalPipe, NgForOf} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {staticIdData, StaticIdService, UNKNOWN_ID} from "../services/static-id.service";
-import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAlert, NgbOffcanvas, NgbPopover} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 
 @Component({
@@ -14,7 +14,8 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
     NgbAlert,
     DatePipe,
     NgForOf,
-    ZXingScannerModule
+    ZXingScannerModule,
+    NgbPopover
   ],
   templateUrl: './static-data.component.html',
   styleUrl: './static-data.component.css'
@@ -46,6 +47,12 @@ export class StaticDataComponent {
   ngAfterViewInit() {
     console.log("ngAfterViewInit" + this.actPosBuddyId)
     this.checkLocalStorage()
+    if (this.actPosBuddyId != UNKNOWN_ID) {
+      this.loadData();
+    }
+  }
+
+  reloadData() {
     if (this.actPosBuddyId != UNKNOWN_ID) {
       this.loadData();
     }

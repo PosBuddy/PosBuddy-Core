@@ -78,6 +78,22 @@
       <mark>{{ staticData.syncTimeStamp | date:'medium' }}</mark>
     </p>
   </div>
+  <p></p>
+  <div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <button
+          type="button"
+          class="btn btn-lg btn-outline-primary"
+          placement="top"
+          ngbPopover="Die Umsätze werden während Veranstaltungen minütlich aktualisiert"
+          popoverTitle="Hinweis"
+          (click)="reloadData()">Erneut abrufen
+        </button>
+      </div>
+    </div>
+  </div>
+  <p></p>
 }
 
 <!--                                    SCANNER OFF CANVAS                                                           -->
