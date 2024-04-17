@@ -19,10 +19,18 @@
   </div>
 </nav>
 <!--------------------------------------------------------------------------------------------------------------Actions-->
-<div ngbAccordion [closeOthers]="true" xmlns="http://www.w3.org/1999/html">
-  <div ngbAccordionItem [collapsed]="!checkoutPermission">
+<div ngbAccordion
+     [closeOthers]="true"
+     xmlns="http://www.w3.org/1999/html"
+     #accMenue="ngbAccordion"
+>
+  <div ngbAccordionItem="accF1" [collapsed]="!checkoutPermission" #accF1="ngbAccordionItem">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton><i class="bi bi-database-fill-add">&nbsp;Person zuordnen</i></button>
+      <button ngbAccordionButton>
+        <i class="bi bi-1-circle"></i>
+        <span style="width: 50px"></span>
+        <i class="bi bi-database-fill-add">&nbsp;Person zuordnen</i>
+      </button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -38,9 +46,13 @@
       </div>
     </div>
   </div>
-  <div ngbAccordionItem [collapsed]="true">
+  <div ngbAccordionItem="accF2" [collapsed]="true" #accF2="ngbAccordionItem">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton><i class="bi bi-currency-euro">&nbsp;Konto aufladen</i></button>
+      <button ngbAccordionButton>
+        <i class="bi bi-2-circle"></i>
+        <span style="width: 50px"></span>
+        <i class="bi bi-currency-euro">&nbsp;Konto aufladen</i>
+      </button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -56,9 +68,13 @@
       </div>
     </div>
   </div>
-  <div ngbAccordionItem [collapsed]="true">
+  <div ngbAccordionItem="accF3" [collapsed]="true" #accF3="ngbAccordionItem">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton><i class="bi bi-arrow-90deg-down">&nbsp;Auszahlen</i></button>
+      <button ngbAccordionButton>
+        <i class="bi bi-3-circle"></i>
+        <span style="width: 50px"></span>
+        <i class="bi bi-arrow-90deg-down">&nbsp;Auszahlen</i>
+      </button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -74,9 +90,13 @@
       </div>
     </div>
   </div>
-  <div ngbAccordionItem [collapsed]="true">
+  <div ngbAccordionItem="accF4" [collapsed]="true" #accF4="ngbAccordionItem">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton><i class="bi bi-arrow-bar-right">&nbsp;Personenzuordnung aufheben</i></button>
+      <button ngbAccordionButton>
+        <i class="bi bi-3-circle"></i>
+        <span style="width: 50px"></span>
+        <i class="bi bi-arrow-bar-right">&nbsp;Personenzuordnung aufheben</i>
+      </button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -92,9 +112,13 @@
       </div>
     </div>
   </div>
-  <div ngbAccordionItem [collapsed]="true">
+  <div ngbAccordionItem="accF5" [collapsed]="true" #accF5="ngbAccordionItem">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton><i class="bi bi-list-columns-reverse">&nbsp;ID Umsätze anzeigen</i></button>
+      <button ngbAccordionButton>
+        <i class="bi bi-5-circle"></i>
+        <span style="width: 50px"></span>
+        <i class="bi bi-list-columns-reverse">&nbsp;ID Umsätze anzeigen</i>
+      </button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>
@@ -110,9 +134,13 @@
       </div>
     </div>
   </div>
-  <div ngbAccordionItem [collapsed]="checkoutPermission">
+  <div ngbAccordionItem="accF6" [collapsed]="checkoutPermission" #accF6="ngbAccordionItem">
     <h2 ngbAccordionHeader>
-      <button ngbAccordionButton><i class="bi bi-cart-check">&nbsp;Ausgabe</i></button>
+      <button ngbAccordionButton>
+        <i class="bi bi-6-circle"></i>
+        <span style="width: 50px"></span>
+        <i class="bi bi-cart-check">&nbsp;Ausgabe</i>
+      </button>
     </h2>
     <div ngbAccordionCollapse>
       <div ngbAccordionBody>

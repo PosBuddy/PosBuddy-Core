@@ -41,7 +41,8 @@
   <ng-template #scanIdOC let-offcanvas>
     <div class="offcanvas-header">
       <h4 class="offcanvas-title" id="scanID">Id Scannen</h4>
-      <button type="button" class="btn-light" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"><i class="bi bi-box-arrow-in-left"></i></button>
+      <button type="button" class="btn-light" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"><i
+        class="bi bi-box-arrow-in-left"></i></button>
     </div>
     <div class="offcanvas-body">
       <div class="mb-3">
@@ -67,17 +68,17 @@
             <div class="card-header">
               {{ dispensingStation.name }}
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
               <div class="container">
                 <!--                                                        Items per Station                          -->
                 @for (item of items; track item) {
                   @if (item.dispensingStation.id == dispensingStation.id) {
-                    <div class="row pt-3 border-top">
+                    <div class="row pt-1 bg-info-subtle">
                       <div class="col-2"><h3>{{ getServeItemCount(item.id) }}</h3></div>
                       <div class="col-3">{{ item.unit }}</div>
                       <div class="col-7">{{ item.itemText }}</div>
                     </div>
-                    <div class="row pt-3">
+                    <div class="row pb-3 border-bottom">
                       <div class="col-6 justify-content-start">
                         <button class="btn btn-lg btn-outline-info" [disabled]="checkDisableAddItem(item.price)"
                                 (click)="incServeItemCount(item.id)"><i class="bi bi-plus-circle-fill"></i>

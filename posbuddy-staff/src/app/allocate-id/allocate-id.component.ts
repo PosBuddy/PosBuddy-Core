@@ -1,9 +1,10 @@
-import {Component, inject, TemplateRef} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, TemplateRef, ViewChild} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {AllocateService} from "../service/allocate.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {timer} from "rxjs";
 
 
 @Component({
@@ -14,7 +15,8 @@ import {HttpErrorResponse} from "@angular/common/http";
   styleUrl: './allocate-id.component.css'
 })
 
-export class AllocateIdComponent {
+export class AllocateIdComponent implements AfterViewInit {
+  @ViewChild("surnameInput") surnameInputElement!: ElementRef;
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
   formValid: boolean = false;
@@ -34,6 +36,10 @@ export class AllocateIdComponent {
   constructor(private allocateService: AllocateService) {
   }
 
+
+  ngAfterViewInit(): void {
+    timer(500).subscribe(() => this.surnameInputElement.nativeElement.focus());
+  }
 
   scanQRCode(content: TemplateRef<any>) {
     //@ts-ignore

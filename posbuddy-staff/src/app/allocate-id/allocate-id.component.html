@@ -1,44 +1,63 @@
 <div class="container">
   <div class="row pt-3">
     <div class="col-4">ID :</div>
-    <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
+    <div class="col-8">
+      <input type="password" readonly [(ngModel)]="posBuddyId" tabindex="-1"/>
+    </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">Vorname :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="surname"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="surname" tabindex="1" #surnameInput/>
+    </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">Nachname :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="lastname"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="lastname" tabindex="2"/>
+    </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">Geburtstag :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="birthday"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="birthday" tabindex="3"/>
+    </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">Merkmal 1 :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="attribute1"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="attribute1" tabindex="4"/>
+    </div>
   </div>
   <div class="row pt-2">
     <div class="col-4">Merkmal 2 :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="attribute2"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="attribute2" tabindex="5"/>
+    </div>
   </div>
   <div class="row pt-2">
     <div class="col-4">Merkmal 3 :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="attribute3"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="attribute3" tabindex="6"/>
+    </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">Guthaben :</div>
-    <div class="col-8"><input type="text" [(ngModel)]="balance"/></div>
+    <div class="col-8">
+      <input type="text" [(ngModel)]="balance" tabindex="7"/>
+    </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">
       <button class="btn btn-lg btn-outline-secondary"
-              (click)="scanQRCode(content)">SCAN
+              #scan
+              (click)="scanQRCode(content)"
+              (keyup.enter)="scanQRCode(content)"
+              tabindex="8">SCAN
       </button>
     </div>
     <div class="col-8">
-      <button class="btn btn-lg btn-outline-primary"
+      <button class="btn btn-lg btn-outline-primary" tabindex="9"
               (click)="checkAndSend()" [disabled]="confirmError || confirmOK">zuordnen
       </button>
     </div>

@@ -1,6 +1,6 @@
-import {Component} from '@angular/core';
+import {Component, HostListener, ViewChild} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {NgbAccordionModule, NgbAlert} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAccordionDirective, NgbAccordionModule, NgbAlert} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {AllocateIdComponent} from "./allocate-id/allocate-id.component";
 import {AddValueComponent} from "./add-value/add-value.component";
@@ -32,7 +32,7 @@ import {version} from '../../package.json';
   styleUrl: './app.component.css'
 })
 export class AppComponent {
-
+  @ViewChild('accMenue') accMenue!: NgbAccordionDirective;
   title = 'PosBuddy &#9400; by JK';
 
   servePermission: boolean = false;
@@ -53,6 +53,51 @@ export class AppComponent {
           console.error("Error at getting permissions from backend:" + err)
         }
       )
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyEvent(event: KeyboardEvent) {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+      return;
+    }
+    switch (event.key) {
+      case "F1" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF1');
+        event.preventDefault();
+        break
+      }
+      case "F2" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF2');
+        event.preventDefault();
+        break
+      }
+      case "F3" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF3');
+        event.preventDefault();
+        break
+      }
+      case "F4" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF4');
+        event.preventDefault();
+        break
+      }
+      case "F5" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF5');
+        event.preventDefault();
+        break
+      }
+      case "F6" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF6');
+        event.preventDefault();
+        break
+      }
+    }
   }
 
   protected readonly version = version;
