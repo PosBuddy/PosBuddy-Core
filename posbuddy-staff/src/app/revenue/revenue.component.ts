@@ -14,6 +14,8 @@ import {DecimalPipe} from "@angular/common";
     ReactiveFormsModule,
     ZXingScannerModule,
     FormsModule,
+    DecimalPipe,
+    DecimalPipe,
     DecimalPipe
   ],
   templateUrl: './revenue.component.html',

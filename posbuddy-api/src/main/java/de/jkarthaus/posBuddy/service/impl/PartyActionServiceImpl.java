@@ -148,14 +148,33 @@ public class PartyActionServiceImpl implements PartyActionService {
     public void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException {
         if (isNotValidUUID(posBuddyId)) {
-            throw new posBuddyIdNotValidException("PosBuddy ID is not validS");
+            throw new posBuddyIdNotValidException("PosBuddy ID is not valid");
         }
         boolean isAssignable = identityRepository.isPosBuddyIdAllocatable(posBuddyId);
         if (isAssignable) {
+            log.info("assign new posBuddyId:{} to {}",
+                    posBuddyId,
+                    allocatePosBuddyIdRequest.getSurname() + " " + allocatePosBuddyIdRequest.getLastname()
+            );
             identityRepository.allocatePosBuddyId(
-                    identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest));
+                    identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest)
+            );
+            if (allocatePosBuddyIdRequest.getBalance() > 0) {
+                log.info("add deposit start revenue:{}",
+                        allocatePosBuddyIdRequest.getBalance()
+                );
+                RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setAmount(1);
+                revenueEntity.setItemtext("Startguthaben");
+                revenueEntity.setTimeofaction(LocalDateTime.now());
+                revenueEntity.setValue(allocatePosBuddyIdRequest.getBalance());
+                revenueEntity.setPosbuddyid(posBuddyId);
+                revenueEntity.setPaymentaction(Constants.DEPOSIT);
+                revenueRepository.addRevenue(revenueEntity);
+            }
             return;
         }
+        log.warn("id:{} is not assignable", posBuddyId);
         throw new PosBuddyIdNotAllocateableException("posBuddyId is not assignable");
     }
 
@@ -171,9 +190,11 @@ public class PartyActionServiceImpl implements PartyActionService {
     public void deAllocatePosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException, OutOfBalanceException {
         if (isNotValidUUID(posBuddyId)) {
+            log.warn("posBuddy ID:{} is not valid", posBuddyId);
             throw new posBuddyIdNotValidException("PosBuddy ID is not valid");
         }
         if (identityRepository.isPosBuddyIdAllocatable(posBuddyId)) {
+            log.error("posbuddy ID:{} is not allocated", posBuddyId);
             throw new posBuddyIdNotAllocatedException("posBuddyId is Not allocated");
         }
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
@@ -182,6 +203,7 @@ public class PartyActionServiceImpl implements PartyActionService {
         }
         identityEntity.setEndallocation(LocalDateTime.now());
         identityRepository.updateIdentityEntity(identityEntity);
+        log.info("deAllocation of ID:{} succesfully", posBuddyId);
     }
 
     @Override

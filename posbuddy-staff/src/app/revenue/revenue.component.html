@@ -49,7 +49,7 @@
   <div class="offcanvas-body">
     <div class="alert alert-primary" role="alert">
       Kontostand:
-      <h5>{{ balance | number }}</h5>
+      <h5>{{ balance | number: '1.2-2' }}</h5>
     </div>
     <table class="table table-striped">
       <thead>
@@ -87,7 +87,7 @@
               {{ revenue.itemText }}
             </td>
             <td>
-              {{ revenue.value | number }}
+              {{ revenue.value * revenue.amount | number: '1.2-2' }}
             </td>
           </tr>
         }

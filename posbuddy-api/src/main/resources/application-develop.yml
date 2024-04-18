@@ -24,4 +24,4 @@ micronaut:
       log-level: debug
 
 posbuddy:
-  configDir: /tmp
+  do-ftp-sync: false

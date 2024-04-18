@@ -12,6 +12,7 @@ import de.jkarthaus.posBuddy.model.StaticIdData;
 import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
 import de.jkarthaus.posBuddy.service.FtpSyncService;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.scheduling.annotation.Scheduled;
 import io.micronaut.serde.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -33,6 +34,9 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class FtpSyncImpl implements FtpSyncService {
+
+    @Value("${posbuddy.do-ftp-sync:true}")
+    private boolean doFtpSync;
 
     private static String FTP_HASH_FILE = "posBuddySync.obj";
     private HashMap<String, Integer> lastUploadHashValue = new HashMap<>();
@@ -60,11 +64,15 @@ public class FtpSyncImpl implements FtpSyncService {
     @Override
     @PostConstruct
     public FtpConfig getFtpServerConfig() {
+        posBuddyFtpConfig = new FtpConfig();
+        if (!doFtpSync) {
+            log.warn("FTP sync is disabled by profile.");
+            return posBuddyFtpConfig;
+        }
         // init the ftp client
         ftpClient = new FTPClient();
         // -- try to get ftpConfig from database
         log.info("Try to read ftp Server config from Database");
-        posBuddyFtpConfig = new FtpConfig();
         Optional<ConfigEntity> optionalConfigEntity = configRepository
                 .findById(ConfigID.FTP_CONFIG);
         try {
