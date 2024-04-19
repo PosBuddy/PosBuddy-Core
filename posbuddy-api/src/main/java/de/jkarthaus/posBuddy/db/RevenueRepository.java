@@ -16,6 +16,5 @@ public interface RevenueRepository {
     List<RevenueEntity> getRevenuesByIdSince(String posBuddyId, LocalDateTime since);
 
     @ReadOnly
-    List<RevenueEntity> getRevenuesByIdDescending(String posBuddyId);
-
+    List<RevenueEntity> getRevenuesByIdDescending(String posBuddyId, LocalDateTime since);
 }

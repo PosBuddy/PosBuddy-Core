@@ -237,7 +237,7 @@ public class PartyActionServiceImpl implements PartyActionService {
             throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
         }
         List<IdDataResponse.Revenue> revenueList = revenueRepository
-                .getRevenuesByIdDescending(posBuddyId)
+                .getRevenuesByIdDescending(posBuddyId, identityEntity.getStartallocation())
                 .stream()
                 .map(revenueEntity -> new IdDataResponse.Revenue(
                                 revenueEntity.getItemtext(),

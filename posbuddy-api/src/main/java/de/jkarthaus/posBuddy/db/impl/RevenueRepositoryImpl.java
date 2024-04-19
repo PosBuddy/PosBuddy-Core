@@ -44,15 +44,18 @@ public class RevenueRepositoryImpl implements RevenueRepository {
 
     @Override
     @ReadOnly
-    public List<RevenueEntity> getRevenuesByIdDescending(String posBuddyId) {
+    public List<RevenueEntity> getRevenuesByIdDescending(String posBuddyId, LocalDateTime since) {
         TypedQuery<RevenueEntity> query = entityManager.createQuery(
-                """
-                        select r from revenues as r
-                        where r.posbuddyid = :posBuddyId
-                        order by r.timeofaction desc
-                        """,
-                RevenueEntity.class
-        ).setParameter("posBuddyId", posBuddyId);
+                        """
+                                select r from revenues as r
+                                where r.posbuddyid = :posBuddyId
+                                and r.timeofaction > :since
+                                order by r.timeofaction desc
+                                """,
+                        RevenueEntity.class
+                ).setParameter("posBuddyId", posBuddyId)
+                .setParameter("since", since);
+
 
         return query.getResultList();
     }
