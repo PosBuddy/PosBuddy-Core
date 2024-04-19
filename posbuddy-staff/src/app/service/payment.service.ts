@@ -73,7 +73,7 @@ export class paymentService {
   }
 
   doDeallocate(posBuddyId: string) {
-    return this.http.post<any>(this.baseUrl + "deAllocate/" + posBuddyId, httpOptions)
+    return this.http.get<any>(this.baseUrl + "deAllocate/" + posBuddyId, httpOptions)
   }
 
   getIdentity(posBuddyId: string): Observable<identity> {

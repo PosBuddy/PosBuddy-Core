@@ -175,7 +175,8 @@ public class FtpSyncImpl implements FtpSyncService {
             );
             return;
         }
-        List<StaticIdData> staticIdDataList = new ArrayList<>();
+        List<StaticIdData> uploadStaticIdDataList = new ArrayList<>();
+        List<String> removeIdList = new ArrayList<>();
         List<IdentityEntity> identityEntityList = identityRepository.getAllocatedIdentitys();
         identityEntityList.forEach(identityEntity -> {
                     StaticIdData staticIdData = new StaticIdData();
@@ -183,19 +184,32 @@ public class FtpSyncImpl implements FtpSyncService {
                     staticIdData.setBalance(identityEntity.getBalance());
                     staticIdData.setRevenueList(getStaticRevenueList(identityEntity.getPosbuddyid()));
                     if (isObjectModified(staticIdData)) {
-                        staticIdDataList.add(staticIdData);
+                        uploadStaticIdDataList.add(staticIdData);
                     }
                 }
         );
-        doUpload(staticIdDataList);
+        lastUploadHashValue.forEach((posBuddyId, integer) -> {
+                    if (identityEntityList
+                            .stream()
+                            .filter(identityEntity -> identityEntity.getPosbuddyid().equals(posBuddyId))
+                            .findAny()
+                            .isEmpty()
+                    ) {
+                        removeIdList.add(posBuddyId);
+                    }
+                }
+        );
+        removeIdList.forEach(posBuddyId -> lastUploadHashValue.remove(posBuddyId));
+        doServerOperations(uploadStaticIdDataList, removeIdList);
     }
 
-    private void doUpload(List<StaticIdData> staticIdDataList) {
-        if (staticIdDataList.isEmpty()) {
-            log.info("Ftp Server is full snyced - nothing to upload");
+
+    private void doServerOperations(List<StaticIdData> uploadStaticIdData, List<String> removeIdList) {
+        if (uploadStaticIdData.isEmpty() && removeIdList.isEmpty()) {
+            log.info("Ftp Server is full snyced - nothing to upload or remove");
             return;
         }
-        log.info("upload {} identitys to ftp Server", staticIdDataList.size());
+        log.info("upload:{} remove:{} identity's", uploadStaticIdData.size(), removeIdList.size());
         try {
             ftpClient.connect(posBuddyFtpConfig.getHost());
             ftpClient.login(
@@ -203,7 +217,8 @@ public class FtpSyncImpl implements FtpSyncService {
                     posBuddyFtpConfig.getPassword()
             );
             ftpClient.changeWorkingDirectory(posBuddyFtpConfig.getDestination());
-            for (StaticIdData staticIdData : staticIdDataList) {
+
+            for (StaticIdData staticIdData : uploadStaticIdData) {
                 log.info("upload id:{}", staticIdData.getPosBuddyId());
                 OutputStream outputStream = ftpClient.storeFileStream(staticIdData.getPosBuddyId() + ".json");
                 PrintStream out = new PrintStream(outputStream, true, StandardCharsets.UTF_8);
@@ -214,11 +229,17 @@ public class FtpSyncImpl implements FtpSyncService {
                 outputStream.close();
                 ftpClient.completePendingCommand();
             }
+            for (String posBuddyRemoveId : removeIdList) {
+                log.info("remove id:{} from FTP Server", posBuddyRemoveId);
+                ftpClient.deleteFile(posBuddyRemoveId + ".json");
+                ftpClient.completePendingCommand();
+            }
             log.info("Store new SyncState");
             ObjectOutputStream out = new ObjectOutputStream(ftpClient.storeFileStream(FTP_HASH_FILE));
             out.writeObject(lastUploadHashValue);
             out.flush();
             out.close();
+            log.info("disconnect from FTP Server");
             ftpClient.logout();
             ftpClient.disconnect();
         } catch (IOException e) {
