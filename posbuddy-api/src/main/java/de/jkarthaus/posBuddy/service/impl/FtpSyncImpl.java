@@ -182,7 +182,9 @@ public class FtpSyncImpl implements FtpSyncService {
                     StaticIdData staticIdData = new StaticIdData();
                     staticIdData.setPosBuddyId(identityEntity.getPosbuddyid());
                     staticIdData.setBalance(identityEntity.getBalance());
-                    staticIdData.setRevenueList(getStaticRevenueList(identityEntity.getPosbuddyid()));
+                    staticIdData.setRevenueList(
+                            getStaticRevenueList(identityEntity.getPosbuddyid(), identityEntity.getStartallocation())
+                    );
                     if (isObjectModified(staticIdData)) {
                         uploadStaticIdDataList.add(staticIdData);
                     }
@@ -261,9 +263,9 @@ public class FtpSyncImpl implements FtpSyncService {
         return true;
     }
 
-    private List<StaticIdData.Revenue> getStaticRevenueList(String posBuddyId) {
+    private List<StaticIdData.Revenue> getStaticRevenueList(String posBuddyId, LocalDateTime startAllocation) {
         List<StaticIdData.Revenue> revenueList = new ArrayList<>();
-        List<RevenueEntity> revenueEntities = revenueRepository.getRevenuesByIdDescending(posBuddyId);
+        List<RevenueEntity> revenueEntities = revenueRepository.getRevenuesByIdDescending(posBuddyId, startAllocation);
         revenueEntities.stream().forEach(revenueEntity -> {
                     revenueList.add(new StaticIdData.Revenue(
                                     revenueEntity.getItemtext(),
