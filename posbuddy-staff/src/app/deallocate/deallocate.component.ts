@@ -25,6 +25,7 @@ export class DeallocateComponent {
 
   private offcanvasService = inject(NgbOffcanvas);
   deallocatePossible = false;
+
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
@@ -33,11 +34,15 @@ export class DeallocateComponent {
 
   posBuddyId: string = "-";
   value = '0';
-
+  isStatic: boolean = false;
 
   check() {
     // -- Check if balance is valid
-    if (isNaN(Number(this.value)) || Number(this.value) != 0) {
+    if (this.isStatic) {
+      this.deallocatePossible = false;
+      this.serverResponse = "Diese ID hat eine feste zuordnung"
+      this.confirmError = true;
+    } else if (isNaN(Number(this.value)) || Number(this.value) != 0) {
       this.deallocatePossible = false;
       this.serverResponse = "Es ist noch Guthaben vorhanden"
       this.confirmError = true;
@@ -60,7 +65,7 @@ export class DeallocateComponent {
             this.confirmError = true;
             switch (e.status) {
               case 400 : {
-                this.serverResponse = "Kein Guthaben";
+                this.serverResponse = "Fehler:" + e.error;
                 break
               }
               case 401 : {
@@ -94,6 +99,7 @@ export class DeallocateComponent {
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
         this.value = "" + next.balance;
+        this.isStatic = next.staticId;
         if (this.value.indexOf(".") > 0) {
           this.value = this.value.substring(0, this.value.indexOf(".") + 2)
         }

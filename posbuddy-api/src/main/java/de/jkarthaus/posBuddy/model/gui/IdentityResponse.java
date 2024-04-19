@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class IdentityResponse {
     private String posBuddyId;
 
+    private boolean staticId;
+
     private String surName;
 
     private String lastName;

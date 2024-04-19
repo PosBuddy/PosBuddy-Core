@@ -1,9 +1,6 @@
 package de.jkarthaus.posBuddy.service;
 
-import de.jkarthaus.posBuddy.exception.OutOfBalanceException;
-import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAllocateableException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
+import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.model.gui.*;
 
 import java.util.List;
@@ -29,7 +26,7 @@ public interface PartyActionService {
     List<DispensingStationResponse> getDispensingStations();
 
     void deAllocatePosBuddyId(String posBuddyId)
-            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException, OutOfBalanceException;
+            throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException, OutOfBalanceException, PosBuddyIdStaticException;
 
     void payout(String posBuddyId) throws
             posBuddyIdNotAllocatedException, OutOfBalanceException;

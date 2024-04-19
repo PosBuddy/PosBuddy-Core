@@ -18,6 +18,7 @@ public class IdentityMapperImpl implements IdentityMapper {
     public IdentityResponse toResponse(IdentityEntity identityEntity) {
         return new IdentityResponse(
                 identityEntity.getPosbuddyid(),
+                identityEntity.isStaticIdentity(),
                 identityEntity.getSurname(),
                 identityEntity.getLastname(),
                 Tools.isAgeUnderYouthProtection(identityEntity.getBirthday()),

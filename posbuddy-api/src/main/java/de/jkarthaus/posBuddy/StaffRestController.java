@@ -2,10 +2,7 @@ package de.jkarthaus.posBuddy;
 
 import de.jkarthaus.posBuddy.db.DispensingStationRepository;
 import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.exception.OutOfBalanceException;
-import de.jkarthaus.posBuddy.exception.PosBuddyIdNotAllocateableException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotAllocatedException;
-import de.jkarthaus.posBuddy.exception.posBuddyIdNotValidException;
+import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.mapper.PermissionMapper;
@@ -232,7 +229,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "404", description = "ID is not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
-            @ApiResponse(responseCode = "400", description = "Balance not 0"),
+            @ApiResponse(responseCode = "400", description = "ID is static or Balance not 0"),
     })
     @Tag(name = "secure")
     public HttpResponse deAllocate(
@@ -252,9 +249,9 @@ public class StaffRestController {
         } catch (posBuddyIdNotAllocatedException | posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
             return HttpResponse.notFound();
-        } catch (OutOfBalanceException e) {
-            log.error("OutOfBalanceException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+        } catch (OutOfBalanceException | PosBuddyIdStaticException e) {
+            log.error("OutOfBalance or static ID Exception : {}", e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
         return HttpResponse.ok();
     }

@@ -11,6 +11,7 @@ const httpOptions = {
 
 export interface identity {
   "posBuddyId": "string",
+  "staticId": boolean,
   "surName": "string",
   "lastName": "string",
   "youthProtectionAct": boolean,
