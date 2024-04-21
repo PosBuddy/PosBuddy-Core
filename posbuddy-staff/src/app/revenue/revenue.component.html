@@ -48,8 +48,9 @@
   </div>
   <div class="offcanvas-body">
     <div class="alert alert-primary" role="alert">
-      Kontostand:
-      <h5>{{ balance | number: '1.2-2' }}</h5>
+      <span style="white-space: nowrap;">
+        <strong>  {{ name }} / {{ balance | number: '1.2-2' }}<i class="bi bi-currency-euro"></i></strong>
+      </span>
     </div>
     <table class="table table-striped">
       <thead>

@@ -33,6 +33,7 @@ export class ServeComponent {
   confirmOK: boolean = false;
   iscollapsed: boolean = false;
   posBuddyId: string = "-";
+  name: string = "";
   balance = '0';
 
   orderValue: number = 0;
@@ -121,10 +122,12 @@ export class ServeComponent {
         if (this.balance.indexOf(".") > 0) {
           this.balance = this.balance.substring(0, this.balance.indexOf(".") + 2)
         }
+        this.name = next.surName + " " + next.lastName
         this.offcanvasService.open(this.serveOCTemplate, {ariaLabelledBy: 'revenue'})
       },
       err => {
         this.balance = "0";
+        this.name = "";
         this.confirmError = true;
         switch (err.status) {
           case 400 : {

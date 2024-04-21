@@ -57,7 +57,7 @@
   <!--                                            ITEMS OffCanvas                                                     -->
   <ng-template #serveOC let-offcanvas>
     <div class="offcanvas-header">
-      <h4 class="offcanvas-title" id="revenue">Bestellung</h4>
+      <h4 class="offcanvas-title" id="revenue">{{ name }}</h4>
       <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
     </div>
     <div class="offcanvas-body">
@@ -100,12 +100,19 @@
       }
     </div>
     <!--                                                                  Order Footer                                 -->
-    <div class="text-end">
+    <div class="text-center">
       <hr/>
       <div class="alert alert-primary" role="alert">
         <p class="text-nowrap fs-4">
-          Bestellwert: {{ orderValue | number: '1.2-2' }} / {{ balance | number : '1.2-2' }}
-          <i class="bi bi-currency-euro"></i>
+          <strong>
+            <i class="bi bi-piggy-bank"></i>
+            {{ balance | number : '1.2-2' }}
+            <i class="bi bi-currency-euro"></i>
+            &nbsp;-&nbsp;
+            <i class="bi bi-cart-check-fill"></i>
+            {{ orderValue | number: '1.2-2' }}
+            <i class="bi bi-currency-euro"></i>
+          </strong>
         </p>
       </div>
     </div>

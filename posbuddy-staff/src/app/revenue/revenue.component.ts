@@ -39,6 +39,7 @@ export class RevenueComponent {
   formValidText: string = "ID zur Anzeige der Umsätze scannen"
   posBuddyId: string = "-";
   balance = '0';
+  name: string = "";
   revenues: Array<revenue> = [];
 
   scanQRCode(content: TemplateRef<any>) {
@@ -91,9 +92,12 @@ export class RevenueComponent {
         if (this.balance.indexOf(".") > 0) {
           this.balance = this.balance.substring(0, this.balance.indexOf(".") + 2)
         }
+        this.name = next.surName + " " + next.lastName
         this.getRevenue()
       },
       err => {
+        this.balance = "0";
+        this.name = "";
         this.confirmError = true;
         switch (err.status) {
           case 400 : {
