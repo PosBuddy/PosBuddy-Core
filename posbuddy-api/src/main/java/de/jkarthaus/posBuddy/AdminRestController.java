@@ -6,6 +6,7 @@ import de.jkarthaus.posBuddy.model.gui.FtpConfigDto;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
 import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.FtpSyncService;
+import de.jkarthaus.posBuddy.service.ReportService;
 import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -17,6 +18,7 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.x509.X509Authentication;
+import io.micronaut.transaction.annotation.ReadOnly;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +37,36 @@ public class AdminRestController {
     final FtpSyncService ftpSyncService;
     final SecurityService securityService;
     final DataImportService dataImportService;
+    final ReportService reportService;
     final ConfigMapper configMapper;
+
+    //--------------------------------------------------------------------------------------------------store ftp config
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/report/menue", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "500", description = "server error occured"),
+            @ApiResponse(responseCode = "401", description = "forbidden - you need a admin certificate"),
+            @ApiResponse(responseCode = "405", description = "not allowed - you need a valid certificate"),
+    })
+    @Tag(name = "admin")
+    @ReadOnly
+    public HttpResponse<String> createMenueReport(
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        try {
+            if (securityService.isAdmin(x509Authentication)) {
+                reportService.createMenueReport();
+            } else {
+                log.warn("forbidden access to serve endpoint");
+                return HttpResponse.status(HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            log.error("Exception:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return HttpResponse.ok();
+    }
+
 
     //--------------------------------------------------------------------------------------------------store ftp config
     @Secured(IS_ANONYMOUS)
