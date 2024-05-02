@@ -7,6 +7,9 @@ const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
     'rejectUnauthorized': 'false',
+    'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   })
 };
 
