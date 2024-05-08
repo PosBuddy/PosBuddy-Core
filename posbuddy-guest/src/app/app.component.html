@@ -27,9 +27,10 @@
     <button ngbNavLink>Umsätze</button>
     <ng-template ngbNavContent>
       <div class="mb-2 bg-light text-dark border border-danger">
-
         @if (environment.callStaticApi) {
           <app-static-data></app-static-data>
+        } @else {
+          <app-revenue></app-revenue>
         }
       </div>
     </ng-template>
