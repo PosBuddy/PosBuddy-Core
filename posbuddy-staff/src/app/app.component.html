@@ -1,11 +1,23 @@
-<nav class="navbar navbar-dark bg-primary">
-  <a class="navbar-brand" href="#">PosBuddy {{ version }} &#9400; by JK</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
+  <a class="navbar-brand mb-0 h1" href="#">PosBuddy {{ version }} &#9400; by JK</a>
+  <button class="navbar-toggler"
+          type="button"
+          (click)="isCollapsed = !isCollapsed"
+          data-toggle="collapse"
+          data-bs-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          data-bs-target="#navbarSupportedContent"
+          [attr.aria-expanded]="!isCollapsed"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+  <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" [ngClass]="{'disabled' : !checkoutPermission}" href="#" (click)="openFilter(stationFilter)">Filter</a>
+      </li>
       <li class="nav-item active">
         <a class="nav-link" href="#">Report</a>
       </li>
@@ -157,4 +169,20 @@
     </div>
   </div>
 </div>
+
+<ng-template #stationFilter let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="offcanvas-basic-title">Filter</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+    </div>
+  </div>
+  <div class="text-end">
+    Ausgabestationen
+  </div>
+</ng-template>
+
+
 <router-outlet/>

@@ -1,6 +1,12 @@
-import {Component, HostListener, ViewChild} from '@angular/core';
+import {Component, HostListener, inject, TemplateRef, ViewChild} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {NgbAccordionDirective, NgbAccordionModule, NgbAlert} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbAccordionDirective,
+  NgbAccordionModule,
+  NgbAlert,
+  NgbCollapse,
+  NgbOffcanvas
+} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {AllocateIdComponent} from "./allocate-id/allocate-id.component";
 import {AddValueComponent} from "./add-value/add-value.component";
@@ -11,6 +17,8 @@ import {RevenueComponent} from "./revenue/revenue.component";
 import {ServeComponent} from "./serve/serve.component";
 import {paymentService} from "./service/payment.service";
 import {version} from '../../package.json';
+import {ZXingScannerModule} from "@zxing/ngx-scanner";
+import {NgClass} from "@angular/common";
 
 @Component({
   selector: 'app-root',
@@ -26,7 +34,10 @@ import {version} from '../../package.json';
     DeallocateComponent,
     RevenueComponent,
     ServeComponent,
-    NgbAlert
+    NgbAlert,
+    NgbCollapse,
+    ZXingScannerModule,
+    NgClass
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -35,8 +46,11 @@ export class AppComponent {
   @ViewChild('accMenue') accMenue!: NgbAccordionDirective;
   title = 'PosBuddy &#9400; by JK';
 
+  private offcanvasService = inject(NgbOffcanvas);
+
   servePermission: boolean = false;
   checkoutPermission: boolean = false;
+  public isCollapsed: boolean = true;
 
   constructor(private paymentService: paymentService) {
 
@@ -101,4 +115,8 @@ export class AppComponent {
   }
 
   protected readonly version = version;
+
+  openFilter(content: TemplateRef<any>) {
+    this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
+  }
 }
