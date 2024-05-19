@@ -1,4 +1,4 @@
-import {Component, inject, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, inject, TemplateRef, ViewChild} from '@angular/core';
 import {DecimalPipe} from "@angular/common";
 import {NgbAlert, NgbCollapse, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
@@ -20,7 +20,7 @@ import {dispensingStation, item, paymentService, serve} from "../service/payment
   templateUrl: './serve.component.html',
   styleUrl: './serve.component.css'
 })
-export class ServeComponent {
+export class ServeComponent implements AfterViewInit {
   @ViewChild('serveOC') serveOCTemplate: TemplateRef<any> | undefined;
 
   constructor(private paymentService: paymentService) {

@@ -19,6 +19,7 @@ import {paymentService} from "./service/payment.service";
 import {version} from '../../package.json';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {NgClass} from "@angular/common";
+import {DispensingStationFilterComponent} from "./dispensing-station-filter/dispensing-station-filter.component";
 
 @Component({
   selector: 'app-root',
@@ -37,7 +38,8 @@ import {NgClass} from "@angular/common";
     NgbAlert,
     NgbCollapse,
     ZXingScannerModule,
-    NgClass
+    NgClass,
+    DispensingStationFilterComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
