@@ -1,7 +1,5 @@
 import {AfterViewInit, Component} from '@angular/core';
-import {dispensingStation, paymentService} from "../service/payment.service";
-
-const STATION_FILTER_PRE = "stationFilter_";
+import {DISPENSING_STATION_FILTER_PRE, dispensingStation, paymentService} from "../service/payment.service";
 
 @Component({
   selector: 'app-dispensing-station-filter',
@@ -38,15 +36,15 @@ export class DispensingStationFilterComponent implements AfterViewInit {
   setDispFilterToLocalStorage(dispensingStatiionId: String, event: any) {
     //console.log("SetFilter on dispensingStationId:" + dispensingStatiionId + "->" + event.target.checked)
     if (event.target.checked) {
-      localStorage.setItem(STATION_FILTER_PRE + dispensingStatiionId, String(true));
+      localStorage.setItem(DISPENSING_STATION_FILTER_PRE + dispensingStatiionId, String(true));
     } else {
-      localStorage.removeItem(STATION_FILTER_PRE + dispensingStatiionId);
+      localStorage.removeItem(DISPENSING_STATION_FILTER_PRE + dispensingStatiionId);
     }
   }
 
   getDispFilterFromLocalStorage(dispensingStatiionId: String): boolean {
     //console.log("getFilter localStorage:" + localStorage.getItem(STATION_FILTER_PRE + dispensingStatiionId))
-    if (localStorage.getItem(STATION_FILTER_PRE + dispensingStatiionId) == null) {
+    if (localStorage.getItem(DISPENSING_STATION_FILTER_PRE + dispensingStatiionId) == null) {
       return false
     }
     return true

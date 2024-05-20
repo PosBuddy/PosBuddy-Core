@@ -9,6 +9,8 @@ const httpOptions = {
   })
 };
 
+export const DISPENSING_STATION_FILTER_PRE = "stationFilter_";
+
 export interface identity {
   "posBuddyId": "string",
   "staticId": boolean,
@@ -32,6 +34,7 @@ export interface revenue {
 export interface permissions {
   "servePermission": boolean,
   "checkoutPermission": boolean
+  "adminPermission": boolean
 }
 
 export interface item {

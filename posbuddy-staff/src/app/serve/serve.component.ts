@@ -3,7 +3,13 @@ import {DecimalPipe} from "@angular/common";
 import {NgbAlert, NgbCollapse, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import {dispensingStation, item, paymentService, serve} from "../service/payment.service";
+import {
+  DISPENSING_STATION_FILTER_PRE,
+  dispensingStation,
+  item,
+  paymentService,
+  serve
+} from "../service/payment.service";
 
 @Component({
   selector: 'app-serve',
@@ -203,5 +209,11 @@ export class ServeComponent implements AfterViewInit {
     this.resetServeData();
   }
 
+  isItemsFromStationSelectable(dispensingStationId: string): boolean {
+    if (localStorage.getItem(DISPENSING_STATION_FILTER_PRE + dispensingStationId) != null) {
+      return true;
+    }
+    return false;
+  }
 
 }

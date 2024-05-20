@@ -16,13 +16,19 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
-        <a class="nav-link" [ngClass]="{'disabled' : !checkoutPermission}" href="#" (click)="openFilter(stationFilter)">Filter</a>
+        <a class="nav-link"
+           [ngClass]="{'disabled' : !checkoutPermission}"
+           href="#"
+           (click)="openFilter(stationFilter)"><i class="bi bi-funnel"></i>Ausgabestationen Filtern</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link"
+           [ngClass]="{'disabled' : !adminPermission}"
+           href="#">
+          <i class="bi bi-body-text"></i>Import Textbausteine</a>
       </li>
       <li class="nav-item active">
         <a class="nav-link" href="#">Report</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Import</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="#">Info</a>
