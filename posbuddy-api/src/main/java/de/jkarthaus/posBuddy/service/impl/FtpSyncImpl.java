@@ -7,7 +7,7 @@ import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
 import de.jkarthaus.posBuddy.mapper.ConfigMapper;
-import de.jkarthaus.posBuddy.model.FtpConfig;
+import de.jkarthaus.posBuddy.model.config.FtpConfig;
 import de.jkarthaus.posBuddy.model.StaticIdData;
 import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;

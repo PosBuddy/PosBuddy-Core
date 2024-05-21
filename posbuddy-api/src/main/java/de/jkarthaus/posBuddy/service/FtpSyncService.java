@@ -1,6 +1,6 @@
 package de.jkarthaus.posBuddy.service;
 
-import de.jkarthaus.posBuddy.model.FtpConfig;
+import de.jkarthaus.posBuddy.model.config.FtpConfig;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
 
 import java.io.IOException;

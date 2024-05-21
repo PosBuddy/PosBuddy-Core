@@ -3,6 +3,7 @@ package de.jkarthaus.posBuddy.service;
 import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.model.gui.*;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PartyActionService {
@@ -18,7 +19,7 @@ public interface PartyActionService {
     void serveItems(List<ServeItem> servItems, String posBuddyId)
             throws posBuddyIdNotAllocatedException, OutOfBalanceException;
 
-    void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException;
+    void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException, IOException;
 
     void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;

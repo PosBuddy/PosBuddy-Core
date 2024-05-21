@@ -2,7 +2,7 @@ package de.jkarthaus.posBuddy.mapper;
 
 
 import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
-import de.jkarthaus.posBuddy.model.FtpConfig;
+import de.jkarthaus.posBuddy.model.config.FtpConfig;
 import de.jkarthaus.posBuddy.model.gui.FtpConfigDto;
 import jakarta.inject.Singleton;
 

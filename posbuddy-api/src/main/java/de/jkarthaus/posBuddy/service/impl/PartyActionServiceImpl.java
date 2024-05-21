@@ -1,9 +1,7 @@
 package de.jkarthaus.posBuddy.service.impl;
 
-import de.jkarthaus.posBuddy.db.DispensingStationRepository;
-import de.jkarthaus.posBuddy.db.IdentityRepository;
-import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.db.RevenueRepository;
+import de.jkarthaus.posBuddy.db.*;
+import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
@@ -12,17 +10,22 @@ import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.mapper.RevenueMapper;
 import de.jkarthaus.posBuddy.model.Constants;
+import de.jkarthaus.posBuddy.model.config.DiscountConfig;
+import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.tools.Tools;
+import io.micronaut.serde.ObjectMapper;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -32,12 +35,15 @@ import java.util.stream.Collectors;
 @Singleton
 public class PartyActionServiceImpl implements PartyActionService {
 
+    private final ObjectMapper objectMapper;
     private final IdentityMapper identityMapper;
     private final RevenueMapper revenueMapper;
     private final DispensingStationMapper dispensingStationMapper;
     private final IdentityRepository identityRepository;
     private final RevenueRepository revenueRepository;
     private final ItemRepository itemRepository;
+    private final ConfigRepository configRepository;
+
     private final DispensingStationRepository dispensingStationRepository;
 
     @Override
@@ -123,7 +129,7 @@ public class PartyActionServiceImpl implements PartyActionService {
 
 
     @Override
-    public void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException {
+    public void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException, IOException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         float newBalance = identityEntity.getBalance() + value;
         // add revenue
@@ -137,6 +143,23 @@ public class PartyActionServiceImpl implements PartyActionService {
         // setNewBalance
         identityEntity.setBalance(newBalance);
         identityRepository.updateIdentityEntity(identityEntity);
+        // check discounts
+        Optional<ConfigEntity> configEntityOptional = configRepository.findById(ConfigID.DISCOUNT_CONFIG);
+        if (configEntityOptional.isPresent()) {
+            log.debug("check discount");
+            DiscountConfig discountConfig = objectMapper.readValue(
+                    configEntityOptional.get().getJsonConfig(),
+                    DiscountConfig.class
+            );
+            // TODO ITERARE THRU DISCOUNTS
+            if (identityEntity.isStaticIdentity() )
+        } else {
+            log.debug("no discount config found");
+        }
+    }
+
+    private List<RevenueEntity> calculateDiscounts(DiscountConfig discountConfig){
+        // TODO implement me
     }
 
     /**
