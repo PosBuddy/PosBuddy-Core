@@ -39,9 +39,9 @@ export class AddValueComponent {
     let formcheck = true;
     let errorText = "";
     if (isNaN(Number(this.value))
-      || Number(this.value) <= 0 || Number(this.value) > 100) {
+      || Number(this.value) <= 0 || Number(this.value) > 250) {
       formcheck = false;
-      errorText += " / Wert ungültig 1<-->100 EUR"
+      errorText += " / Wert ungültig 1<-->250 EUR"
     }
     if (formcheck) {
       console.info("formCheck:OK")

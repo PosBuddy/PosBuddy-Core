@@ -14,14 +14,15 @@ import java.util.List;
 @NoArgsConstructor
 @Serdeable
 @JsonInclude(JsonInclude.Include.ALWAYS)
-public class DiscountConfig {
-    public List<Discount> discountList = new ArrayList<>();
+public class DepositBonusConfig {
+    public List<DepositBonus> depositBonusList = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
     @Serdeable
-    public static class Discount {
+    public static class DepositBonus {
+        String revenueText = "";
         boolean activeOnStaticId = false;
         boolean activeOnVolatileId = false;
         Double fromAmount = 0.0;

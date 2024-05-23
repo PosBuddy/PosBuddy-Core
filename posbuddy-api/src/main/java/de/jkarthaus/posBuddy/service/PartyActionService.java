@@ -19,7 +19,7 @@ public interface PartyActionService {
     void serveItems(List<ServeItem> servItems, String posBuddyId)
             throws posBuddyIdNotAllocatedException, OutOfBalanceException;
 
-    void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException, IOException;
+    void addDeposit(String posBuddyId, Float value) throws posBuddyIdNotAllocatedException, IOException;
 
     void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;
