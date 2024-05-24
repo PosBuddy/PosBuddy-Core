@@ -172,6 +172,7 @@ public class PartyActionServiceImpl implements PartyActionService {
             IdentityEntity identityEntity) {
         List<RevenueEntity> revenueEntities = new ArrayList<>();
         depositBonusConfig.depositBonusList.forEach(depositBonus -> {
+                    // -- bonus for static identity
                     if (identityEntity.isStaticIdentity() && depositBonus.isActiveOnStaticId()) {
                         if (depositValue >= depositBonus.getFromAmount()
                                 && (depositValue <= depositBonus.getToAmount() || depositBonus.getToAmount() <= 0)
@@ -185,6 +186,7 @@ public class PartyActionServiceImpl implements PartyActionService {
                             );
                         }
                     }
+                    // -- bonus for volatile identity
                     if (!identityEntity.isStaticIdentity() && !depositBonus.isActiveOnStaticId()) {
                         if (depositValue >= depositBonus.getFromAmount()
                                 && (depositValue <= depositBonus.getToAmount() || depositBonus.getToAmount() <= 0)

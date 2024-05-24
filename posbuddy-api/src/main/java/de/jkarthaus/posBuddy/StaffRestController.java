@@ -322,6 +322,9 @@ public class StaffRestController {
         } catch (IOException e) {
             log.error("IOException:{}", e.getMessage());
             return HttpResponse.serverError();
+        } catch (Exception e) {
+            log.error("Exception:{}", e.getMessage());
+            return HttpResponse.serverError();
         }
         return HttpResponse.ok();
     }
