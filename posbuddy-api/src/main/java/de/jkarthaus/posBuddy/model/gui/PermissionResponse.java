@@ -14,4 +14,5 @@ import lombok.NoArgsConstructor;
 public class PermissionResponse {
     boolean servePermission;
     boolean checkoutPermission;
+    boolean adminPermission;
 }

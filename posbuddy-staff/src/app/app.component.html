@@ -13,6 +13,7 @@
           aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
+  <!---------------------------------------------------------------------------------------------------Hamburger Menue-->
   <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
@@ -42,6 +43,7 @@
      xmlns="http://www.w3.org/1999/html"
      #accMenue="ngbAccordion"
 >
+  <!--                                   ########ALLOCATE PERSON########                                            -->
   <div ngbAccordionItem="accF1" [collapsed]="!checkoutPermission" #accF1="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
@@ -64,6 +66,7 @@
       </div>
     </div>
   </div>
+  <!--                                   ########ADD VALUE########                                                   -->
   <div ngbAccordionItem="accF2" [collapsed]="true" #accF2="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
@@ -86,6 +89,7 @@
       </div>
     </div>
   </div>
+  <!--                                   ########PAYOUT########                                                      -->
   <div ngbAccordionItem="accF3" [collapsed]="true" #accF3="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
@@ -108,6 +112,7 @@
       </div>
     </div>
   </div>
+  <!--                                   ########DE-ALLOCATE PERSON########                                          -->
   <div ngbAccordionItem="accF4" [collapsed]="true" #accF4="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
@@ -130,6 +135,7 @@
       </div>
     </div>
   </div>
+  <!--                                   ########REVENUE########                                                     -->
   <div ngbAccordionItem="accF5" [collapsed]="true" #accF5="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
@@ -152,6 +158,7 @@
       </div>
     </div>
   </div>
+  <!--                                   ########SERVE########                                                       -->
   <div ngbAccordionItem="accF6" [collapsed]="checkoutPermission" #accF6="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
@@ -174,6 +181,25 @@
       </div>
     </div>
   </div>
+  <!--                                   ########SPECIAL-TRANSACTION########                                         -->
+  @if (adminPermission) {
+    <div ngbAccordionItem="accF7" [collapsed]="false" #accF7="ngbAccordionItem">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton style="background-color: #dfc2c4">
+          <i class="bi bi-7-circle"></i>
+          <span style="width: 55px"></span>
+          <i class="bi bi-exposure">&nbsp;Sonderbuchung</i>
+        </button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody>
+          <ng-template>
+            <app-special-transaction></app-special-transaction>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  }
 </div>
 
 <!----------------------------------------------------------------------------------offcancas-dispensing Station Filter-->

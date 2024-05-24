@@ -20,6 +20,7 @@ import {version} from '../../package.json';
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {NgClass} from "@angular/common";
 import {DispensingStationFilterComponent} from "./dispensing-station-filter/dispensing-station-filter.component";
+import {SpecialTransactionComponent} from "./special-transaction/special-transaction.component";
 
 @Component({
   selector: 'app-root',
@@ -39,7 +40,8 @@ import {DispensingStationFilterComponent} from "./dispensing-station-filter/disp
     NgbCollapse,
     ZXingScannerModule,
     NgClass,
-    DispensingStationFilterComponent
+    DispensingStationFilterComponent,
+    SpecialTransactionComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

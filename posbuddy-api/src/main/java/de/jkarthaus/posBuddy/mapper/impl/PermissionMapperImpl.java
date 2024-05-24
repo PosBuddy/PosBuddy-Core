@@ -11,7 +11,8 @@ public class PermissionMapperImpl implements PermissionMapper {
     public PermissionResponse toResponse(SecurityService.permissionRecord permissionRecord) {
         return new PermissionResponse(
                 permissionRecord.servePermission(),
-                permissionRecord.checkoutPermission()
+                permissionRecord.checkoutPermission(),
+                permissionRecord.adminPermission()
         );
     }
 }
