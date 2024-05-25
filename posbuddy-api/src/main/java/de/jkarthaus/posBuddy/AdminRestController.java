@@ -1,11 +1,13 @@
 package de.jkarthaus.posBuddy;
 
-import de.jkarthaus.posBuddy.exception.ParseImportException;
+import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.ConfigMapper;
 import de.jkarthaus.posBuddy.model.gui.FtpConfigDto;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
+import de.jkarthaus.posBuddy.model.gui.SpecialTransactionDto;
 import de.jkarthaus.posBuddy.service.DataImportService;
 import de.jkarthaus.posBuddy.service.FtpSyncService;
+import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -33,6 +35,7 @@ import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 public class AdminRestController {
 
     final FtpSyncService ftpSyncService;
+    final PartyActionService partyActionService;
     final SecurityService securityService;
     final DataImportService dataImportService;
     final ConfigMapper configMapper;
@@ -158,6 +161,54 @@ public class AdminRestController {
         } catch (ParseImportException e) {
             log.error("ParseImportException:{}", e.getMessage());
             throw new RuntimeException(e);
+        }
+        return HttpResponse.ok();
+    }
+
+    //-----------------------------------------------------------------------------------------------special transaction
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/specialTransaction/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "forbidden - you need a admin certificate"),
+            @ApiResponse(responseCode = "403", description = "Out of Balance, id not valid"),
+            @ApiResponse(responseCode = "404", description = "ID not allocated"),
+            @ApiResponse(responseCode = "405", description = "not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "500", description = "server error occured"),
+    })
+    @Tag(name = "admin")
+    public HttpResponse<String> specialTransaction(
+            String posBuddyId,
+            @Body SpecialTransactionDto specialTransactionDto,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        try {
+            if (securityService.isAdmin(x509Authentication)) {
+                log.info("try special transaction...");
+                partyActionService.doSpecialRevenue(
+                        posBuddyId,
+                        specialTransactionDto.getAction(),
+                        specialTransactionDto.getValue(),
+                        specialTransactionDto.getItemText()
+                );
+            } else {
+                log.warn("forbidden access to serve endpoint");
+                return HttpResponse.status(HttpStatus.FORBIDDEN);
+            }
+        } catch (OutOfBalanceException oobe) {
+            log.error("OutOfBalanceException:{}", oobe.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+        } catch (ActionNotSupportetException anse) {
+            log.error("ActionNotSupportetException:{}", anse.getMessage());
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+        } catch (posBuddyIdNotAllocatedException e) {
+            log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            log.error("Exception:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return HttpResponse.ok();
     }

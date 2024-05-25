@@ -44,6 +44,57 @@ public class PartyActionServiceImpl implements PartyActionService {
     private final DispensingStationRepository dispensingStationRepository;
 
     @Override
+    @Transactional
+    public void doSpecialRevenue(
+            String posBuddyId,
+            String operation,
+            Double value,
+            String itemText) throws posBuddyIdNotValidException,
+            posBuddyIdNotAllocatedException,
+            OutOfBalanceException, ActionNotSupportetException {
+        IdentityResponse identityResponse = getIdentityResponseByPosBuddyId(posBuddyId);
+        if (operation.equals(Constants.PAYMENT) && identityResponse.getBalance().doubleValue() - value < 0) {
+            throw new OutOfBalanceException("value is greater than balance");
+        }
+        switch (operation) {
+            case Constants.DEPOSIT -> {
+                RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setTimeofaction(LocalDateTime.now());
+                revenueEntity.setPaymentaction(Constants.DEPOSIT);
+                revenueEntity.setItemtext(itemText);
+                revenueEntity.setAmount(1);
+                revenueEntity.setValue(value.floatValue());
+                revenueRepository.addRevenue(revenueEntity);
+                IdentityEntity identityEntity = new IdentityEntity();
+                identityEntity.setPosbuddyid(posBuddyId);
+                identityEntity.setBalance(identityResponse.getBalance() + value.floatValue());
+                identityRepository.updateIdentityEntity(identityEntity);
+                log.info("successfully deposited revenue -> add {} EUR to balance of id:{}", value, posBuddyId);
+                break;
+            }
+            case Constants.PAYMENT -> {
+                RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setTimeofaction(LocalDateTime.now());
+                revenueEntity.setPaymentaction(Constants.PAYMENT);
+                revenueEntity.setItemtext(itemText);
+                revenueEntity.setAmount(1);
+                revenueEntity.setValue(value.floatValue());
+                revenueRepository.addRevenue(revenueEntity);
+                IdentityEntity identityEntity = new IdentityEntity();
+                identityEntity.setPosbuddyid(posBuddyId);
+                identityEntity.setBalance(identityResponse.getBalance() - value.floatValue());
+                identityRepository.updateIdentityEntity(identityEntity);
+                log.info("successfully deposited revenue -> substract {} EUR from balance of id:{}", value, posBuddyId);
+                break;
+            }
+            default -> {
+                log.error("operation:{} not supported -> do nothing", operation);
+                throw new ActionNotSupportetException(operation);
+            }
+        }
+    }
+
+    @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
         if (isNotValidUUID(posBuddyId)) {

@@ -118,6 +118,12 @@ export class AppComponent {
         event.preventDefault();
         break
       }
+      case "F7" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF7');
+        event.preventDefault();
+        break
+      }
     }
   }
 

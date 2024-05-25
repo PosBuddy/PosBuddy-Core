@@ -159,7 +159,9 @@
     </div>
   </div>
   <!--                                   ########SERVE########                                                       -->
-  <div ngbAccordionItem="accF6" [collapsed]="checkoutPermission" #accF6="ngbAccordionItem">
+  <div ngbAccordionItem="accF6"
+       [collapsed]="checkoutPermission"
+       #accF6="ngbAccordionItem">
     <h2 ngbAccordionHeader>
       <button ngbAccordionButton>
         <i class="bi bi-6-circle"></i>
@@ -183,16 +185,18 @@
   </div>
   <!--                                   ########SPECIAL-TRANSACTION########                                         -->
   @if (adminPermission) {
-    <div ngbAccordionItem="accF7" [collapsed]="false" #accF7="ngbAccordionItem">
+    <div ngbAccordionItem="accF7"
+         [collapsed]="false"
+         #accF7="ngbAccordionItem">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton style="background-color: #dfc2c4">
+        <button ngbAccordionButton style="background-color: #ffc107">
           <i class="bi bi-7-circle"></i>
           <span style="width: 55px"></span>
           <i class="bi bi-exposure">&nbsp;Sonderbuchung</i>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody style="background-color: #fff3cd">
           <ng-template>
             <app-special-transaction></app-special-transaction>
           </ng-template>

@@ -125,7 +125,9 @@ public class StaffRestController {
             return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
-            return HttpResponse.ok(partyActionService.getIdentityResponseByPosBuddyId(posBuddyId));
+            return HttpResponse.ok(
+                    partyActionService.getIdentityResponseByPosBuddyId(posBuddyId)
+            );
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
             return HttpResponse.status(HttpStatus.BAD_REQUEST);

@@ -2,12 +2,22 @@ package de.jkarthaus.posBuddy.service;
 
 import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.model.gui.*;
+import io.micronaut.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface PartyActionService {
 
+
+    @Transactional
+    void doSpecialRevenue(
+            String posBuddyId,
+            String operation,
+            Double value,
+            String itemText) throws posBuddyIdNotValidException,
+            posBuddyIdNotAllocatedException,
+            OutOfBalanceException, ActionNotSupportetException;
 
     IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException;
