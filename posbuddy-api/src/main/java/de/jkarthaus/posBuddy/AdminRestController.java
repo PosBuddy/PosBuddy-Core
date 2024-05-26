@@ -169,6 +169,7 @@ public class AdminRestController {
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/specialTransaction/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "401", description = "forbidden - you need a admin certificate"),
             @ApiResponse(responseCode = "403", description = "Out of Balance, id not valid"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
@@ -196,19 +197,19 @@ public class AdminRestController {
             }
         } catch (OutOfBalanceException oobe) {
             log.error("OutOfBalanceException:{}", oobe.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "Guthaben zu gering");
         } catch (ActionNotSupportetException anse) {
             log.error("ActionNotSupportetException:{}", anse.getMessage());
-            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, anse.getLocalizedMessage());
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "posBuddyId ungültig");
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.NOT_FOUND);
+            return HttpResponse.status(HttpStatus.NOT_FOUND, "id nicht zugeordnet");
         } catch (Exception e) {
             log.error("Exception:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return HttpResponse.ok();
     }

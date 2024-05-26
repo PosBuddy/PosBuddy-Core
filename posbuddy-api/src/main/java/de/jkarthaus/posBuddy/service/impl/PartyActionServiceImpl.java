@@ -52,37 +52,36 @@ public class PartyActionServiceImpl implements PartyActionService {
             String itemText) throws posBuddyIdNotValidException,
             posBuddyIdNotAllocatedException,
             OutOfBalanceException, ActionNotSupportetException {
-        IdentityResponse identityResponse = getIdentityResponseByPosBuddyId(posBuddyId);
-        if (operation.equals(Constants.PAYMENT) && identityResponse.getBalance().doubleValue() - value < 0) {
+        IdentityEntity identityEntity = getPosBuddyEntity(posBuddyId);
+        if (operation.equals(Constants.PAYMENT)
+                && identityEntity.getBalance().doubleValue() - value < 0) {
             throw new OutOfBalanceException("value is greater than balance");
         }
         switch (operation) {
             case Constants.DEPOSIT -> {
                 RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setPosbuddyid(posBuddyId);
                 revenueEntity.setTimeofaction(LocalDateTime.now());
                 revenueEntity.setPaymentaction(Constants.DEPOSIT);
                 revenueEntity.setItemtext(itemText);
                 revenueEntity.setAmount(1);
                 revenueEntity.setValue(value.floatValue());
                 revenueRepository.addRevenue(revenueEntity);
-                IdentityEntity identityEntity = new IdentityEntity();
-                identityEntity.setPosbuddyid(posBuddyId);
-                identityEntity.setBalance(identityResponse.getBalance() + value.floatValue());
+                identityEntity.setBalance(identityEntity.getBalance() + value.floatValue());
                 identityRepository.updateIdentityEntity(identityEntity);
                 log.info("successfully deposited revenue -> add {} EUR to balance of id:{}", value, posBuddyId);
                 break;
             }
             case Constants.PAYMENT -> {
                 RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setPosbuddyid(posBuddyId);
                 revenueEntity.setTimeofaction(LocalDateTime.now());
                 revenueEntity.setPaymentaction(Constants.PAYMENT);
                 revenueEntity.setItemtext(itemText);
                 revenueEntity.setAmount(1);
                 revenueEntity.setValue(value.floatValue());
                 revenueRepository.addRevenue(revenueEntity);
-                IdentityEntity identityEntity = new IdentityEntity();
-                identityEntity.setPosbuddyid(posBuddyId);
-                identityEntity.setBalance(identityResponse.getBalance() - value.floatValue());
+                identityEntity.setBalance(identityEntity.getBalance() - value.floatValue());
                 identityRepository.updateIdentityEntity(identityEntity);
                 log.info("successfully deposited revenue -> substract {} EUR from balance of id:{}", value, posBuddyId);
                 break;
@@ -97,6 +96,10 @@ public class PartyActionServiceImpl implements PartyActionService {
     @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
+        return identityMapper.toResponse(getPosBuddyEntity(posBuddyId));
+    }
+
+    private IdentityEntity getPosBuddyEntity(String posBuddyId) throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
         if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("no valid UUID");
         }
@@ -105,7 +108,12 @@ public class PartyActionServiceImpl implements PartyActionService {
             log.info("Actual valid posBuddy Identity with ID:{} not found in Database", posBuddyId);
             throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
         }
-        return identityMapper.toResponse(identityEntity);
+        if (identityEntity.getEndallocation() != null
+                && identityEntity.getEndallocation().isBefore(LocalDateTime.now())) {
+            log.info("posBuddyId is not allocated anymore");
+            throw new posBuddyIdNotAllocatedException("posBuddyId is not allocated anymore");
+        }
+        return identityEntity;
     }
 
     @Override

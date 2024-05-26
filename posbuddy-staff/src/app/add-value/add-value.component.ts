@@ -4,6 +4,7 @@ import {FormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {paymentService} from "../service/payment.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {Constants} from "../constants";
 
 @Component({
   selector: 'app-add-value',
@@ -39,9 +40,10 @@ export class AddValueComponent {
     let formcheck = true;
     let errorText = "";
     if (isNaN(Number(this.value))
-      || Number(this.value) <= 0 || Number(this.value) > 250) {
+      || Number(this.value) <= 0
+      || Number(this.value) > Constants.MAX_DEPOSIT) {
       formcheck = false;
-      errorText += " / Wert ungültig 1<-->250 EUR"
+      errorText += " / Wert ungültig 1 <--> " + Constants.MAX_DEPOSIT + " EUR"
     }
     if (formcheck) {
       console.info("formCheck:OK")

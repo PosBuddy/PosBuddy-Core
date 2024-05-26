@@ -15,71 +15,76 @@
   <div class="row pt-3">
     <div class="col-4">Vorgang</div>
     <div class="col-8">
-      <select>
-        <option selected>Einzahlung</option>
-        <option>Auszahlung</option>
+      <select
+        class="form-select"
+        aria-label="Ein/Auszahlung"
+        [(ngModel)]="operation">
+        >
+        <option default ngValue="{{ Constants.DEPOSIT }}">Einzahlung</option>
+        <option ngValue="{{ Constants.PAYMENT }}" >Auszahlung</option>
       </select>
     </div>
   </div>
   <div class="row pt-3">
-    <div class="col-4">&nbsp;</div>
-    <div class="col-8">
-      <select>
-        <option>Gutschrift wegen Überbuchung</option>
-        <option>Gutschrift wegen Storno</option>
-        <option>Nachbuchung</option>
-      </select>
+        <div class="col-4">&nbsp;</div>
+        <div class="col-8">
+          <select class="form-select" aria-label="OperationsText">
+            <option>Gutschrift wegen Überbuchung</option>
+            <option>Gutschrift wegen Storno</option>
+            <option>Nachbuchung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+    </div>
+    <div class="row pt-3">
+      <div class="col-4">Wert :</div>
+      <div class="col-8">
+        <input
+          type="text"
+          [(ngModel)]="value"
+        />
+      </div>
+    </div>
+    <div class="row pt-3">
+      <div class="col-4">
+        <button class="btn btn-lg btn-outline-secondary"
+                (click)="scanQRCode(content)">SCAN
+        </button>
+      </div>
+      <div class="col-8">
+        <button class="btn btn-lg btn-outline-primary"
+                (click)="checkAndSend()"
+                [disabled]="confirmError || confirmOK">
+          Vorgang Auslösen
+        </button>
+      </div>
+    </div>
+    <div class="row pt-3">
+      <div class="col-12">
+        @if (!formValid) {
+          <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
+        }
+        @if (confirmError) {
+          <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
+        }
+        @if (confirmOK) {
+          <ngb-alert type="success" (closed)="resetOK()">Transaktion erfolgreich</ngb-alert>
+        }
+      </div>
     </div>
   </div>
-  <div class="row pt-3">
-    <div class="col-4">Wert :</div>
-    <div class="col-8">
-      <input
-        type="text"
-        [(ngModel)]="value"
-      />
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-4">
-      <button class="btn btn-lg btn-outline-secondary"
-              (click)="scanQRCode(content)">SCAN
-      </button>
-    </div>
-    <div class="col-8">
-      <button class="btn btn-lg btn-outline-primary"
-              (click)="checkAndSend()"
-              [disabled]="confirmError || confirmOK">
-        Vorgang Auslösen
-      </button>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-12">
-      @if (!formValid) {
-        <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
-      }
-      @if (confirmError) {
-        <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
-      }
-      @if (confirmOK) {
-        <ngb-alert type="success" (closed)="resetOK()">Einzahlung erfolgreich</ngb-alert>
-      }
-    </div>
-  </div>
-</div>
 
-<ng-template #content let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="mb-3">
-      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+  <ng-template #content let-offcanvas>
+    <div class="offcanvas-header">
+      <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
     </div>
-  </div>
-  <div class="text-end">
-    Bitte QR-code in der Kamera ausrichten.
-  </div>
-</ng-template>
+    <div class="offcanvas-body">
+      <div class="mb-3">
+        <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+      </div>
+    </div>
+    <div class="text-end">
+      Bitte QR-code in der Kamera ausrichten.
+    </div>
+  </ng-template>

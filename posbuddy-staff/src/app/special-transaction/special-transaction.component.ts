@@ -3,7 +3,8 @@ import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbDropdownModule, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {HttpErrorResponse} from "@angular/common/http";
-import {paymentService} from "../service/payment.service";
+import {paymentService, specialTransaction} from "../service/payment.service";
+import {Constants} from "../constants";
 
 @Component({
   selector: 'app-special-transaction',
@@ -30,59 +31,68 @@ export class SpecialTransactionComponent {
 
   posBuddyId: string = "-";
   value = '0';
+  operation: string = Constants.DEPOSIT;
 
   constructor(private paymentService: paymentService) {
 
   }
 
 
-  checkAndSend() {
-    let formcheck = true;
+  checkAndSend(): void {
     let errorText = "";
     if (isNaN(Number(this.value))
-      || Number(this.value) <= 0 || Number(this.value) > 250) {
-      formcheck = false;
-      errorText += " / Wert ungültig 1<-->250 EUR"
-    }
-    if (formcheck) {
-      console.info("formCheck:OK")
-      this.formValid = true;
-      this.formValidText = "";
-      this.paymentService.addDeposit(this.posBuddyId, Number(this.value))
-        .subscribe({
-            next: (v) => {
-              this.serverResponse = "OK"
-              console.log("suceded")
-              this.confirmOK = true;
-            },
-            error: (e: HttpErrorResponse) => {
-              this.confirmError = true;
-              switch (e.status) {
-                case 401 : {
-                  this.serverResponse = "Zugriff verweigert";
-                  break
-                }
-                case 404 : {
-                  this.serverResponse = "ID nicht zugeordnet";
-                  break
-                }
-                case 405 : {
-                  this.serverResponse = "keine Berechtigung";
-                  break
-                }
-                default : {
-                  this.serverResponse = "Fehlercode:" + e.status;
-                  break
-                }
-              }
-            },
-            complete: () => console.info('complete')
-          }
-        )
-    } else {
+      || Number(this.value) <= 0
+      || Number(this.value) > Constants.MAX_DEPOSIT) {
+      errorText += " / Wert ungültig 1<--> " + Constants.MAX_DEPOSIT + " EUR"
       this.formValid = false;
       this.formValidText = errorText;
+      return;
     }
+  }
+
+  send(specialTransaction: specialTransaction) {
+    console.info("formCheck:OK")
+    this.formValid = true;
+    this.formValidText = "";
+    this.paymentService.doSpecialTransaction(this.posBuddyId, specialTransaction)
+      .subscribe({
+          next: (v) => {
+            this.serverResponse = "OK"
+            console.log("suceded")
+            this.confirmOK = true;
+          },
+          error: (e: HttpErrorResponse) => {
+            this.confirmError = true;
+            switch (e.status) {
+              case 400 : {
+                this.serverResponse = "Daten ungültig";
+                break
+              }
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 403 : {
+                this.serverResponse = "Guthaben zu gering / ID ungültig";
+                break
+              }
+              case 404 : {
+                this.serverResponse = "ID nicht zugeordnet";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + e.status;
+                break
+              }
+            }
+          },
+          complete: () => console.info('complete')
+        }
+      )
   }
 
 
@@ -108,4 +118,5 @@ export class SpecialTransactionComponent {
     this.posBuddyId = "-";
   }
 
+  protected readonly Constants = Constants;
 }

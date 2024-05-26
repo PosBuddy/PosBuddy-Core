@@ -61,6 +61,12 @@ export interface dispensingStation {
   "location": String
 }
 
+export interface specialTransaction {
+  "value": number,
+  "action": String,
+  "itemText": String
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -105,6 +111,14 @@ export class paymentService {
     return this.http.post<Array<serve>>(
       this.baseUrl + "serve/" + posBuddyId,
       serveItems,
+      httpOptions
+    )
+  }
+
+  doSpecialTransaction(posBuddyId: string, specialTransaction: specialTransaction) {
+    return this.http.post<specialTransaction>(
+      this.baseUrl + "specialTransaction/" + posBuddyId,
+      specialTransaction,
       httpOptions
     )
   }
