@@ -26,12 +26,19 @@ export class SpecialTransactionComponent {
 
   formValid: boolean = false;
   formValidText: string = "Betrag eingeben"
+  itemTexts: string[] = [
+    'Gutschrift wegen Überbuchung',
+    'Gutschrift wegen Storno',
+    'Nachbuchung',
+    'Sonstiges',
+  ];
+
 
   serverResponseText: string = "";
-
   posBuddyId: string = "-";
   value = '0';
   operation: string = Constants.DEPOSIT;
+  itemText: string = this.itemTexts[0];
 
   constructor(private paymentService: paymentService) {
 
@@ -48,10 +55,16 @@ export class SpecialTransactionComponent {
       this.formValidText = errorText;
       return;
     }
+    this.send({
+        value: Number(this.value),
+        action: this.operation,
+        itemText: this.itemText
+      }
+    )
   }
 
   send(specialTransaction: specialTransaction) {
-    console.info("formCheck:OK")
+    console.log(specialTransaction)
     this.formValid = true;
     this.formValidText = "";
     this.paymentService.doSpecialTransaction(this.posBuddyId, specialTransaction)
