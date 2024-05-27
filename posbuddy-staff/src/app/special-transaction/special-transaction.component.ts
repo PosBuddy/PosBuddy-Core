@@ -4,7 +4,8 @@ import {NgbAlert, NgbDropdownModule, NgbOffcanvas} from "@ng-bootstrap/ng-bootst
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {HttpErrorResponse} from "@angular/common/http";
 import {paymentService, specialTransaction} from "../service/payment.service";
-import {Constants} from "../constants";
+import {PosBuddyConstants} from "../posBuddyConstants";
+import {DecimalPipe} from "@angular/common";
 
 @Component({
   selector: 'app-special-transaction',
@@ -13,7 +14,8 @@ import {Constants} from "../constants";
     FormsModule,
     NgbAlert,
     ZXingScannerModule,
-    NgbDropdownModule
+    NgbDropdownModule,
+    DecimalPipe
   ],
   templateUrl: './special-transaction.component.html',
   styleUrl: './special-transaction.component.css'
@@ -29,15 +31,13 @@ export class SpecialTransactionComponent {
   itemTexts: string[] = [
     'Gutschrift wegen Überbuchung',
     'Gutschrift wegen Storno',
-    'Nachbuchung',
+    'Auszahlung wegen Falschbuchung',
     'Sonstiges',
   ];
-
-
-  serverResponseText: string = "";
-  posBuddyId: string = "-";
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
   value = '0';
-  operation: string = Constants.DEPOSIT;
+  balance: number = 0;
+  operation: string = PosBuddyConstants.DEPOSIT;
   itemText: string = this.itemTexts[0];
 
   constructor(private paymentService: paymentService) {
@@ -46,15 +46,26 @@ export class SpecialTransactionComponent {
 
 
   checkAndSend(): void {
-    let errorText = "";
-    if (isNaN(Number(this.value))
-      || Number(this.value) <= 0
-      || Number(this.value) > Constants.MAX_DEPOSIT) {
-      errorText += " / Wert ungültig 1<--> " + Constants.MAX_DEPOSIT + " EUR"
+    if (this.posBuddyId == PosBuddyConstants.INVALID_POSBUDDY_ID) {
+      this.formValidText = "Bitte ID Scannen"
       this.formValid = false;
-      this.formValidText = errorText;
       return;
     }
+    if (isNaN(Number(this.value))
+      || Number(this.value) <= 0
+      || Number(this.value) > PosBuddyConstants.MAX_DEPOSIT) {
+      this.formValid = false;
+      this.formValidText = "Wert ungültig 1<--> " + PosBuddyConstants.MAX_DEPOSIT + " EUR";
+      return;
+    }
+    if (this.operation == PosBuddyConstants.PAYMENT
+      && (this.balance - Number(this.value) < 0)) {
+      this.formValid = false;
+      this.formValidText = "Kein ausreichendes Guthaben";
+      return;
+    }
+    this.formValid = true;
+    this.formValidText = "";
     this.send({
         value: Number(this.value),
         action: this.operation,
@@ -113,7 +124,43 @@ export class SpecialTransactionComponent {
     this.posBuddyId = scanResult;
     this.formValid = true
     this.offcanvasService.dismiss("success");
+    this.paymentService.getIdentity(this.posBuddyId).subscribe(
+      next => {
+        this.balance = next.balance;
+        if (this.value.indexOf(".") > 0) {
+          this.value = this.value.substring(0, this.value.indexOf(".") + 2)
+        }
+      },
+      err => {
+        console.error(err.status)
+        this.confirmError = true;
+        switch (err.status) {
+          case 400 : {
+            this.serverResponse = "Ungültige ID";
+            break
+          }
+          case 401 : {
+            this.serverResponse = "Zugriff verweigert";
+            break
+          }
+          case 404 : {
+            this.serverResponse = "ID nicht zugeordnet";
+            break
+          }
+          case 405 : {
+            this.serverResponse = "keine Berechtigung";
+            break
+          }
+          default : {
+            this.serverResponse = "Fehlercode:" + err.status;
+            break
+          }
+        }
+      },
+      () => console.log('HTTP request completed.')
+    );
   }
+
 
   scanQRCode(content: TemplateRef<any>) {
     this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
@@ -122,14 +169,18 @@ export class SpecialTransactionComponent {
   resetError() {
     this.confirmError = false;
     this.serverResponse = "-";
+    this.value = "0";
+    this.balance = 0;
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
   resetOK() {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.value = "0";
-    this.posBuddyId = "-";
+    this.balance = 0;
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
-  protected readonly Constants = Constants;
+  protected readonly PosBuddyConstants = PosBuddyConstants;
 }

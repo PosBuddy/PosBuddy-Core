@@ -6,10 +6,9 @@
   <div class="row pt-3">
     <div class="col-4">Kontostand :</div>
     <div class="col-8">
-      <input
-        type="text"
-        [(ngModel)]="value"
-      />
+      <p class="text-nowrap fs-4">
+        Guthaben: {{ balance | number: '1.2-2' }} <i class="bi bi-currency-euro"></i>
+      </p>
     </div>
   </div>
   <div class="row pt-3">
@@ -20,8 +19,8 @@
         aria-label="Ein/Auszahlung"
         [(ngModel)]="operation"
       >
-        <option default ngValue="{{ Constants.DEPOSIT }}">Einzahlung</option>
-        <option ngValue="{{ Constants.PAYMENT }}">Auszahlung</option>
+        <option default ngValue="{{ PosBuddyConstants.DEPOSIT }}">Einzahlung</option>
+        <option ngValue="{{ PosBuddyConstants.PAYMENT }}">Auszahlung</option>
       </select>
     </div>
   </div>
@@ -33,7 +32,7 @@
         aria-label="OperationsText"
         [(ngModel)]="itemText"
       >
-        @for (itemText of itemTexts;track itemText) {
+        @for (itemText of itemTexts; track itemText) {
           <option>{{ itemText }}</option>
         }
       </select>

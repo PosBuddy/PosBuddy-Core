@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 
 
-@Controller(value = "/api/v1", port = "${ micronaut.server.ssl.port }")
+@Controller(value = "staff/api/v1", port = "${ micronaut.server.ssl.port }")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminRestController {
