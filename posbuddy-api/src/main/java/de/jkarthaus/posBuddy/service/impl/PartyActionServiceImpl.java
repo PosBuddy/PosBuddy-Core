@@ -342,10 +342,11 @@ public class PartyActionServiceImpl implements PartyActionService {
         if (identityEntity.isStaticIdentity()) {
             throw new PosBuddyIdStaticException("posBuddy ID is static");
         }
-        if (identityEntity.getBalance() > 0) {
+        if (identityEntity.getBalance() > 0.001) {
             throw new OutOfBalanceException("balance is > 0");
         }
         identityEntity.setEndallocation(LocalDateTime.now());
+        identityEntity.setBalance(0.0F);
         identityRepository.updateIdentityEntity(identityEntity);
         log.info("deAllocation of ID:{} successfully", posBuddyId);
     }
