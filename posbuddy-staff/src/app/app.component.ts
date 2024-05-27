@@ -5,6 +5,7 @@ import {
   NgbAccordionModule,
   NgbAlert,
   NgbCollapse,
+  NgbModal,
   NgbOffcanvas
 } from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
@@ -51,6 +52,7 @@ export class AppComponent {
   title = 'PosBuddy &#9400; by JK';
 
   private offcanvasService = inject(NgbOffcanvas);
+  private modalService = inject(NgbModal);
 
   servePermission: boolean = false;
   checkoutPermission: boolean = false;
@@ -131,5 +133,10 @@ export class AppComponent {
 
   openFilter(content: TemplateRef<any>) {
     this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
+  }
+
+  openInfo(content: TemplateRef<any>) {
+    this.modalService.open(content,
+      {ariaLabelledBy: 'modal-basic-title'});
   }
 }
