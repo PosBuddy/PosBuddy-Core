@@ -18,13 +18,13 @@
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link"
-           [ngClass]="{'disabled' : !checkoutPermission}"
+           [ngClass]="{'disabled' : !permissions.checkoutPermission}"
            href="#"
            (click)="openFilter(stationFilter)"><i class="bi bi-funnel"></i>Ausgabestationen Filtern</a>
       </li>
       <li class="nav-item">
         <a class="nav-link"
-           [ngClass]="{'disabled' : !adminPermission}"
+           [ngClass]="{'disabled' : !permissions.adminPermission}"
            href="#">
           <i class="bi bi-body-text"></i>Import Textbausteine</a>
       </li>
@@ -46,9 +46,9 @@
      xmlns="http://www.w3.org/1999/html"
      #accMenue="ngbAccordion"
 >
-  @if (checkoutPermission || adminPermission) {
+  @if (permissions.checkoutPermission || permissions.adminPermission) {
     <!--                                   ########ALLOCATE PERSON########                                            -->
-    <div ngbAccordionItem="accF1" [collapsed]="!checkoutPermission" #accF1="ngbAccordionItem">
+    <div ngbAccordionItem="accF1" [collapsed]="!permissions.checkoutPermission" #accF1="ngbAccordionItem">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
           <i class="bi bi-1-circle"></i>
@@ -59,8 +59,8 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (checkoutPermission) {
-              <app-allocate-id></app-allocate-id>
+            @if (permissions.checkoutPermission) {
+              <app-allocate-id [permissions]=permissions></app-allocate-id>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
                 <strong>Keine Berechtigung!</strong>
@@ -82,7 +82,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (checkoutPermission) {
+            @if (permissions.checkoutPermission) {
               <app-add-value></app-add-value>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -105,7 +105,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (checkoutPermission) {
+            @if (permissions.checkoutPermission) {
               <app-payout></app-payout>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -128,7 +128,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (checkoutPermission) {
+            @if (permissions.checkoutPermission) {
               <app-deallocate></app-deallocate>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -140,7 +140,7 @@
       </div>
     </div>
   }
-  @if (servePermission || checkoutPermission || adminPermission) {
+  @if (permissions.servePermission || permissions.checkoutPermission || permissions.adminPermission) {
     <!--                                   ########REVENUE########                                                     -->
     <div ngbAccordionItem="accF5" [collapsed]="true" #accF5="ngbAccordionItem">
       <h2 ngbAccordionHeader>
@@ -153,7 +153,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (checkoutPermission || servePermission) {
+            @if (permissions.checkoutPermission || permissions.servePermission) {
               <app-revenue></app-revenue>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -166,7 +166,7 @@
     </div>
     <!--                                   ########SERVE########                                                       -->
     <div ngbAccordionItem="accF6"
-         [collapsed]="checkoutPermission"
+         [collapsed]="permissions.checkoutPermission"
          #accF6="ngbAccordionItem">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
@@ -178,7 +178,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (checkoutPermission || servePermission) {
+            @if (permissions.checkoutPermission || permissions.servePermission) {
               <app-serve></app-serve>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -190,7 +190,7 @@
       </div>
     </div>
   }
-  @if (adminPermission) {
+  @if (permissions.adminPermission) {
     <!--                                   ########SPECIAL-TRANSACTION########                                         -->
     <div ngbAccordionItem="accF7"
          [collapsed]="false"
@@ -228,8 +228,6 @@
     Ausgabestationen
   </div>
 </ng-template>
-
-
 <!-------------------------------------------------------------------------------------------------------- Info Modal-->
 <ng-template #infoModal let-modal>
   <div class="modal-header">
@@ -239,11 +237,35 @@
   <div class="modal-body">
     <form>
       <div class="mb-3">
-        https://github.com/PosBuddy
+        <a href="https://github.com/PosBuddy" target="_blank">PosBuddy</a>
+        das Kassensystem für Vereine.
+        <p></p>
+        Konzeption : Carsten Puhl / Jörn Karthaus
         <ul>
-          <li>Kassen - Berechtigung</li>
-          <li>Ausgabe - Berechtigung</li>
-          <li>Admin - Berechtigung</li>
+          <li>
+            Ausgabe - Berechtigung &nbsp;
+            @if (permissions.servePermission) {
+              <i class="bi bi-check-lg"></i>
+            } @else {
+              <i class="bi bi-emoji-frown-fill"></i>
+            }
+          </li>
+          <li>
+            Kasse - Berechtigung &nbsp;
+            @if (permissions.checkoutPermission) {
+              <i class="bi bi-check-lg"></i>
+            } @else {
+              <i class="bi bi-emoji-frown-fill"></i>
+            }
+          </li>
+          <li>
+            Admin - Berechtigung &nbsp;
+            @if (permissions.adminPermission) {
+              <i class="bi bi-check-lg"></i>
+            } @else {
+              <i class="bi bi-emoji-frown-fill"></i>
+            }
+          </li>
         </ul>
       </div>
     </form>

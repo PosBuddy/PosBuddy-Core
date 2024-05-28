@@ -1,10 +1,11 @@
-import {AfterViewInit, Component, ElementRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, Input, TemplateRef, ViewChild} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {AllocateService} from "../service/allocate.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {timer} from "rxjs";
+import {paymentService} from "../service/payment.service";
 
 
 @Component({
@@ -16,6 +17,11 @@ import {timer} from "rxjs";
 })
 
 export class AllocateIdComponent implements AfterViewInit {
+  @Input() permissions = {
+    "servePermission": false,
+    "checkoutPermission": false,
+    "adminPermission": false,
+  }
   @ViewChild("surnameInput") surnameInputElement!: ElementRef;
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
@@ -33,7 +39,7 @@ export class AllocateIdComponent implements AfterViewInit {
   attribute3 = '';
   balance = '0'
 
-  constructor(private allocateService: AllocateService) {
+  constructor(private allocateService: AllocateService, public paymentService: paymentService) {
   }
 
 

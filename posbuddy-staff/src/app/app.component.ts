@@ -54,11 +54,14 @@ export class AppComponent {
   private offcanvasService = inject(NgbOffcanvas);
   private modalService = inject(NgbModal);
 
-  servePermission: boolean = false;
-  checkoutPermission: boolean = false;
-  adminPermission: boolean = false;
+  public permissions = {
+    "servePermission": false,
+    "checkoutPermission": false,
+    "adminPermission": false,
+  }
 
   public isCollapsed: boolean = true;
+
 
   constructor(private paymentService: paymentService) {
 
@@ -69,9 +72,7 @@ export class AppComponent {
     this.paymentService
       .getPermissions()
       .subscribe(permissions => {
-          this.checkoutPermission = permissions.checkoutPermission;
-          this.servePermission = permissions.servePermission;
-          this.adminPermission = permissions.adminPermission;
+          this.permissions = permissions;
         }, err => {
           console.error("Error at getting permissions from backend:" + err)
         }

@@ -82,25 +82,39 @@ export class paymentService {
     return this.http.post<any>(this.baseUrl + "payout/" + posBuddyId, httpOptions)
   }
 
-  doDeallocate(posBuddyId: string) {
+  doDeallocate(posBuddyId
+                 :
+                 string
+  ) {
     return this.http.get<any>(this.baseUrl + "deAllocate/" + posBuddyId, httpOptions)
   }
 
-  getIdentity(posBuddyId: string): Observable<identity> {
+  getIdentity(posBuddyId
+                :
+                string
+  ):
+    Observable<identity> {
     return this.http.get<any>(this.baseUrl + "identity/" + posBuddyId, httpOptions)
   }
 
-  getRevenue(posBuddyId: string): Observable<revenue[]> {
+  getRevenue(posBuddyId
+               :
+               string
+  ):
+    Observable<revenue[]> {
     return this.http.get<any>(this.baseUrl + "revenue/" + posBuddyId, httpOptions)
   }
 
-  getPermissions(): Observable<permissions> {
+  getPermissions()
+    :
+    Observable<permissions> {
     return this.http.get<any>(this.baseUrl + "permissions", httpOptions)
   }
 
-  getItems(dispensingStation?: string): Observable<item[]> {
+  getItems(dispensingStation ?: string): Observable<item[]> {
     let url = this.baseUrl + "items"
-    if (typeof dispensingStation != 'undefined') {
+    if (typeof dispensingStation != 'undefined'
+    ) {
       url += "/" + dispensingStation
     }
     console.info("url:" + url)
