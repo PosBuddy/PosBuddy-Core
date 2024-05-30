@@ -15,10 +15,10 @@ public class ConfigEntity {
 
     @Enumerated(EnumType.STRING)
     @Id
-    @Column(name = "id", nullable = false, length = 20)
+    @Column(name = "id", nullable = false, length = 40)
     private ConfigID id;
 
-    @Column(name = "jsonConfig", nullable = false)
+    @Column(name = "jsonConfig", nullable = false, length = 8092)
     private String jsonConfig;
 
 

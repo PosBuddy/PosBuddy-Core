@@ -1,0 +1,23 @@
+@for (dispensingStation of dispensingStations; track dispensingStation) {
+  <div class="card">
+    <div class="card-header">
+      Ausgabestation : {{ dispensingStation.name }}
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{ dispensingStation.name }} </h5>
+      Beschreibung: {{ dispensingStation.location }}
+      <p class="card-text form-check">
+        <input class="form-check-input"
+               type="checkbox"
+               id="{{ dispensingStation.id }}"
+               (change)="setDispFilterToLocalStorage(dispensingStation.id,$event)"
+               [checked]="getDispFilterFromLocalStorage(dispensingStation.id)"
+        />
+        <label class="form-check-label" for="{{ dispensingStation.id }}">
+          Artikel dieser Ausgabestation anzeigen
+        </label>
+      </p>
+    </div>
+  </div>
+  <p></p>
+}

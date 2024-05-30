@@ -1,7 +1,7 @@
 package de.jkarthaus.posBuddy.mapper.impl;
 
 import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
-import de.jkarthaus.posBuddy.model.FtpConfig;
+import de.jkarthaus.posBuddy.model.config.FtpConfig;
 import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.FtpConfigDto;
 import io.micronaut.serde.ObjectMapper;

@@ -1,4 +1,4 @@
-package de.jkarthaus.posBuddy.model;
+package de.jkarthaus.posBuddy.model.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.micronaut.serde.annotation.Serdeable;

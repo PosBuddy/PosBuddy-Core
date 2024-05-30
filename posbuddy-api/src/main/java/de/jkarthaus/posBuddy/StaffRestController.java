@@ -23,6 +23,7 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.util.List;
 
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
@@ -124,7 +125,9 @@ public class StaffRestController {
             return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
-            return HttpResponse.ok(partyActionService.getIdentityResponseByPosBuddyId(posBuddyId));
+            return HttpResponse.ok(
+                    partyActionService.getIdentityResponseByPosBuddyId(posBuddyId)
+            );
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
             return HttpResponse.status(HttpStatus.BAD_REQUEST);
@@ -189,7 +192,7 @@ public class StaffRestController {
 
     //--------------------------------------------------------------------------------------------------------------Allocate
     @Secured(IS_ANONYMOUS)
-    @Post(uri = "/allocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/allocateVolatile/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
@@ -297,6 +300,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "500", description = "Server Error occurred"),
     })
     @Tag(name = "secure")
     public HttpResponse deposit(
@@ -317,6 +321,12 @@ public class StaffRestController {
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
             return HttpResponse.notFound();
+        } catch (IOException e) {
+            log.error("IOException:{}", e.getMessage());
+            return HttpResponse.serverError();
+        } catch (Exception e) {
+            log.error("Exception:{}", e.getMessage());
+            return HttpResponse.serverError();
         }
         return HttpResponse.ok();
     }

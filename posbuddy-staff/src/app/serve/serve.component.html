@@ -63,39 +63,41 @@
     <div class="offcanvas-body">
       <!--                                                                  Dispensing Stations                        -->
       @for (dispensingStation of dispensingStations; track dispensingStation) {
-        <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
-          <div class="card">
-            <div class="card-header">
-              {{ dispensingStation.name }}
-            </div>
-            <div class="card-body p-1">
-              <div class="container">
-                <!--                                                        Items per Station                          -->
-                @for (item of items; track item) {
-                  @if (item.dispensingStation.id == dispensingStation.id) {
-                    <div class="row pt-1 bg-info-subtle">
-                      <div class="col-2"><h3>{{ getServeItemCount(item.id) }}</h3></div>
-                      <div class="col-3">{{ item.unit }}</div>
-                      <div class="col-7">{{ item.itemText }}</div>
-                    </div>
-                    <div class="row pb-3 border-bottom">
-                      <div class="col-6 justify-content-start">
-                        <button class="btn btn-lg btn-outline-info" [disabled]="checkDisableAddItem(item.price)"
-                                (click)="incServeItemCount(item.id)"><i class="bi bi-plus-circle-fill"></i>
-                        </button>
+        @if (isItemsFromStationSelectable(dispensingStation.id)) {
+          <div #collapse="ngbCollapse" [(ngbCollapse)]="iscollapsed">
+            <div class="card">
+              <div class="card-header">
+                {{ dispensingStation.name }}
+              </div>
+              <div class="card-body p-1">
+                <div class="container">
+                  <!--                                                        Items per Station                          -->
+                  @for (item of items; track item) {
+                    @if (item.dispensingStation.id == dispensingStation.id) {
+                      <div class="row pt-1 bg-info-subtle">
+                        <div class="col-2"><h3>{{ getServeItemCount(item.id) }}</h3></div>
+                        <div class="col-3">{{ item.unit }}</div>
+                        <div class="col-7">{{ item.itemText }}</div>
                       </div>
-                      <div class="col-6 justify-content-end">
-                        <button class="btn btn-lg btn-outline-primary"
-                                (click)="decServeItemCount(item.id)"><i class="bi bi-dash-circle-fill"></i>
-                        </button>
+                      <div class="row pb-3 border-bottom">
+                        <div class="col-6 justify-content-start">
+                          <button class="btn btn-lg btn-outline-info" [disabled]="checkDisableAddItem(item.price)"
+                                  (click)="incServeItemCount(item.id)"><i class="bi bi-plus-circle-fill"></i>
+                          </button>
+                        </div>
+                        <div class="col-6 justify-content-end">
+                          <button class="btn btn-lg btn-outline-primary"
+                                  (click)="decServeItemCount(item.id)"><i class="bi bi-dash-circle-fill"></i>
+                          </button>
+                        </div>
                       </div>
-                    </div>
+                    }
                   }
-                }
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        }
         <p></p>
       }
     </div>

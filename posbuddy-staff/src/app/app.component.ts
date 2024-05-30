@@ -1,6 +1,13 @@
-import {Component, HostListener, ViewChild} from '@angular/core';
+import {Component, HostListener, inject, TemplateRef, ViewChild} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
-import {NgbAccordionDirective, NgbAccordionModule, NgbAlert} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbAccordionDirective,
+  NgbAccordionModule,
+  NgbAlert,
+  NgbCollapse,
+  NgbModal,
+  NgbOffcanvas
+} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule} from "@angular/forms";
 import {AllocateIdComponent} from "./allocate-id/allocate-id.component";
 import {AddValueComponent} from "./add-value/add-value.component";
@@ -11,6 +18,10 @@ import {RevenueComponent} from "./revenue/revenue.component";
 import {ServeComponent} from "./serve/serve.component";
 import {paymentService} from "./service/payment.service";
 import {version} from '../../package.json';
+import {ZXingScannerModule} from "@zxing/ngx-scanner";
+import {NgClass} from "@angular/common";
+import {DispensingStationFilterComponent} from "./dispensing-station-filter/dispensing-station-filter.component";
+import {SpecialTransactionComponent} from "./special-transaction/special-transaction.component";
 
 @Component({
   selector: 'app-root',
@@ -26,7 +37,12 @@ import {version} from '../../package.json';
     DeallocateComponent,
     RevenueComponent,
     ServeComponent,
-    NgbAlert
+    NgbAlert,
+    NgbCollapse,
+    ZXingScannerModule,
+    NgClass,
+    DispensingStationFilterComponent,
+    SpecialTransactionComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
@@ -35,8 +51,17 @@ export class AppComponent {
   @ViewChild('accMenue') accMenue!: NgbAccordionDirective;
   title = 'PosBuddy &#9400; by JK';
 
-  servePermission: boolean = false;
-  checkoutPermission: boolean = false;
+  private offcanvasService = inject(NgbOffcanvas);
+  private modalService = inject(NgbModal);
+
+  public permissions = {
+    "servePermission": false,
+    "checkoutPermission": false,
+    "adminPermission": false,
+  }
+
+  public isCollapsed: boolean = true;
+
 
   constructor(private paymentService: paymentService) {
 
@@ -47,8 +72,7 @@ export class AppComponent {
     this.paymentService
       .getPermissions()
       .subscribe(permissions => {
-          this.checkoutPermission = permissions.checkoutPermission;
-          this.servePermission = permissions.servePermission;
+          this.permissions = permissions;
         }, err => {
           console.error("Error at getting permissions from backend:" + err)
         }
@@ -97,8 +121,23 @@ export class AppComponent {
         event.preventDefault();
         break
       }
+      case "F7" : {
+        this.accMenue.collapseAll();
+        this.accMenue.toggle('accF7');
+        event.preventDefault();
+        break
+      }
     }
   }
 
   protected readonly version = version;
+
+  openFilter(content: TemplateRef<any>) {
+    this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
+  }
+
+  openInfo(content: TemplateRef<any>) {
+    this.modalService.open(content,
+      {ariaLabelledBy: 'modal-basic-title'});
+  }
 }

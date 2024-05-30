@@ -1,28 +1,115 @@
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th scope="col">#</th>
-    <th scope="col">Zeit</th>
-    <th scope="col">M.</th>
-    <th scope="col">Artikel</th>
-    <th scope="col">Wert</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let revenue of revenues; let i = index ">
-    <th scope="row">{{ i+1 }}</th>
-    <td>
-      {{ revenue.timeOfAction | date:'mediumTime' }}
-    </td>
-    <td>
-      {{ revenue.amount }}
-    </td>
-    <td>
-      {{ revenue.itemText }}
-    </td>
-    <td>
-      {{ revenue.value | number : '1.2-2' }}
-    </td>
-  </tr>
-  </tbody>
-</table>
+<!--                                    HEADER                                                           -->
+<div class="container text-center">
+  <div class="row">
+    <div class="col gy-1">
+      &nbsp;
+    </div>
+  </div>
+  @if (serverResponse != "") {
+    <div class="row">
+      <div class="col">
+        <ngb-alert type="danger" [dismissible]="false">{{ serverResponse }}</ngb-alert>
+      </div>
+    </div>
+  }
+  @if (actPosBuddyId == UNKNOWN_ID) {
+    <div class="row">
+      <div class="col">
+        <ngb-alert type="primary" [dismissible]="false">Bitte ID scannen</ngb-alert>
+      </div>
+    </div>
+  }
+  <div class="row">
+    <div class="col">
+      <button class="btn btn-lg btn-outline-primary"
+              (click)="scanQRCode(scanIdOC)">SCAN ID KARTE
+      </button>
+    </div>
+  </div>
+  <p></p>
+</div>
+<!--                                     REVENUE AND BALANCE                                                         -->
+@if (actPosBuddyId != UNKNOWN_ID) {
+  <div class="card" style="width: 23rem;">
+    <div class="card-header">
+      Personidentifikation
+    </div>
+    <div class="card-body">
+      <h5 class="card-title">{{ idData.surName + " " + idData.lastName }}</h5>
+      <p class="card-text">Guthaben:
+        <strong> {{ idData.balance | number : '1.2-2' }} EUR</strong>
+      </p>
+      @if (idData.youthProtectionAct) {
+        <p class="card-text"><strong>Person fällt unter Jugendschutzgesetz</strong></p>
+      }
+    </div>
+  </div>
+  <p></p>
+  <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Zeit</th>
+        <th scope="col">M.</th>
+        <th scope="col">Artikel</th>
+        <th scope="col">Wert</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let revenue of idData.revenueList; let i = index ">
+        <th scope="row">{{ i + 1 }}</th>
+        <td>
+          {{ revenue.timeOfAction | date:'hh:mm:ss' }}
+        </td>
+        <td>
+          {{ revenue.amount }}
+        </td>
+        <td>
+          @if (revenue.action == "+") {
+            <i class="bi bi-plus-circle-fill"></i>
+            Einzahlung
+          }
+          @if (revenue.action == "-") {
+            <i class="bi bi-minus-circle-fill"></i>
+            Auszahlung
+          }
+          {{ revenue.itemText }}
+        </td>
+        <td>
+          {{ revenue.value * revenue.amount | number : '1.2-2' }}
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <p></p>
+  <div class="container text-center">
+    <div class="row">
+      <div class="col">
+        <button
+          type="button"
+          class="btn btn-lg btn-outline-primary"
+          (click)="resetData()">Anzeige zurücksetzen
+        </button>
+      </div>
+    </div>
+  </div>
+  <p></p>
+}
+
+<!--                                    SCANNER OFF CANVAS                                                           -->
+<ng-template #scanIdOC let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="scanID">Karte Scannen</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+    </div>
+  </div>
+  <div class="text-end">
+    Bitte QR-code in der Kamera ausrichten.
+  </div>
+</ng-template>

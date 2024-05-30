@@ -1,4 +1,4 @@
 export const environment = {
-  callStaticApi: true,
+  callStaticApi: false,
   applicationTitle: "DEV-posBuddy"
 };

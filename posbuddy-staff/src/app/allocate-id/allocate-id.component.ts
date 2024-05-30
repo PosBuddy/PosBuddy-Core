@@ -1,10 +1,12 @@
-import {AfterViewInit, Component, ElementRef, inject, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, Input, TemplateRef, ViewChild} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {AllocateService} from "../service/allocate.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {timer} from "rxjs";
+import {paymentService} from "../service/payment.service";
+import {PosBuddyConstants} from "../posBuddyConstants";
 
 
 @Component({
@@ -16,6 +18,11 @@ import {timer} from "rxjs";
 })
 
 export class AllocateIdComponent implements AfterViewInit {
+  @Input() permissions = {
+    "servePermission": false,
+    "checkoutPermission": false,
+    "adminPermission": false,
+  }
   @ViewChild("surnameInput") surnameInputElement!: ElementRef;
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
@@ -24,7 +31,12 @@ export class AllocateIdComponent implements AfterViewInit {
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
-  posBuddyId: string = "-";
+  // -- Form
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
+  disableIdField = false;
+  borrowCard: boolean = true;
+  oneTimeCard: boolean = false;
+  staticCard: boolean = false;
   surname = '';
   lastname = '';
   birthday = '1975-03-08';
@@ -33,7 +45,7 @@ export class AllocateIdComponent implements AfterViewInit {
   attribute3 = '';
   balance = '0'
 
-  constructor(private allocateService: AllocateService) {
+  constructor(private allocateService: AllocateService, public paymentService: paymentService) {
   }
 
 
@@ -55,6 +67,25 @@ export class AllocateIdComponent implements AfterViewInit {
     );
   }
 
+  toggleCardType(cardType: string) {
+    this.borrowCard = false;
+    this.oneTimeCard = false;
+    this.staticCard = false;
+    if (cardType === "borrowCard") {
+      this.borrowCard = true
+      this.disableIdField = false
+    }
+    if (cardType === "oneTimeCard") {
+      this.oneTimeCard = true
+      this.disableIdField = true
+      this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID
+    }
+    if (cardType === "staticCard") {
+      this.staticCard = true
+      this.disableIdField = false
+    }
+  }
+
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
     if (this.isUUID(this.posBuddyId)) {
@@ -62,6 +93,7 @@ export class AllocateIdComponent implements AfterViewInit {
     } else {
       this.formValidText = "ID ungültig"
       this.formValid = false
+      this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID
     }
     this.offcanvasService.dismiss("success");
   }
@@ -82,7 +114,7 @@ export class AllocateIdComponent implements AfterViewInit {
       console.info("formCheck:OK")
       this.formValid = true;
       this.formValidText = "";
-      this.allocateService.allocatePosBuddyId(
+      this.allocateService.allocateVolatilePosBuddyId(
         this.posBuddyId,
         {
           allocatePosBuddyIdRequest: {
@@ -144,7 +176,7 @@ export class AllocateIdComponent implements AfterViewInit {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.balance = "0";
-    this.posBuddyId = "-";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
   private getDismissReason(reason: any): string {

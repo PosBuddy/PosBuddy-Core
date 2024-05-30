@@ -1,24 +1,21 @@
 import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Observable} from "rxjs";
-
 
 const httpOptions = {
   headers: new HttpHeaders({
     'Content-Type': 'application/json',
     'rejectUnauthorized': 'false',
-    'Cache-Control': 'no-cache, no-store, must-revalidate, post-check=0, pre-check=0',
-    'Pragma': 'no-cache',
-    'Expires': '0'
   })
 };
 
 export const UNKNOWN_ID = "-";
 
-export interface staticIdData {
+export interface idData {
   "posBuddyId": string,
+  "surName": string,
+  "lastName": string,
+  "youthProtectionAct": boolean,
   "balance": number,
-  "syncTimeStamp": string,
   "revenueList": [
     {
       "itemText": string,
@@ -33,17 +30,16 @@ export interface staticIdData {
 @Injectable({
   providedIn: 'root'
 })
+export class RevenueService {
 
-
-export class StaticIdService {
+  private identityDataUrl = '/api/v1/identityData/';  // URL to web api
 
   constructor(private http: HttpClient) {
 
   }
 
-  getIdentity(posBuddyId: string): Observable<staticIdData> {
-    return this.http.get<any>("/asset/" + posBuddyId, httpOptions)
+  getIdentityData(posBuddyId: String) {
+    return this.http.get<idData>(this.identityDataUrl + posBuddyId, httpOptions)
   }
-
 
 }

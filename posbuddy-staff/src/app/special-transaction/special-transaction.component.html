@@ -4,6 +4,41 @@
     <div class="col-8"><input type="password" readonly [(ngModel)]="posBuddyId"/></div>
   </div>
   <div class="row pt-3">
+    <div class="col-4">Kontostand :</div>
+    <div class="col-8">
+      <p class="text-nowrap fs-4">
+        Guthaben: {{ balance | number: '1.2-2' }} <i class="bi bi-currency-euro"></i>
+      </p>
+    </div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-4">Vorgang</div>
+    <div class="col-8">
+      <select
+        class="form-select"
+        aria-label="Ein/Auszahlung"
+        [(ngModel)]="operation"
+      >
+        <option default ngValue="{{ PosBuddyConstants.DEPOSIT }}">Einzahlung</option>
+        <option ngValue="{{ PosBuddyConstants.PAYMENT }}">Auszahlung</option>
+      </select>
+    </div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-4">&nbsp;</div>
+    <div class="col-8">
+      <select
+        class="form-select"
+        aria-label="OperationsText"
+        [(ngModel)]="itemText"
+      >
+        @for (itemText of itemTexts; track itemText) {
+          <option>{{ itemText }}</option>
+        }
+      </select>
+    </div>
+  </div>
+  <div class="row pt-3">
     <div class="col-4">Wert :</div>
     <div class="col-8">
       <input
@@ -20,7 +55,9 @@
     </div>
     <div class="col-8">
       <button class="btn btn-lg btn-outline-primary"
-              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">Einzahlen
+              (click)="checkAndSend()"
+              [disabled]="confirmError || confirmOK">
+        Vorgang Auslösen
       </button>
     </div>
   </div>
@@ -33,7 +70,7 @@
         <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
       }
       @if (confirmOK) {
-        <ngb-alert type="success" (closed)="resetOK()">Einzahlung erfolgreich</ngb-alert>
+        <ngb-alert type="success" (closed)="resetOK()">Transaktion erfolgreich</ngb-alert>
       }
     </div>
   </div>

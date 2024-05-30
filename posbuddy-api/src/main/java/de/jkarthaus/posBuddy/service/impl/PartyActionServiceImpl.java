@@ -1,9 +1,7 @@
 package de.jkarthaus.posBuddy.service.impl;
 
-import de.jkarthaus.posBuddy.db.DispensingStationRepository;
-import de.jkarthaus.posBuddy.db.IdentityRepository;
-import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.db.RevenueRepository;
+import de.jkarthaus.posBuddy.db.*;
+import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.ItemEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
@@ -12,18 +10,20 @@ import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.IdentityMapper;
 import de.jkarthaus.posBuddy.mapper.RevenueMapper;
 import de.jkarthaus.posBuddy.model.Constants;
+import de.jkarthaus.posBuddy.model.config.DepositBonusConfig;
+import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
 import de.jkarthaus.posBuddy.tools.Tools;
+import io.micronaut.serde.ObjectMapper;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -32,17 +32,74 @@ import java.util.stream.Collectors;
 @Singleton
 public class PartyActionServiceImpl implements PartyActionService {
 
+    private final ObjectMapper objectMapper;
     private final IdentityMapper identityMapper;
     private final RevenueMapper revenueMapper;
     private final DispensingStationMapper dispensingStationMapper;
     private final IdentityRepository identityRepository;
     private final RevenueRepository revenueRepository;
     private final ItemRepository itemRepository;
+    private final ConfigRepository configRepository;
+
     private final DispensingStationRepository dispensingStationRepository;
+
+    @Override
+    @Transactional
+    public void doSpecialRevenue(
+            String posBuddyId,
+            String operation,
+            Double value,
+            String itemText) throws posBuddyIdNotValidException,
+            posBuddyIdNotAllocatedException,
+            OutOfBalanceException, ActionNotSupportetException {
+        IdentityEntity identityEntity = getPosBuddyEntity(posBuddyId);
+        if (operation.equals(Constants.PAYMENT)
+                && identityEntity.getBalance().doubleValue() - value < 0) {
+            throw new OutOfBalanceException("value is greater than balance");
+        }
+        switch (operation) {
+            case Constants.DEPOSIT -> {
+                RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setPosbuddyid(posBuddyId);
+                revenueEntity.setTimeofaction(LocalDateTime.now());
+                revenueEntity.setPaymentaction(Constants.DEPOSIT);
+                revenueEntity.setItemtext(itemText);
+                revenueEntity.setAmount(1);
+                revenueEntity.setValue(value.floatValue());
+                revenueRepository.addRevenue(revenueEntity);
+                identityEntity.setBalance(identityEntity.getBalance() + value.floatValue());
+                identityRepository.updateIdentityEntity(identityEntity);
+                log.info("successfully deposited revenue -> add {} EUR to balance of id:{}", value, posBuddyId);
+                break;
+            }
+            case Constants.PAYMENT -> {
+                RevenueEntity revenueEntity = new RevenueEntity();
+                revenueEntity.setPosbuddyid(posBuddyId);
+                revenueEntity.setTimeofaction(LocalDateTime.now());
+                revenueEntity.setPaymentaction(Constants.PAYMENT);
+                revenueEntity.setItemtext(itemText);
+                revenueEntity.setAmount(1);
+                revenueEntity.setValue(value.floatValue());
+                revenueRepository.addRevenue(revenueEntity);
+                identityEntity.setBalance(identityEntity.getBalance() - value.floatValue());
+                identityRepository.updateIdentityEntity(identityEntity);
+                log.info("successfully deposited revenue -> substract {} EUR from balance of id:{}", value, posBuddyId);
+                break;
+            }
+            default -> {
+                log.error("operation:{} not supported -> do nothing", operation);
+                throw new ActionNotSupportetException(operation);
+            }
+        }
+    }
 
     @Override
     public IdentityResponse getIdentityResponseByPosBuddyId(String posBuddyId)
             throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
+        return identityMapper.toResponse(getPosBuddyEntity(posBuddyId));
+    }
+
+    private IdentityEntity getPosBuddyEntity(String posBuddyId) throws posBuddyIdNotValidException, posBuddyIdNotAllocatedException {
         if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("no valid UUID");
         }
@@ -51,7 +108,12 @@ public class PartyActionServiceImpl implements PartyActionService {
             log.info("Actual valid posBuddy Identity with ID:{} not found in Database", posBuddyId);
             throw new posBuddyIdNotAllocatedException("posBuddy ID not found");
         }
-        return identityMapper.toResponse(identityEntity);
+        if (identityEntity.getEndallocation() != null
+                && identityEntity.getEndallocation().isBefore(LocalDateTime.now())) {
+            log.info("posBuddyId is not allocated anymore");
+            throw new posBuddyIdNotAllocatedException("posBuddyId is not allocated anymore");
+        }
+        return identityEntity;
     }
 
     @Override
@@ -123,7 +185,8 @@ public class PartyActionServiceImpl implements PartyActionService {
 
 
     @Override
-    public void addDeposit(String posBuddyId, float value) throws posBuddyIdNotAllocatedException {
+    @Transactional
+    public void addDeposit(String posBuddyId, Float value) throws posBuddyIdNotAllocatedException, IOException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
         float newBalance = identityEntity.getBalance() + value;
         // add revenue
@@ -134,10 +197,88 @@ public class PartyActionServiceImpl implements PartyActionService {
         revenueEntity.setPosbuddyid(posBuddyId);
         revenueEntity.setPaymentaction(Constants.DEPOSIT);
         revenueRepository.addRevenue(revenueEntity);
+        // check discounts
+        Optional<ConfigEntity> configEntityOptional = configRepository.findById(ConfigID.DEP_BONUS_CONFIG);
+        if (configEntityOptional.isPresent()) {
+            log.debug("check discount");
+            DepositBonusConfig depositBonusConfig = objectMapper.readValue(
+                    configEntityOptional.get().getJsonConfig(),
+                    DepositBonusConfig.class
+            );
+            List<RevenueEntity> depositBonusRevenueEntities = calculateDepositBonus(
+                    depositBonusConfig,
+                    value.doubleValue(),
+                    identityEntity
+            );
+            AtomicReference<Double> depositBonus = new AtomicReference<>(0.0);
+            depositBonusRevenueEntities.forEach(depositBonusRevenueEntity -> {
+                revenueRepository.addRevenue(depositBonusRevenueEntity);
+                depositBonus.updateAndGet(v -> v + depositBonusRevenueEntity.getValue().doubleValue());
+            });
+            log.info("add:{} bonus value to new balance", depositBonus);
+            newBalance += depositBonus.get();
+        } else {
+            log.debug("no discount config found");
+        }
         // setNewBalance
         identityEntity.setBalance(newBalance);
         identityRepository.updateIdentityEntity(identityEntity);
     }
+
+    private List<RevenueEntity> calculateDepositBonus(
+            DepositBonusConfig depositBonusConfig,
+            double depositValue,
+            IdentityEntity identityEntity) {
+        List<RevenueEntity> revenueEntities = new ArrayList<>();
+        depositBonusConfig.depositBonusList.forEach(depositBonus -> {
+                    // -- bonus for static identity
+                    if (identityEntity.isStaticIdentity() && depositBonus.isActiveOnStaticId()) {
+                        if (depositValue >= depositBonus.getFromAmount()
+                                && (depositValue <= depositBonus.getToAmount() || depositBonus.getToAmount() <= 0)
+                        ) {
+                            log.info("generating for static id bonus :{}", depositBonus.getRevenueText());
+                            revenueEntities.add(getBonusRevenueEntity(
+                                            identityEntity.getPosbuddyid(),
+                                            depositBonus.getRevenueText(),
+                                            depositValue / 100 * depositBonus.getCreditNotePercent()
+                                    )
+                            );
+                        }
+                    }
+                    // -- bonus for volatile identity
+                    if (!identityEntity.isStaticIdentity() && !depositBonus.isActiveOnStaticId()) {
+                        if (depositValue >= depositBonus.getFromAmount()
+                                && (depositValue <= depositBonus.getToAmount() || depositBonus.getToAmount() <= 0)
+                        ) {
+                            log.info("generating bonus for volatile id :{}", depositBonus.getRevenueText());
+                            revenueEntities.add(getBonusRevenueEntity(
+                                            identityEntity.getPosbuddyid(),
+                                            depositBonus.getRevenueText(),
+                                            depositValue / 100 * depositBonus.getCreditNotePercent()
+                                    )
+                            );
+                        }
+                    }
+                }
+        );
+        return revenueEntities;
+    }
+
+    private RevenueEntity getBonusRevenueEntity(
+            String posBuddyId,
+            String text,
+            Double value
+    ) {
+        RevenueEntity revenueEntity = new RevenueEntity();
+        revenueEntity.setPosbuddyid(posBuddyId);
+        revenueEntity.setPaymentaction(Constants.DEPOSIT);
+        revenueEntity.setItemtext(text);
+        revenueEntity.setAmount(1);
+        revenueEntity.setValue(value.floatValue());
+        revenueEntity.setTimeofaction(LocalDateTime.now());
+        return revenueEntity;
+    }
+
 
     /**
      * connect a posBuddyId with a Person
@@ -201,12 +342,13 @@ public class PartyActionServiceImpl implements PartyActionService {
         if (identityEntity.isStaticIdentity()) {
             throw new PosBuddyIdStaticException("posBuddy ID is static");
         }
-        if (identityEntity.getBalance() > 0) {
+        if (identityEntity.getBalance() > 0.001) {
             throw new OutOfBalanceException("balance is > 0");
         }
         identityEntity.setEndallocation(LocalDateTime.now());
+        identityEntity.setBalance(0.0F);
         identityRepository.updateIdentityEntity(identityEntity);
-        log.info("deAllocation of ID:{} succesfully", posBuddyId);
+        log.info("deAllocation of ID:{} successfully", posBuddyId);
     }
 
     @Override
