@@ -192,7 +192,7 @@ public class StaffRestController {
 
     //--------------------------------------------------------------------------------------------------------------Allocate
     @Secured(IS_ANONYMOUS)
-    @Post(uri = "/allocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @Post(uri = "/allocateVolatile/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),

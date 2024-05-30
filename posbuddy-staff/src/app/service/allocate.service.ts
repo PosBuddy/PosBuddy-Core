@@ -26,14 +26,14 @@ interface AllocatePosBuddyIdRequest {
 })
 export class AllocateService {
 
-  private serverUrl = 'api/v1/allocate/';  // URL to web api
+  private serverUrl = 'api/v1/allocateVolatile/';  // URL to web api
 
   constructor(private http: HttpClient) {
 
   }
 
 
-  allocatePosBuddyId(posBuddyId: string, allocatePosBuddyIdRequest: AllocatePosBuddyIdRequest) {
+  allocateVolatilePosBuddyId(posBuddyId: string, allocatePosBuddyIdRequest: AllocatePosBuddyIdRequest) {
     return this
       .http
       .post<AllocatePosBuddyIdRequest>(
