@@ -71,6 +71,10 @@ datasources:
     username: posbuddy
     driver-class-name: org.postgresql.Driver
     dialect: POSTGRES
+  jasper:
+    url: jdbc:postgresql://localhost:5432/posbuddy
+    username: posbuddy
+    password: posbuddy
 jpa:
   default:
     properties:

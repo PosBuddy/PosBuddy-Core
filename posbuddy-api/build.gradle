@@ -35,6 +35,9 @@ dependencies {
 
     implementation("net.sf.jasperreports:jasperreports:6.21.0")
     implementation("net.sf.jasperreports:jasperreports-fonts:6.20.5")
+    implementation("net.sf.barcode4j:barcode4j:2.1")
+    implementation("com.google.zxing:core:3.5.3")
+    implementation("org.apache.xmlgraphics:batik-bridge:1.17")
 
     compileOnly("org.apache.commons:commons-csv:1.10.0")
     compileOnly("org.projectlombok:lombok")

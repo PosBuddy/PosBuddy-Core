@@ -22,13 +22,32 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportService {
 
-    @Value("${posbuddy.do-ftp-sync:true}")
-    private boolean doFtpSync;
+    @Value("${datasources.jasper.url:''}")
+    private String jasperUrl;
 
+    @Value("${datasources.jasper.username:''}")
+    private String jasperUsername;
+
+    @Value("${datasources.jasper.password:''}")
+    private String jasperPassword;
+
+    private Connection databaseConnection;
 
     @PostConstruct
     private void init() {
-
+        log.info("Init Report Database Connection: {}", jasperUrl);
+        try {
+            databaseConnection = DriverManager.getConnection(
+                    jasperUrl,
+                    jasperUsername,
+                    jasperPassword
+            );
+            log.info("established report-database connection to:{}",
+                    databaseConnection.getMetaData().getDatabaseProductName()
+            );
+        } catch (SQLException e) {
+            log.error("failed to initialize report database connection", e);
+        }
     }
 
     @Override
@@ -40,25 +59,19 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
                         "/home/jkarthaus/JaspersoftWorkspace/posBuddy/oneTimeID.jrxml"
                 );
 
-        Connection conn = DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/posbuddy",
-                "posbuddy",
-                "posBuddy"
-        );
-
         HashMap map = new HashMap();
-        map.put("REPORT_CONNECTION", conn);
+        map.put("REPORT_CONNECTION", databaseConnection);
 
         JasperPrint jasperPrint = JasperFillManager.fillReport(
                 menueReport,
-                parameters
+                parameters,
+                databaseConnection
         );
 
         Files.write(
                 Path.of("/tmp/oneTimeId.pdf"),
                 JasperExportManager.exportReportToPdf(jasperPrint)
         );
-
 
     }
 
