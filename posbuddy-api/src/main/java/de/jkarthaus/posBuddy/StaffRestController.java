@@ -22,8 +22,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JRException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
@@ -190,7 +192,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
-    //--------------------------------------------------------------------------------------------------------------Allocate
+    //-------------------------------------------------------------------------------------Allocate volatile posBuddyId
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/allocateVolatile/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -221,6 +223,43 @@ public class StaffRestController {
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
             return HttpResponse.status(HttpStatus.BAD_REQUEST);
+        }
+        return HttpResponse.ok();
+    }
+
+    //-------------------------------------------------------------------------------------Allocate one time posBuddyId
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/allocateOneTimeId", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "409", description = "ID already allocated"),
+            @ApiResponse(responseCode = "400", description = "ID not valid"),
+    })
+    @Tag(name = "secure")
+    public HttpResponse allocateOneTimePosBuddyId(
+            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        log.info("allocate Person to a one time posBuddyId");
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        if (!securityService.isCheckoutStation(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        }
+        try {
+            partyActionService.allocateOneTimePosBuddyId(allocatePosBuddyIdRequest);
+        } catch (PosBuddyIdNotAllocateableException e) {
+            log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.CONFLICT);
+        } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+        } catch (JRException | SQLException | IOException serverException) {
+            log.error("Exception:{}", serverException.getMessage());
+            return HttpResponse.serverError(serverException.getMessage());
         }
         return HttpResponse.ok();
     }

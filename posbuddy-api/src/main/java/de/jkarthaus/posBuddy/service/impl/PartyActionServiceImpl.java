@@ -14,14 +14,17 @@ import de.jkarthaus.posBuddy.model.config.DepositBonusConfig;
 import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
+import de.jkarthaus.posBuddy.service.ReportService;
 import de.jkarthaus.posBuddy.tools.Tools;
 import io.micronaut.serde.ObjectMapper;
 import io.micronaut.transaction.annotation.Transactional;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.jasperreports.engine.JRException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -40,8 +43,8 @@ public class PartyActionServiceImpl implements PartyActionService {
     private final RevenueRepository revenueRepository;
     private final ItemRepository itemRepository;
     private final ConfigRepository configRepository;
-
     private final DispensingStationRepository dispensingStationRepository;
+    private final ReportService reportService;
 
     @Override
     @Transactional
@@ -279,6 +282,19 @@ public class PartyActionServiceImpl implements PartyActionService {
         return revenueEntity;
     }
 
+
+    @Override
+    public void allocateOneTimePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
+            throws PosBuddyIdNotAllocateableException,
+            posBuddyIdNotValidException,
+            JRException,
+            SQLException, IOException {
+
+        UUID posBuddyId = UUID.randomUUID();
+        //allocatePosBuddyId(posBuddyId.toString(), allocatePosBuddyIdRequest);
+        // TODO : FIX
+        reportService.createOneTimeIdreport(UUID.fromString("b9870fab-8017-4f0d-9621-e05d6a9855fe"));
+    }
 
     /**
      * connect a posBuddyId with a Person

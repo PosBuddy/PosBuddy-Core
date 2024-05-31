@@ -1,47 +1,71 @@
 package de.jkarthaus.posBuddy.service.impl;
 
-import de.jkarthaus.posBuddy.db.ItemRepository;
-import de.jkarthaus.posBuddy.db.entities.ItemEntity;
+import io.micronaut.context.annotation.Value;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Singleton
 @Slf4j
 @RequiredArgsConstructor
 public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportService {
 
-    private final ItemRepository itemRepository;
+    @Value("${posbuddy.do-ftp-sync:true}")
+    private boolean doFtpSync;
+
+
+    @PostConstruct
+    private void init() {
+
+    }
 
     @Override
-    public void createMenueReport() throws JRException, IOException {
+    public void createOneTimeIdreport(UUID posBuddyId) throws JRException, IOException, SQLException {
         Map<String, Object> parameters = new HashMap<>();
-        List<ItemEntity> itemEntities = itemRepository.findAll();
-        JRDataSource JRdataSource = new JRBeanCollectionDataSource(itemEntities);
 
-        parameters.put("datasource", JRdataSource);
+        JasperReport menueReport = JasperCompileManager
+                .compileReport(
+                        "/home/jkarthaus/JaspersoftWorkspace/posBuddy/oneTimeID.jrxml"
+                );
 
-        JasperReport menueReport = JasperCompileManager.compileReport(
-                "/home/jkarthaus/git/gve-posBuddy/menueReport/menue.jrxml"
+        Connection conn = DriverManager.getConnection(
+                "jdbc:postgresql://localhost:5432/posbuddy",
+                "posbuddy",
+                "posBuddy"
         );
+
+        HashMap map = new HashMap();
+        map.put("REPORT_CONNECTION", conn);
+
         JasperPrint jasperPrint = JasperFillManager.fillReport(
                 menueReport,
                 parameters
         );
 
         Files.write(
-                Path.of("/tmp/menue.pdf"),
+                Path.of("/tmp/oneTimeId.pdf"),
                 JasperExportManager.exportReportToPdf(jasperPrint)
         );
+
+
+    }
+
+
+    @Override
+    public void createMenueReport() throws JRException, IOException, SQLException {
+        Map<String, Object> parameters = new HashMap<>();
 
 
     }

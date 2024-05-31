@@ -3,8 +3,10 @@ package de.jkarthaus.posBuddy.service;
 import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.model.gui.*;
 import io.micronaut.transaction.annotation.Transactional;
+import net.sf.jasperreports.engine.JRException;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 public interface PartyActionService {
@@ -31,8 +33,12 @@ public interface PartyActionService {
 
     void addDeposit(String posBuddyId, Float value) throws posBuddyIdNotAllocatedException, IOException;
 
-    void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
+    void allocatePosBuddyId(String posBuddyId,
+                            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;
+
+    void allocateOneTimePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
+            throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException, JRException, SQLException, IOException;
 
     List<DispensingStationResponse> getDispensingStations();
 
