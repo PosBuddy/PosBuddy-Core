@@ -1,5 +1,6 @@
 package de.jkarthaus.posBuddy.service.impl;
 
+import de.jkarthaus.posBuddy.model.enums.ReportType;
 import io.micronaut.context.annotation.Value;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Singleton;
@@ -13,9 +14,10 @@ import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
 
 @Singleton
 @Slf4j
@@ -25,6 +27,14 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
     public static final String ONE_TIME_REPORT_PREFIX = "oneTimeID_";
 
     private static final String ONE_TIME_REPORT = "oneTimeID.jrxml";
+
+    public record reportDescriptor(
+            ReportType reportType,
+            String fileName,
+            LocalDateTime creationDate
+    ) {
+    }
+
 
     @Value("${datasources.jasper.url:''}")
     private String jasperUrl;
@@ -70,6 +80,25 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
                 log.error("error on create report dest directory:{}", e);
             }
         }
+    }
+
+    @Override
+    public List<reportDescriptor> getReportList() throws IOException {
+        List<reportDescriptor> result = new ArrayList<>();
+        Files.walk(reportDest).forEach(reportFile -> {
+                    ReportType reportType = ReportType.UNKNOWN;
+                    String fileName = reportFile.getFileName().toString();
+                    LocalDateTime fileDate = Instant
+                            .ofEpochMilli(reportFile.toFile().lastModified())
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime();
+                    if (fileName.startsWith(ONE_TIME_REPORT_PREFIX)) {
+                        reportType = ReportType.ONE_TIME_ID;
+                    }
+                    result.add(new reportDescriptor(reportType, fileName, fileDate));
+                }
+        );
+        return result;
     }
 
     @Override
