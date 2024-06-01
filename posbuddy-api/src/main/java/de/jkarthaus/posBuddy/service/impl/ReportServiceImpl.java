@@ -22,6 +22,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportService {
 
+    public static final String ONE_TIME_REPORT_PREFIX = "oneTimeID_";
+
+    private static final String ONE_TIME_REPORT = "oneTimeID.jrxml";
+
     @Value("${datasources.jasper.url:''}")
     private String jasperUrl;
 
@@ -30,6 +34,13 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
 
     @Value("${datasources.jasper.password:''}")
     private String jasperPassword;
+
+    @Value("${report.src}")
+    private Path reportSource;
+
+    @Value("${report.dest}")
+    private Path reportDest;
+
 
     private Connection databaseConnection;
 
@@ -48,30 +59,39 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
         } catch (SQLException e) {
             log.error("failed to initialize report database connection", e);
         }
+        if (!reportSource.resolve(ONE_TIME_REPORT).toFile().exists()) {
+            log.error("could not find :{} at :{}", ONE_TIME_REPORT, reportSource);
+        }
+        if (!reportDest.toFile().exists()) {
+            log.warn("report-dest directory:{} does not exist -> create", reportDest);
+            try {
+                Files.createDirectories(reportDest);
+            } catch (IOException e) {
+                log.error("error on create report dest directory:{}", e);
+            }
+        }
     }
 
     @Override
     public void createOneTimeIdreport(UUID posBuddyId) throws JRException, IOException, SQLException {
         Map<String, Object> parameters = new HashMap<>();
-
-        JasperReport menueReport = JasperCompileManager
-                .compileReport(
-                        "/home/jkarthaus/JaspersoftWorkspace/posBuddy/oneTimeID.jrxml"
-                );
+        JasperReport menueReport = JasperCompileManager.compileReport(
+                reportSource.resolve(ONE_TIME_REPORT).toString()
+        );
         parameters.put(
-                "posBuddyId", "b9870fab-8017-4f0d-9621-e05d6a9855fe"
+                "posBuddyId", posBuddyId.toString()
         );
         JasperPrint jasperPrint = JasperFillManager.fillReport(
                 menueReport,
                 parameters,
                 databaseConnection
         );
-
+        String filename = ONE_TIME_REPORT_PREFIX + System.currentTimeMillis() + ".pdf";
         Files.write(
-                Path.of("/tmp/oneTimeId.pdf"),
+                reportDest.resolve(filename),
                 JasperExportManager.exportReportToPdf(jasperPrint)
         );
-
+        log.info("oneTimeId Report saved to:{}", filename);
     }
 
 

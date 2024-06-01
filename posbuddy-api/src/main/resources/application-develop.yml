@@ -9,7 +9,7 @@ micronaut:
     static-resources:
       assets:
         paths: file:/tmp/
-        mapping: /assets/**
+        mapping: /asset/**
   server:
     port: 8443
     cors:
@@ -24,3 +24,8 @@ micronaut:
 
 posbuddy:
   do-ftp-sync: false
+
+report:
+  src: "${user.home}/git/PosBuddy-Deployment/roles/posBuddyAssets/developmentProfile"
+  dest: "/tmp/posBuddyReports"
+

@@ -81,3 +81,6 @@ jpa:
       hibernate:
         hbm2ddl:
           auto: update
+report:
+  src: "/asset/"
+  dest: "/home/app/reports"
