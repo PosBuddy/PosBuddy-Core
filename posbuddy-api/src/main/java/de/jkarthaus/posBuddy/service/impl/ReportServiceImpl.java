@@ -58,10 +58,9 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
                 .compileReport(
                         "/home/jkarthaus/JaspersoftWorkspace/posBuddy/oneTimeID.jrxml"
                 );
-
-        HashMap map = new HashMap();
-        map.put("REPORT_CONNECTION", databaseConnection);
-
+        parameters.put(
+                "posBuddyId", "b9870fab-8017-4f0d-9621-e05d6a9855fe"
+        );
         JasperPrint jasperPrint = JasperFillManager.fillReport(
                 menueReport,
                 parameters,
