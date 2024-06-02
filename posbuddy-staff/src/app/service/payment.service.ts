@@ -9,7 +9,6 @@ const httpOptions = {
   })
 };
 
-export const DISPENSING_STATION_FILTER_PRE = "stationFilter_";
 
 export interface identity {
   "posBuddyId": "string",

@@ -8,5 +8,9 @@ export abstract class PosBuddyConstants {
   static readonly DEPOSIT = "+";
   static readonly PAYMENT = "-";
 
+  static readonly DISPENSING_STATION_FILTER_PRE = "stationFilter_";
+
+  static readonly REPORT_TYPE_ONE_TIME = "ONE_TIME_ID";
+
 
 }

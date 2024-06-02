@@ -1,4 +1,4 @@
-import {Component, HostListener, inject, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, HostListener, inject, TemplateRef, ViewChild} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {
   NgbAccordionDirective,
@@ -49,7 +49,7 @@ import {ReportComponent} from "./report/report.component";
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
   @ViewChild('accMenue') accMenue!: NgbAccordionDirective;
   title = 'PosBuddy &#9400; by JK';
 
@@ -135,6 +135,10 @@ export class AppComponent {
   protected readonly version = version;
 
   openFilter(content: TemplateRef<any>) {
+    this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
+  }
+
+  openReportList(content: TemplateRef<any>) {
     this.offcanvasService.open(content, {ariaLabelledBy: 'offcanvas-basic-title'})
   }
 

@@ -32,7 +32,7 @@
         <a class="nav-link"
            [ngClass]="{'disabled' : !permissions.checkoutPermission}"
            href="#"
-           (click)="openFilter(stationFilter)"><i class="bi bi-funnel"></i>Reports</a>
+           (click)="openReportList(reportList)"><i class="bi bi-card-list"></i>Reports</a>
       </li>
       <li class="nav-item">
         <a class="nav-link"
@@ -216,7 +216,7 @@
   }
 </div>
 
-<!----------------------------------------------------------------------------------offcancas-dispensing Station Filter-->
+<!----------------------------------------------------------------------------------offcanvas-dispensing Station Filter-->
 <ng-template #stationFilter let-offcanvas>
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="offcanvas-basic-title">Filter</h4>
@@ -231,8 +231,8 @@
     Ausgabestationen
   </div>
 </ng-template>
-<!----------------------------------------------------------------------------------------------------offcancas-Reports-->
-<ng-template #stationFilter let-offcanvas>
+<!----------------------------------------------------------------------------------------------------offcanvas-Reports-->
+<ng-template #reportList let-offcanvas>
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="offcanvas-report">Reports</h4>
     <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
