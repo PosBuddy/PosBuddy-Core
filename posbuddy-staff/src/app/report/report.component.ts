@@ -2,13 +2,15 @@ import {Component} from '@angular/core';
 import {paymentService, reportItem} from "../service/payment.service";
 import {NgbAlert} from "@ng-bootstrap/ng-bootstrap";
 import {PosBuddyConstants} from "../posBuddyConstants";
+import {DatePipe} from "@angular/common";
 
 
 @Component({
   selector: 'app-report',
   standalone: true,
   imports: [
-    NgbAlert
+    NgbAlert,
+    DatePipe
   ],
   templateUrl: './report.component.html',
   styleUrl: './report.component.css'

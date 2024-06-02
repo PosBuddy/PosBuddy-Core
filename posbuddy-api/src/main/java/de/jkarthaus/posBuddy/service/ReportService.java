@@ -15,4 +15,6 @@ public interface ReportService {
     void createOneTimeIdreport(UUID posBuddyId) throws JRException, IOException, SQLException;
 
     void createMenueReport() throws JRException, IOException, SQLException;
+
+    byte[] getReportData(String filename) throws IOException;
 }

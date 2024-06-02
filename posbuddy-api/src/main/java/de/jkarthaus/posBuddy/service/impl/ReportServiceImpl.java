@@ -7,6 +7,7 @@ import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
+import org.apache.commons.io.FileUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -102,8 +103,11 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
                     }
                 }
         );
+        result.sort(Comparator.comparing(rd -> rd.creationDate));
+        Collections.reverse(result);
         return result;
     }
+
 
     @Override
     public void createOneTimeIdreport(UUID posBuddyId) throws JRException, IOException, SQLException {
@@ -133,6 +137,13 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
         Map<String, Object> parameters = new HashMap<>();
 
 
+    }
+
+    @Override
+    public byte[] getReportData(String filename) throws IOException {
+        return FileUtils.readFileToByteArray(
+                reportDest.resolve(filename).toFile()
+        );
     }
 
 

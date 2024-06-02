@@ -95,6 +95,37 @@ public class StaffRestController {
         }
     }
 
+    //----------------------------------------------------------------------------------------------get the report
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/reportData/{filename}")
+    @Produces("application/pdf")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "the report as pdf"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout or admin certificate"),
+            @ApiResponse(responseCode = "404", description = "not found"),
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+    })
+    @Tag(name = "secure")
+    public HttpResponse<byte[]> getReportData(
+            String filename,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        if (!securityService.isServeStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin Berechtigung erforderlich");
+        }
+        log.debug("get report data");
+        try {
+            return HttpResponse.ok(reportService.getReportData(filename));
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return HttpResponse.notFound();
+        }
+    }
+
     //-----------------------------------------------------------------------------------------------------------------items
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items", produces = MediaType.APPLICATION_JSON)
