@@ -29,7 +29,10 @@
           <i class="bi bi-body-text"></i>Import Textbausteine</a>
       </li>
       <li class="nav-item active">
-        <a class="nav-link" href="#">Report</a>
+        <a class="nav-link"
+           [ngClass]="{'disabled' : !permissions.checkoutPermission}"
+           href="#"
+           (click)="openFilter(stationFilter)"><i class="bi bi-funnel"></i>Reports</a>
       </li>
       <li class="nav-item">
         <a class="nav-link"
@@ -228,7 +231,22 @@
     Ausgabestationen
   </div>
 </ng-template>
-<!-------------------------------------------------------------------------------------------------------- Info Modal-->
+<!----------------------------------------------------------------------------------------------------offcancas-Reports-->
+<ng-template #stationFilter let-offcanvas>
+  <div class="offcanvas-header">
+    <h4 class="offcanvas-title" id="offcanvas-report">Reports</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body">
+    <div class="mb-3">
+      <app-report></app-report>
+    </div>
+  </div>
+  <div class="text-end">
+    Report auswählen
+  </div>
+</ng-template>
+<!---------------------------------------------------------------------------------------------------------- Info Modal-->
 <ng-template #infoModal let-modal>
   <div class="modal-header">
     <h4 class="modal-title" id="modal-basic-title">PosBuddy</h4>

@@ -22,6 +22,7 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {NgClass} from "@angular/common";
 import {DispensingStationFilterComponent} from "./dispensing-station-filter/dispensing-station-filter.component";
 import {SpecialTransactionComponent} from "./special-transaction/special-transaction.component";
+import {ReportComponent} from "./report/report.component";
 
 @Component({
   selector: 'app-root',
@@ -42,7 +43,8 @@ import {SpecialTransactionComponent} from "./special-transaction/special-transac
     ZXingScannerModule,
     NgClass,
     DispensingStationFilterComponent,
-    SpecialTransactionComponent
+    SpecialTransactionComponent,
+    ReportComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

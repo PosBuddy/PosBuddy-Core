@@ -13,13 +13,19 @@
   <div class="row pt-3">
     <div class="col-4">Vorname :</div>
     <div class="col-8">
-      <input type="text" [(ngModel)]="surname" tabindex="1" #surnameInput/>
+      <input type="text"
+             [maxLength]="40"
+             [(ngModel)]="surname"
+             tabindex="1" #surnameInput/>
     </div>
   </div>
   <div class="row pt-3">
     <div class="col-4">Nachname :</div>
     <div class="col-8">
-      <input type="text" [(ngModel)]="lastname" tabindex="2"/>
+      <input type="text"
+             [maxlength]="40"
+             [(ngModel)]="lastname"
+             tabindex="2"/>
     </div>
   </div>
   <div class="row pt-3">
@@ -31,19 +37,28 @@
   <div class="row pt-3">
     <div class="col-4">Merkmal 1 :</div>
     <div class="col-8">
-      <input type="text" [(ngModel)]="attribute1" tabindex="4"/>
+      <input type="text"
+             [maxlength]="40"
+             [(ngModel)]="attribute1"
+             tabindex="4"/>
     </div>
   </div>
   <div class="row pt-2">
     <div class="col-4">Merkmal 2 :</div>
     <div class="col-8">
-      <input type="text" [(ngModel)]="attribute2" tabindex="5"/>
+      <input type="text"
+             [maxlength]="40"
+             [(ngModel)]="attribute2"
+             tabindex="5"/>
     </div>
   </div>
   <div class="row pt-2">
     <div class="col-4">Merkmal 3 :</div>
     <div class="col-8">
-      <input type="text" [(ngModel)]="attribute3" tabindex="6"/>
+      <input type="text"
+             [maxlength]="40"
+             [(ngModel)]="attribute3"
+             tabindex="6"/>
     </div>
   </div>
   <div class="row pt-3">
