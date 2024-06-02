@@ -6,8 +6,10 @@ import de.jkarthaus.posBuddy.exception.*;
 import de.jkarthaus.posBuddy.mapper.DispensingStationMapper;
 import de.jkarthaus.posBuddy.mapper.ItemMapper;
 import de.jkarthaus.posBuddy.mapper.PermissionMapper;
+import de.jkarthaus.posBuddy.mapper.ReportItemMapper;
 import de.jkarthaus.posBuddy.model.gui.*;
 import de.jkarthaus.posBuddy.service.PartyActionService;
+import de.jkarthaus.posBuddy.service.ReportService;
 import de.jkarthaus.posBuddy.service.SecurityService;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
@@ -36,12 +38,14 @@ import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 @Slf4j
 public class StaffRestController {
 
+    final ReportItemMapper reportItemMapper;
     final ItemMapper itemMapper;
     final DispensingStationMapper dispensingStationMapper;
     final PermissionMapper permissionMapper;
     final ItemRepository itemRepository;
     final DispensingStationRepository dispensingStationRepository;
     final PartyActionService partyActionService;
+    final ReportService reportService;
     final SecurityService securityService;
 
 
@@ -59,6 +63,36 @@ public class StaffRestController {
         return permissionMapper.toResponse(
                 securityService.getPermissions(x509Authentication)
         );
+    }
+
+    //----------------------------------------------------------------------------------------------get all reprt items
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/reportItems", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "item list"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout or admin certificate"),
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+    })
+    @Tag(name = "secure")
+    public HttpResponse<List<ReportItemResponse>> getReportItems(
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        if (!securityService.isServeStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin Berechtigung erforderlich");
+        }
+        log.debug("get all report items");
+        try {
+            return HttpResponse.ok(
+                    reportItemMapper.toResponse(reportService.getReportList())
+            );
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            return HttpResponse.serverError();
+        }
     }
 
     //-----------------------------------------------------------------------------------------------------------------items

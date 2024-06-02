@@ -83,4 +83,4 @@ jpa:
           auto: update
 report:
   src: "/asset/"
-  dest: "/home/app/reports"
+  dest: "/home/app/reports/"

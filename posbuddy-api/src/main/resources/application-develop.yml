@@ -27,5 +27,5 @@ posbuddy:
 
 report:
   src: "${user.home}/git/PosBuddy-Deployment/roles/posBuddyAssets/developmentProfile"
-  dest: "/tmp/posBuddyReports"
+  dest: "/tmp/posBuddyReports/"
 

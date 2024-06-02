@@ -86,16 +86,20 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
     public List<reportDescriptor> getReportList() throws IOException {
         List<reportDescriptor> result = new ArrayList<>();
         Files.walk(reportDest).forEach(reportFile -> {
-                    ReportType reportType = ReportType.UNKNOWN;
-                    String fileName = reportFile.getFileName().toString();
-                    LocalDateTime fileDate = Instant
-                            .ofEpochMilli(reportFile.toFile().lastModified())
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDateTime();
-                    if (fileName.startsWith(ONE_TIME_REPORT_PREFIX)) {
-                        reportType = ReportType.ONE_TIME_ID;
+                    if (reportFile.toFile().isFile()) {
+                        ReportType reportType = ReportType.UNKNOWN;
+                        String fileName = reportFile.getFileName().toString();
+                        LocalDateTime fileDate = Instant
+                                .ofEpochMilli(reportFile.toFile().lastModified())
+                                .atZone(ZoneId.systemDefault())
+                                .toLocalDateTime();
+                        if (fileName.startsWith(ONE_TIME_REPORT_PREFIX)) {
+                            reportType = ReportType.ONE_TIME_ID;
+                        }
+                        result.add(new reportDescriptor(reportType, fileName, fileDate));
+                    } else {
+                        log.debug("ignoring directory:{}", reportFile);
                     }
-                    result.add(new reportDescriptor(reportType, fileName, fileDate));
                 }
         );
         return result;
