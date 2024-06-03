@@ -49,7 +49,7 @@ public class StaffRestController {
     final SecurityService securityService;
 
 
-    //-----------------------------------------------------------------------------------------------------------------permissions
+    //------------------------------------------------------------------------------------------------------permissions
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/permissions", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -86,16 +86,14 @@ public class StaffRestController {
         }
         log.debug("get all report items");
         try {
-            return HttpResponse.ok(
-                    reportItemMapper.toResponse(reportService.getReportList())
-            );
+            return HttpResponse.ok(reportItemMapper.toResponse(reportService.getReportList()));
         } catch (IOException e) {
             log.error(e.getMessage());
-            return HttpResponse.serverError();
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
     }
 
-    //----------------------------------------------------------------------------------------------get the report
+    //----------------------------------------------------------------------------------------------------get the report
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/reportData/{filename}")
     @Produces("application/pdf")
@@ -122,11 +120,11 @@ public class StaffRestController {
             return HttpResponse.ok(reportService.getReportData(filename));
         } catch (IOException e) {
             log.error(e.getMessage());
-            return HttpResponse.notFound();
+            return HttpResponse.status(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
 
-    //-----------------------------------------------------------------------------------------------------------------items
+    //---------------------------------------------------------------------------------------------------------get items
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -141,7 +139,7 @@ public class StaffRestController {
         );
     }
 
-    //------------------------------------------------------------------------------------------------dispensingSTation
+    //------------------------------------------------------------------------------------get Items on dispensingSTation
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/items/{dispensingStation}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -169,12 +167,12 @@ public class StaffRestController {
         );
     }
 
-    //--------------------------------------------------------------------------------------------------------------identity
+    //----------------------------------------------------------------------------------------------------------identity
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/identity/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400", description = "ID not valid"),
-            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a serve, checkout or admin certificate"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
@@ -188,8 +186,8 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isServeOrCheckout(x509Authentication)) {
-            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        if (!securityService.isServeOrCheckout(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine ausgabe,kasse oder admin berechtigung");
         }
         try {
             return HttpResponse.ok(
@@ -197,37 +195,54 @@ public class StaffRestController {
             );
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "ID ungültig");
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.NOT_FOUND);
+            return HttpResponse.status(HttpStatus.NOT_FOUND, "ID nicht zugewiesen");
         }
     }
 
-    //---------------------------------------------------------------------------------------------------------------revenue
+    //----------------------------------------------------------------------------------------------------------revenue
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/revenue/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "400", description = "ID not valid"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a serve, checkout or admin certificate"),
+            @ApiResponse(responseCode = "404", description = "ID not allocated"),
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+    })
     @Tag(name = "secure")
-    public List<RevenueResponse> getRevenue(String posBuddyId) {
+    public HttpResponse<List<RevenueResponse>> getRevenue(
+            String posBuddyId,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication
+    ) {
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        if (!securityService.isServeOrCheckout(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine ausgabe,kasse oder admin berechtigung");
+        }
         try {
-            return partyActionService.getRevenueResponseByPosBuddyId(posBuddyId);
+            return HttpResponse.ok(partyActionService.getRevenueResponseByPosBuddyId(posBuddyId));
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "ID ungültig");
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            throw new RuntimeException(e);
+            return HttpResponse.status(HttpStatus.NOT_FOUND, "ID nicht zugewiesen");
         }
     }
 
 
-    //-----------------------------------------------------------------------------------------------------------------Serve
+    //-------------------------------------------------------------------------------------------------------Serve Items
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @Tag(name = "secure")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400", description = "balance to low"),
-            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout or admin certificate"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
@@ -241,22 +256,21 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
         try {
-            if (securityService.isServeOrCheckout(x509Authentication)) {
+            if (securityService.isServeOrCheckout(x509Authentication) || securityService.isAdmin(x509Authentication)) {
                 partyActionService.serveItems(serveItems, posBuddyId);
             } else {
                 log.warn("forbidden access to serve endpoint");
-                return HttpResponse.status(HttpStatus.FORBIDDEN);
+                return HttpResponse.status(HttpStatus.FORBIDDEN, "keine ausgabe,kasse oder admin berechtigung");
             }
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.NOT_FOUND);
+            return HttpResponse.status(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (OutOfBalanceException e) {
             log.error("out of balance exception:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "Kein ausreichendes Guthaben");
         }
         return HttpResponse.ok();
     }
-
     //-------------------------------------------------------------------------------------Allocate volatile posBuddyId
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/allocateVolatile/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
@@ -267,7 +281,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "400", description = "ID not valid"),
     })
     @Tag(name = "secure")
-    public HttpResponse allocate(
+    public HttpResponse allocateVolatileId(
             String posBuddyId,
             AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
             @Nullable X509Authentication x509Authentication,
@@ -277,17 +291,60 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication)) {
-            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine Berechtigung");
         }
         try {
-            partyActionService.allocatePosBuddyId(posBuddyId, allocatePosBuddyIdRequest);
+            partyActionService.allocatePosBuddyId(
+                    posBuddyId,
+                    allocatePosBuddyIdRequest,
+                    false
+            );
         } catch (PosBuddyIdNotAllocateableException e) {
             log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.CONFLICT);
+            return HttpResponse.status(HttpStatus.CONFLICT, "ID bereits zugewiesen");
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "ID ist ungültig");
+        }
+        return HttpResponse.ok();
+    }
+
+    //-------------------------------------------------------------------------------------Allocate static posBuddyId
+    @Secured(IS_ANONYMOUS)
+    @Post(uri = "/allocateStatic/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a admin certificate"),
+            @ApiResponse(responseCode = "409", description = "ID already allocated"),
+            @ApiResponse(responseCode = "400", description = "ID not valid"),
+    })
+    @Tag(name = "secure")
+    public HttpResponse allocateStatic(
+            String posBuddyId,
+            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        log.info("allocate Person to posBuddyId:", posBuddyId);
+        if (x509Authentication != authentication) {
+            log.error("ERROR: Authentication and X509Authentication should be the same instance");
+            return HttpResponse.notAllowed();
+        }
+        if (!securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine Admin Berechtigung");
+        }
+        try {
+            partyActionService.allocatePosBuddyId(
+                    posBuddyId,
+                    allocatePosBuddyIdRequest,
+                    true
+            );
+        } catch (PosBuddyIdNotAllocateableException e) {
+            log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.CONFLICT, "ID bereits zugewiesen");
+        } catch (posBuddyIdNotValidException e) {
+            log.error("posBuddyIdNotValidException:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "ID ist ungültig");
         }
         return HttpResponse.ok();
     }
@@ -311,17 +368,17 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication)) {
+        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
             partyActionService.allocateOneTimePosBuddyId(allocatePosBuddyIdRequest);
         } catch (PosBuddyIdNotAllocateableException e) {
             log.error("PosBuddyIdNotAllocateableException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.CONFLICT);
+            return HttpResponse.status(HttpStatus.CONFLICT, "ID bereits zugewiesen");
         } catch (posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotValidException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "ID nicht gültig");
         } catch (JRException | SQLException | IOException serverException) {
             log.error("Exception:{}", serverException.getMessage());
             return HttpResponse.serverError(serverException.getMessage());
@@ -329,7 +386,7 @@ public class StaffRestController {
         return HttpResponse.ok();
     }
 
-    //------------------------------------------------------------------------------------------------------------deAllocate
+    //-------------------------------------------------------------------------------------------------------deAllocate
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/deAllocate/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -348,22 +405,22 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication)) {
-            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine Kasse oder Admin Berechtigung");
         }
         try {
             partyActionService.deAllocatePosBuddyId(posBuddyId);
         } catch (posBuddyIdNotAllocatedException | posBuddyIdNotValidException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            return HttpResponse.notFound();
+            return HttpResponse.status(HttpStatus.NOT_FOUND, "ID nicht zugewiesen");
         } catch (OutOfBalanceException | PosBuddyIdStaticException e) {
             log.error("OutOfBalance or static ID Exception : {}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         return HttpResponse.ok();
     }
 
-    //----------------------------------------------------------------------------------------------------------------Payout
+    //-----------------------------------------------------------------------------------------------------------Payout
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/payout/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
@@ -382,26 +439,26 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication)) {
-            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin berechtigung erforderlich");
         }
         try {
             partyActionService.payout(posBuddyId);
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            return HttpResponse.notFound();
+            return HttpResponse.status(HttpStatus.NOT_FOUND, "ID nicht zugewiesen");
         } catch (OutOfBalanceException e) {
             log.error("OutOfBalanceException:{}", e.getMessage());
-            return HttpResponse.status(HttpStatus.BAD_REQUEST);
+            return HttpResponse.status(HttpStatus.BAD_REQUEST, "Kein Guthaben");
         }
         return HttpResponse.ok();
     }
 
-    //---------------------------------------------------------------------------------------------------------------deposit
+    //-----------------------------------------------------------------------------------------------------------deposit
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/deposit/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
+            @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout or admin certificate"),
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
             @ApiResponse(responseCode = "500", description = "Server Error occurred"),
@@ -417,20 +474,20 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication)) {
-            return HttpResponse.status(HttpStatus.FORBIDDEN);
+        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+            return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin berechtigung erforderlich");
         }
         try {
             partyActionService.addDeposit(posBuddyId, value);
         } catch (posBuddyIdNotAllocatedException e) {
             log.error("posBuddyIdNotAllocatedException:{}", e.getMessage());
-            return HttpResponse.notFound();
+            return HttpResponse.status(HttpStatus.NOT_FOUND, "ID nicht zugewiesen");
         } catch (IOException e) {
             log.error("IOException:{}", e.getMessage());
-            return HttpResponse.serverError();
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         } catch (Exception e) {
             log.error("Exception:{}", e.getMessage());
-            return HttpResponse.serverError();
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return HttpResponse.ok();
     }

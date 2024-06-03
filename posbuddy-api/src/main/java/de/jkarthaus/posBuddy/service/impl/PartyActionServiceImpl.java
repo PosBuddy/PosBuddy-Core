@@ -73,7 +73,6 @@ public class PartyActionServiceImpl implements PartyActionService {
                 identityEntity.setBalance(identityEntity.getBalance() + value.floatValue());
                 identityRepository.updateIdentityEntity(identityEntity);
                 log.info("successfully deposited revenue -> add {} EUR to balance of id:{}", value, posBuddyId);
-                break;
             }
             case Constants.PAYMENT -> {
                 RevenueEntity revenueEntity = new RevenueEntity();
@@ -87,7 +86,6 @@ public class PartyActionServiceImpl implements PartyActionService {
                 identityEntity.setBalance(identityEntity.getBalance() - value.floatValue());
                 identityRepository.updateIdentityEntity(identityEntity);
                 log.info("successfully deposited revenue -> substract {} EUR from balance of id:{}", value, posBuddyId);
-                break;
             }
             default -> {
                 log.error("operation:{} not supported -> do nothing", operation);
@@ -289,11 +287,14 @@ public class PartyActionServiceImpl implements PartyActionService {
             posBuddyIdNotValidException,
             JRException,
             SQLException, IOException {
-
         UUID posBuddyId = UUID.randomUUID();
-        //allocatePosBuddyId(posBuddyId.toString(), allocatePosBuddyIdRequest);
-        // TODO : FIX
-        reportService.createOneTimeIdreport(UUID.fromString("b9870fab-8017-4f0d-9621-e05d6a9855fe"));
+        log.info("create oneTimePosBuddyId :{}", posBuddyId);
+        allocatePosBuddyId(
+                posBuddyId.toString(),
+                allocatePosBuddyIdRequest,
+                false
+        );
+        reportService.createOneTimeIdreport(posBuddyId);
     }
 
     /**
@@ -302,8 +303,11 @@ public class PartyActionServiceImpl implements PartyActionService {
      * deAllocate
      */
     @Override
-    public void allocatePosBuddyId(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
-            throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException {
+    public void allocatePosBuddyId(
+            String posBuddyId,
+            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            boolean isStatic
+    ) throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException {
         if (isNotValidUUID(posBuddyId)) {
             throw new posBuddyIdNotValidException("PosBuddy ID is not valid");
         }
@@ -314,7 +318,11 @@ public class PartyActionServiceImpl implements PartyActionService {
                     allocatePosBuddyIdRequest.getSurname() + " " + allocatePosBuddyIdRequest.getLastname()
             );
             identityRepository.allocatePosBuddyId(
-                    identityMapper.fromRequest(posBuddyId, allocatePosBuddyIdRequest)
+                    identityMapper.fromRequest(
+                            posBuddyId,
+                            allocatePosBuddyIdRequest,
+                            isStatic
+                    )
             );
             if (allocatePosBuddyIdRequest.getBalance() > 0) {
                 log.info("add deposit start revenue:{}",
@@ -371,7 +379,7 @@ public class PartyActionServiceImpl implements PartyActionService {
     @Transactional
     public void payout(String posBuddyId) throws posBuddyIdNotAllocatedException, OutOfBalanceException {
         IdentityEntity identityEntity = identityRepository.findById(posBuddyId);
-        if (identityEntity.getBalance() <= 0) {
+        if (identityEntity.getBalance() <= 0.00) {
             throw new OutOfBalanceException("Balance is already negativ");
         }
         // persist revenue
@@ -383,7 +391,7 @@ public class PartyActionServiceImpl implements PartyActionService {
         revenueEntity.setTimeofaction(LocalDateTime.now());
         revenueRepository.addRevenue(revenueEntity);
         // update new balance
-        identityEntity.setBalance(0f);
+        identityEntity.setBalance(0.0f);
         identityRepository.updateIdentityEntity(identityEntity);
     }
 

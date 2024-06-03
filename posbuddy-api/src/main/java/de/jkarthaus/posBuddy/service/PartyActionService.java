@@ -33,12 +33,15 @@ public interface PartyActionService {
 
     void addDeposit(String posBuddyId, Float value) throws posBuddyIdNotAllocatedException, IOException;
 
-    void allocatePosBuddyId(String posBuddyId,
-                            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
-            throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;
 
     void allocateOneTimePosBuddyId(AllocatePosBuddyIdRequest allocatePosBuddyIdRequest)
             throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException, JRException, SQLException, IOException;
+
+    void allocatePosBuddyId(
+            String posBuddyId,
+            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            boolean isStatic
+    ) throws PosBuddyIdNotAllocateableException, posBuddyIdNotValidException;
 
     List<DispensingStationResponse> getDispensingStations();
 

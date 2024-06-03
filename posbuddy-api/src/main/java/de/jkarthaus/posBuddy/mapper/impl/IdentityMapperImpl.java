@@ -30,7 +30,10 @@ public class IdentityMapperImpl implements IdentityMapper {
     }
 
     @Override
-    public IdentityEntity fromRequest(String posBuddyId, AllocatePosBuddyIdRequest allocatePosBuddyIdRequest) {
+    public IdentityEntity fromRequest(
+            String posBuddyId,
+            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            boolean isStatic) {
         System.out.println(ZonedDateTime.now());
         return new IdentityEntity(
                 posBuddyId,
