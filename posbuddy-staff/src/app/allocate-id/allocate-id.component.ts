@@ -2,10 +2,9 @@ import {AfterViewInit, Component, ElementRef, inject, Input, TemplateRef, ViewCh
 import {FormsModule} from "@angular/forms";
 import {NgbAlert, NgbOffcanvas, OffcanvasDismissReasons} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
-import {AllocateService} from "../service/allocate.service";
+import {AllocatePosBuddyIdRequest, AllocateService} from "../service/allocate.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {timer} from "rxjs";
-import {paymentService} from "../service/payment.service";
 import {PosBuddyConstants} from "../posBuddyConstants";
 
 
@@ -33,7 +32,7 @@ export class AllocateIdComponent implements AfterViewInit {
   confirmOK: boolean = false;
   // -- Form
   posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
-  disableIdField = false;
+  disableIdScan = false;
   borrowCard: boolean = true;
   oneTimeCard: boolean = false;
   staticCard: boolean = false;
@@ -45,7 +44,7 @@ export class AllocateIdComponent implements AfterViewInit {
   attribute3 = '';
   balance = '0'
 
-  constructor(private allocateService: AllocateService, public paymentService: paymentService) {
+  constructor(private allocateService: AllocateService) {
   }
 
 
@@ -71,18 +70,18 @@ export class AllocateIdComponent implements AfterViewInit {
     this.borrowCard = false;
     this.oneTimeCard = false;
     this.staticCard = false;
-    if (cardType === "borrowCard") {
+    if (cardType === PosBuddyConstants.CARD_TYPE_BORROW) {
       this.borrowCard = true
-      this.disableIdField = false
+      this.disableIdScan = false
     }
-    if (cardType === "oneTimeCard") {
+    if (cardType === PosBuddyConstants.CARD_TYPE_ONE_TIME) {
       this.oneTimeCard = true
-      this.disableIdField = true
+      this.disableIdScan = true
       this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID
     }
-    if (cardType === "staticCard") {
+    if (cardType === PosBuddyConstants.CARD_TYPE_STATIC) {
       this.staticCard = true
-      this.disableIdField = false
+      this.disableIdScan = false
     }
   }
 
@@ -99,38 +98,39 @@ export class AllocateIdComponent implements AfterViewInit {
   }
 
   checkAndSend() {
-    let formcheck = true;
-    let errorText = "";
-    if (!this.isUUID(this.posBuddyId)) {
-      formcheck = false;
-      errorText += "ID ungültig"
+    // check ID
+    if (this.borrowCard || this.staticCard) {
+      if (this.isUUID(this.posBuddyId) == false) {
+        this.formValid = false;
+        this.formValidText = "ID ungültig - Bitte Id scannen";
+        return
+      }
     }
-    if (isNaN(Number(this.balance)) || Number(this.balance) <= 0) {
-      formcheck = false;
-      errorText += " / Wert ungültig"
+    // check value
+    if (isNaN(Number(this.balance))
+      || Number(this.balance) <= 0
+      || Number(this.balance) > PosBuddyConstants.MAX_DEPOSIT) {
+      this.formValid = false;
+      this.formValidText = "Wert ungültig 1 <--> " + PosBuddyConstants.MAX_DEPOSIT + " EUR"
+      return
     }
-
-    if (formcheck) {
-      console.info("formCheck:OK")
-      this.formValid = true;
-      this.formValidText = "";
+    // send to backend
+    this.formValid = true;
+    this.formValidText = "";
+    const request: AllocatePosBuddyIdRequest = {
+      surname: this.surname,
+      lastname: this.lastname,
+      birthday: this.birthday,
+      attribute1: this.attribute1,
+      attribute2: this.attribute2,
+      attribute3: this.attribute3,
+      balance: Number(Number(this.balance))
+    }
+    if (this.borrowCard) {
       this.allocateService.allocateVolatilePosBuddyId(
-        this.posBuddyId,
-        {
-          allocatePosBuddyIdRequest: {
-            attribute1: this.attribute1,
-            attribute2: this.attribute2,
-            attribute3: this.attribute3,
-            balance: Number(this.balance),
-            birthday: this.birthday,
-            lastname: this.lastname,
-            surname: this.surname
-          }
-        }
-      ).subscribe({
+        this.posBuddyId, request).subscribe({
           next: (v) => {
             this.serverResponse = "OK"
-            console.log("suceded")
             this.confirmOK = true;
           },
           error: (e: HttpErrorResponse) => {
@@ -161,9 +161,78 @@ export class AllocateIdComponent implements AfterViewInit {
           complete: () => console.info('complete')
         }
       )
-    } else {
-      this.formValid = false;
-      this.formValidText = errorText;
+    }
+    if (this.staticCard) {
+      this.allocateService.allocateStaticPosBuddyId(
+        this.posBuddyId, request).subscribe({
+          next: (v) => {
+            this.serverResponse = "OK ID zugewiesen"
+            this.confirmOK = true;
+          },
+          error: (e: HttpErrorResponse) => {
+            this.confirmError = true;
+            switch (e.status) {
+              case 400 : {
+                this.serverResponse = "ID ungültig";
+                break
+              }
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              case 409 : {
+                this.serverResponse = "ID bereits zugewiesen";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + e.status;
+                break
+              }
+            }
+          },
+          complete: () => console.info('complete')
+        }
+      )
+    }
+    if (this.oneTimeCard) {
+      this.allocateService.allocateOneTimeId(request).subscribe({
+          next: (v) => {
+            this.serverResponse = "OK"
+            this.confirmOK = true;
+          },
+          error: (e: HttpErrorResponse) => {
+            this.confirmError = true;
+            switch (e.status) {
+              case 400 : {
+                this.serverResponse = "ID ungültig";
+                break
+              }
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              case 409 : {
+                this.serverResponse = "ID bereits zugewiesen";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + e.status;
+                break
+              }
+            }
+          },
+          complete: () => console.info('complete')
+        }
+      )
+
     }
   }
 
@@ -176,6 +245,12 @@ export class AllocateIdComponent implements AfterViewInit {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.balance = "0";
+    this.surname = "";
+    this.lastname = "";
+    this.attribute1 = "";
+    this.attribute2 = "";
+    this.attribute3 = "";
+    this.toggleCardType(PosBuddyConstants.CARD_TYPE_BORROW);
     this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
@@ -198,4 +273,5 @@ export class AllocateIdComponent implements AfterViewInit {
     return false
   }
 
+  protected readonly PosBuddyConstants = PosBuddyConstants;
 }

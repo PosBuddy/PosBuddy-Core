@@ -12,5 +12,9 @@ export abstract class PosBuddyConstants {
 
   static readonly REPORT_TYPE_ONE_TIME = "ONE_TIME_ID";
 
+  static readonly CARD_TYPE_BORROW = "borrowCard";
+  static readonly CARD_TYPE_ONE_TIME = "oneTimeCard";
+  static readonly CARD_TYPE_STATIC = "staticCard";
+
 
 }

@@ -6,7 +6,7 @@
              readonly
              [(ngModel)]="posBuddyId"
              tabindex="-1"
-             [disabled]="disableIdField"
+             [disabled]="disableIdScan"
       />
     </div>
   </div>
@@ -75,7 +75,7 @@
                name="btnradioBorrowCard"
                id="btnradioBorrowCard"
                autocomplete="off" [checked]="borrowCard"
-               (click)="toggleCardType('borrowCard')">
+               (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_BORROW)">
         <label class="btn btn-outline-primary" for="btnradioBorrowCard">Leihkarte</label>
       </div>
       <div class="col-4">
@@ -84,7 +84,7 @@
                name="btnradio"
                id="btnradioOneTimeCard"
                autocomplete="off" [checked]="oneTimeCard"
-               (click)="toggleCardType('oneTimeCard')">
+               (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_ONE_TIME)">
         <label class="btn btn-outline-primary" for="btnradioOneTimeCard">Einmalkarte</label>
       </div>
       <div class="col-4">
@@ -93,7 +93,7 @@
                name="btnradio"
                id="btnradioStaticCard"
                autocomplete="off" [checked]="staticCard" [disabled]="!permissions.adminPermission"
-               (click)="toggleCardType('staticCard')">
+               (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_STATIC)">
         <label class="btn btn-outline-primary" for="btnradioStaticCard">Pers. Karte</label>
       </div>
     </div>
@@ -104,6 +104,7 @@
               #scan
               (click)="scanQRCode(content)"
               (keyup.enter)="scanQRCode(content)"
+              [disabled]="disableIdScan"
               tabindex="8">SCAN
       </button>
     </div>

@@ -9,16 +9,14 @@ const httpOptions = {
 };
 
 
-interface AllocatePosBuddyIdRequest {
-  allocatePosBuddyIdRequest: {
-    surname: string | undefined;
-    lastname: string | undefined;
-    birthday: string | undefined;
-    attribute1: string | undefined;
-    attribute2: string | undefined;
-    attribute3: string | undefined;
-    balance: number | undefined;
-  }
+export interface AllocatePosBuddyIdRequest {
+  surname?: string,
+  lastname?: string,
+  birthday?: string,
+  attribute1?: string,
+  attribute2?: string,
+  attribute3?: string,
+  balance?: number
 }
 
 @Injectable({
@@ -26,7 +24,7 @@ interface AllocatePosBuddyIdRequest {
 })
 export class AllocateService {
 
-  private serverUrl = 'api/v1/allocateVolatile/';  // URL to web api
+  private apiBase = 'api/v1/';  // URL to web api
 
   constructor(private http: HttpClient) {
 
@@ -37,7 +35,27 @@ export class AllocateService {
     return this
       .http
       .post<AllocatePosBuddyIdRequest>(
-        this.serverUrl + posBuddyId,
+        this.apiBase + "allocateVolatile/" + posBuddyId,
+        allocatePosBuddyIdRequest,
+        httpOptions
+      )
+  }
+
+  allocateStaticPosBuddyId(posBuddyId: string, allocatePosBuddyIdRequest: AllocatePosBuddyIdRequest) {
+    return this
+      .http
+      .post<AllocatePosBuddyIdRequest>(
+        this.apiBase + "allocateStatic/" + posBuddyId,
+        allocatePosBuddyIdRequest,
+        httpOptions
+      )
+  }
+
+  allocateOneTimeId(allocatePosBuddyIdRequest: AllocatePosBuddyIdRequest) {
+    return this
+      .http
+      .post<AllocatePosBuddyIdRequest>(
+        this.apiBase + "allocateOneTimeId",
         allocatePosBuddyIdRequest,
         httpOptions
       )

@@ -55,7 +55,7 @@ public class StaffRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "get permissions by certificate"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public PermissionResponse getPermissions(
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
@@ -73,7 +73,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout or admin certificate"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse<List<ReportItemResponse>> getReportItems(
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
@@ -103,7 +103,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "404", description = "not found"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse<byte[]> getReportData(
             String filename,
             @Nullable X509Authentication x509Authentication,
@@ -130,7 +130,7 @@ public class StaffRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "item list"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public List<ItemResponse> getItems() {
         log.debug("get all items");
         return itemMapper.toResponse(
@@ -145,7 +145,7 @@ public class StaffRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "item list for given station"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public List<ItemResponse> getFilterdItems(String dispensingStation) {
         return itemMapper.toResponse(
                 itemRepository.findByStation(dispensingStation),
@@ -159,7 +159,7 @@ public class StaffRestController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "dispensing ststation list"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public List<DispensingStationResponse> getStations() {
         log.debug("get all dispensing stations");
         return dispensingStationMapper.toResponse(
@@ -176,7 +176,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse<IdentityResponse> getIdentity(
             String posBuddyId,
             @Nullable X509Authentication x509Authentication,
@@ -211,7 +211,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse<List<RevenueResponse>> getRevenue(
             String posBuddyId,
             @Nullable X509Authentication x509Authentication,
@@ -239,7 +239,7 @@ public class StaffRestController {
     //-------------------------------------------------------------------------------------------------------Serve Items
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/serve/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "400", description = "balance to low"),
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout or admin certificate"),
@@ -271,6 +271,7 @@ public class StaffRestController {
         }
         return HttpResponse.ok();
     }
+
     //-------------------------------------------------------------------------------------Allocate volatile posBuddyId
     @Secured(IS_ANONYMOUS)
     @Post(uri = "/allocateVolatile/{posBuddyId}", produces = MediaType.APPLICATION_JSON)
@@ -280,10 +281,10 @@ public class StaffRestController {
             @ApiResponse(responseCode = "409", description = "ID already allocated"),
             @ApiResponse(responseCode = "400", description = "ID not valid"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse allocateVolatileId(
             String posBuddyId,
-            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            @Body AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
         log.info("allocate Person to posBuddyId:", posBuddyId);
@@ -319,10 +320,10 @@ public class StaffRestController {
             @ApiResponse(responseCode = "409", description = "ID already allocated"),
             @ApiResponse(responseCode = "400", description = "ID not valid"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse allocateStatic(
             String posBuddyId,
-            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            @Body AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
         log.info("allocate Person to posBuddyId:", posBuddyId);
@@ -358,9 +359,9 @@ public class StaffRestController {
             @ApiResponse(responseCode = "409", description = "ID already allocated"),
             @ApiResponse(responseCode = "400", description = "ID not valid"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse allocateOneTimePosBuddyId(
-            AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
+            @Body AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
         log.info("allocate Person to a one time posBuddyId");
@@ -395,7 +396,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "401", description = "Forbidden - you need a checkout certificate"),
             @ApiResponse(responseCode = "400", description = "ID is static or Balance not 0"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse deAllocate(
             String posBuddyId,
             @Nullable X509Authentication x509Authentication,
@@ -429,7 +430,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "404", description = "ID not allocated"),
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse payout(
             String posBuddyId,
             @Nullable X509Authentication x509Authentication,
@@ -463,7 +464,7 @@ public class StaffRestController {
             @ApiResponse(responseCode = "405", description = "Not allowed - you need a valid certificate"),
             @ApiResponse(responseCode = "500", description = "Server Error occurred"),
     })
-    @Tag(name = "secure")
+    @Tag(name = "staff")
     public HttpResponse deposit(
             String posBuddyId,
             @QueryValue Float value,

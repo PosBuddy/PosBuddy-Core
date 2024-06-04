@@ -34,7 +34,6 @@ public class IdentityMapperImpl implements IdentityMapper {
             String posBuddyId,
             AllocatePosBuddyIdRequest allocatePosBuddyIdRequest,
             boolean isStatic) {
-        System.out.println(ZonedDateTime.now());
         return new IdentityEntity(
                 posBuddyId,
                 allocatePosBuddyIdRequest.getSurname(),
@@ -45,7 +44,7 @@ public class IdentityMapperImpl implements IdentityMapper {
                 allocatePosBuddyIdRequest.getAttribute3(),
                 LocalDateTime.now(),
                 null,
-                false,
+                isStatic,
                 allocatePosBuddyIdRequest.getBalance()
         );
     }
