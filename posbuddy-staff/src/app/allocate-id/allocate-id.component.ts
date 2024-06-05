@@ -6,6 +6,7 @@ import {AllocatePosBuddyIdRequest, AllocateService} from "../service/allocate.se
 import {HttpErrorResponse} from "@angular/common/http";
 import {timer} from "rxjs";
 import {PosBuddyConstants} from "../posBuddyConstants";
+import {paymentService} from "../service/payment.service";
 
 
 @Component({
@@ -44,7 +45,9 @@ export class AllocateIdComponent implements AfterViewInit {
   attribute3 = '';
   balance = '0'
 
-  constructor(private allocateService: AllocateService) {
+  constructor(
+    private allocateService: AllocateService,
+    private paymentService: paymentService) {
   }
 
 
@@ -87,7 +90,7 @@ export class AllocateIdComponent implements AfterViewInit {
 
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
-    if (this.isUUID(this.posBuddyId)) {
+    if (this.paymentService.isUUID(this.posBuddyId)) {
       this.formValid = true
     } else {
       this.formValidText = "ID ungültig"
@@ -100,7 +103,7 @@ export class AllocateIdComponent implements AfterViewInit {
   checkAndSend() {
     // check ID
     if (this.borrowCard || this.staticCard) {
-      if (this.isUUID(this.posBuddyId) == false) {
+      if (this.paymentService.isUUID(this.posBuddyId) == false) {
         this.formValid = false;
         this.formValidText = "ID ungültig - Bitte Id scannen";
         return
@@ -265,13 +268,6 @@ export class AllocateIdComponent implements AfterViewInit {
     }
   }
 
-
-  private isUUID(s: string): boolean {
-    if (s.match("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") != null) {
-      return true
-    }
-    return false
-  }
 
   protected readonly PosBuddyConstants = PosBuddyConstants;
 }

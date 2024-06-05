@@ -4,6 +4,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {HttpErrorResponse} from "@angular/common/http";
 import {paymentService} from "../service/payment.service";
+import {PosBuddyConstants} from "../posBuddyConstants";
 
 
 @Component({
@@ -30,14 +31,14 @@ export class PayoutComponent {
   confirmOK: boolean = false;
   formValid: boolean = false;
   formValidText: string = "ID zur Auszahlung scannen"
-  posBuddyId: string = "-";
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
   value = '0';
 
 
   check() {
     // -- Check if balance is valid
     if (isNaN(Number(this.value))
-      || Number(this.value) <= 0 || Number(this.value) > 200) {
+      || Number(this.value) <= 0.00) {
       this.payoutPossible = false;
       this.serverResponse = "Guthaben ungültig 0.1<-->200 EUR"
       this.confirmError = true;
@@ -50,7 +51,7 @@ export class PayoutComponent {
     this.paymentService.doPayout(this.posBuddyId)
       .subscribe({
           next: () => {
-            this.serverResponse = "OK"
+            this.serverResponse = "Auszahlung erfolgreich"
             console.log("suceded")
             this.confirmOK = true;
           },
@@ -89,7 +90,15 @@ export class PayoutComponent {
     this.posBuddyId = scanResult;
     this.formValid = true
     this.offcanvasService.dismiss("success");
-
+    // check uuid
+    if (!this.paymentService.isUUID(this.posBuddyId)) {
+      this.value = "0";
+      this.serverResponse = "Keine gültige ID"
+      this.confirmError = true;
+      this.formValid = true
+      return
+    }
+    // get balance
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
         this.value = "" + next.balance;
@@ -135,13 +144,16 @@ export class PayoutComponent {
   resetError() {
     this.confirmError = false;
     this.serverResponse = "-";
+    this.value = "0";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
+    this.payoutPossible = false;
   }
 
   resetOK() {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.value = "0";
-    this.posBuddyId = "-";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
     this.payoutPossible = false;
   }
 

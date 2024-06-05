@@ -196,7 +196,7 @@
   @if (permissions.adminPermission) {
     <!--                                   ########SPECIAL-TRANSACTION########                                         -->
     <div ngbAccordionItem="accF7"
-         [collapsed]="false"
+         [collapsed]="true"
          #accF7="ngbAccordionItem">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton style="background-color: #ffc107">
@@ -258,7 +258,9 @@
         <a href="https://github.com/PosBuddy" target="_blank">PosBuddy</a>
         das Kassensystem für Vereine.
         <p></p>
-        Konzeption : Carsten Puhl / Jörn Karthaus
+        <h5>
+          Konzeption : Carsten Puhl / Jörn Karthaus
+        </h5>
         <ul>
           <li>
             Ausgabe - Berechtigung &nbsp;
@@ -289,7 +291,7 @@
     </form>
   </div>
   <div class="modal-footer">
-    Footer
+    <i class="bi bi-opencollective"></i> by <a href="https://joern-karthaus.de" target="_blank">Jörn Karthaus</a>
   </div>
 </ng-template>
 

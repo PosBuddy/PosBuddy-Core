@@ -25,65 +25,66 @@ export class AddValueComponent {
 
   formValid: boolean = false;
   formValidText: string = "Betrag eingeben"
-
-  serverResponseText: string = "";
-
-  posBuddyId: string = "-";
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
   value = '0';
-
 
   constructor(private paymentService: paymentService) {
 
   }
 
   checkAndSend() {
-    let formcheck = true;
-    let errorText = "";
+    // check value
     if (isNaN(Number(this.value))
-      || Number(this.value) <= 0
+      || Number(this.value) <= 0.00
       || Number(this.value) > PosBuddyConstants.MAX_DEPOSIT) {
-      formcheck = false;
-      errorText += " / Wert ungültig 1 <--> " + PosBuddyConstants.MAX_DEPOSIT + " EUR"
-    }
-    if (formcheck) {
-      console.info("formCheck:OK")
-      this.formValid = true;
-      this.formValidText = "";
-      this.paymentService.addDeposit(this.posBuddyId, Number(this.value))
-        .subscribe({
-            next: (v) => {
-              this.serverResponse = "OK"
-              console.log("suceded")
-              this.confirmOK = true;
-            },
-            error: (e: HttpErrorResponse) => {
-              this.confirmError = true;
-              switch (e.status) {
-                case 401 : {
-                  this.serverResponse = "Zugriff verweigert";
-                  break
-                }
-                case 404 : {
-                  this.serverResponse = "ID nicht zugeordnet";
-                  break
-                }
-                case 405 : {
-                  this.serverResponse = "keine Berechtigung";
-                  break
-                }
-                default : {
-                  this.serverResponse = "Fehlercode:" + e.status;
-                  break
-                }
-              }
-            },
-            complete: () => console.info('complete')
-          }
-        )
-    } else {
       this.formValid = false;
-      this.formValidText = errorText;
+      this.formValidText = "Wert ungültig 1 <--> " + PosBuddyConstants.MAX_DEPOSIT + " EUR"
+      return
     }
+    // check id
+    if (this.posBuddyId === PosBuddyConstants.INVALID_POSBUDDY_ID) {
+      this.formValid = false;
+      this.formValidText = "Bitte ID scannen"
+      return
+    }
+    // check if uuid
+    if (!this.paymentService.isUUID(this.posBuddyId)) {
+      this.formValid = false;
+      this.formValidText = "ID ungültig"
+      return
+    }
+    this.formValid = true;
+    this.formValidText = "";
+    this.paymentService.addDeposit(this.posBuddyId, Number(this.value))
+      .subscribe({
+          next: (v) => {
+            this.serverResponse = "Einzahlung erfolgreich"
+            this.confirmOK = true;
+          },
+          error: (e: HttpErrorResponse) => {
+            this.confirmError = true;
+            switch (e.status) {
+              case 401 : {
+                this.serverResponse = "Zugriff verweigert";
+                break
+              }
+              case 404 : {
+                this.serverResponse = "ID nicht zugeordnet";
+                break
+              }
+              case 405 : {
+                this.serverResponse = "keine Berechtigung";
+                break
+              }
+              default : {
+                this.serverResponse = "Fehlercode:" + e.status;
+                break
+              }
+            }
+          },
+          complete: () => console.info('complete')
+        }
+      )
   }
 
 
@@ -106,7 +107,7 @@ export class AddValueComponent {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.value = "0";
-    this.posBuddyId = "-";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
 }

@@ -83,6 +83,14 @@ export class paymentService {
 
   }
 
+  public isUUID(s: string): boolean {
+    if (s.match("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$") != null) {
+      return true
+    }
+    return false
+  }
+
+
   doPayout(posBuddyId: string) {
     return this.http.post<any>(this.baseUrl + "payout/" + posBuddyId, httpOptions)
   }
