@@ -4,6 +4,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {HttpErrorResponse} from "@angular/common/http";
 import {paymentService} from "../service/payment.service";
+import {PosBuddyConstants} from "../posBuddyConstants";
 
 @Component({
   selector: 'app-deallocate',
@@ -32,7 +33,7 @@ export class DeallocateComponent {
   formValid: boolean = false;
   formValidText: string = "ID zur Freigabe scannen"
 
-  posBuddyId: string = "-";
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
   value = '0';
   isStatic: boolean = false;
 
@@ -93,17 +94,25 @@ export class DeallocateComponent {
 
 
   onScanSuccess(scanResult: string) {
-    this.posBuddyId = scanResult;
-    this.formValid = true
     this.offcanvasService.dismiss("success");
+    // check id
+    this.posBuddyId = scanResult;
+    if (!this.paymentService.isUUID(this.posBuddyId)) {
+      this.value = "0";
+      this.confirmError = true;
+      this.serverResponse = "Ungültige ID";
+      this.formValid = false;
+      return
+    }
+    this.formValid = true
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
-      next => {
-        this.value = "" + next.balance;
-        this.isStatic = next.staticId;
+      identity => {
+        this.value = "" + identity.balance;
+        this.isStatic = identity.staticId;
         if (this.value.indexOf(".") > 0) {
           this.value = this.value.substring(0, this.value.indexOf(".") + 2)
         }
-        console.log("balance:" + next.balance);
+        console.log("balance:" + identity.balance);
         this.check();
       },
       err => {
@@ -144,13 +153,15 @@ export class DeallocateComponent {
   resetError() {
     this.confirmError = false;
     this.serverResponse = "-";
+    this.value = "0";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
   resetOK() {
     this.confirmOK = false;
     this.serverResponse = "-";
     this.value = "0";
-    this.posBuddyId = "-";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
     this.deallocatePossible = false;
   }
 
