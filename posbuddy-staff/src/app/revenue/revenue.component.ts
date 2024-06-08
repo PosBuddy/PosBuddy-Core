@@ -1,27 +1,30 @@
 import {Component, inject, TemplateRef, ViewChild} from '@angular/core';
-import {NgbAlert, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
+import {NgbAlert, NgbOffcanvas, NgbPopover} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 import {paymentService, revenue} from "../service/payment.service";
-import {DecimalPipe} from "@angular/common";
-
+import {CurrencyPipe, DatePipe, DecimalPipe} from "@angular/common";
+import {PosBuddyConstants} from "../posBuddyConstants";
 
 @Component({
-  selector: 'app-revenue',
-  standalone: true,
-  imports: [
-    NgbAlert,
-    ReactiveFormsModule,
-    ZXingScannerModule,
-    FormsModule,
-    DecimalPipe,
-    DecimalPipe,
-    DecimalPipe
-  ],
-  templateUrl: './revenue.component.html',
-  styleUrl: './revenue.component.css'
-})
-
+    selector: 'app-revenue',
+    standalone: true,
+    imports: [
+      NgbAlert,
+      ReactiveFormsModule,
+      ZXingScannerModule,
+      FormsModule,
+      DecimalPipe,
+      DecimalPipe,
+      DecimalPipe,
+      DatePipe,
+      NgbPopover,
+      CurrencyPipe
+    ],
+    templateUrl: './revenue.component.html',
+    styleUrl: './revenue.component.css'
+  }
+)
 
 export class RevenueComponent {
   @ViewChild('revenueOC') revenueOCTemplate: TemplateRef<any> | undefined;
@@ -37,8 +40,8 @@ export class RevenueComponent {
   confirmOK: boolean = false;
   formValid: boolean = false;
   formValidText: string = "ID zur Anzeige der Umsätze scannen"
-  posBuddyId: string = "-";
-  balance = '0';
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
+  balance: number = 0.00;
   name: string = "";
   revenues: Array<revenue> = [];
 
@@ -83,20 +86,26 @@ export class RevenueComponent {
 
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
-    this.formValid = true
     this.offcanvasService.dismiss("success");
-
+    if (!this.paymentService.isUUID(this.posBuddyId)) {
+      this.balance = 0.00;
+      this.name = "";
+      this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID
+      this.confirmError = true;
+      this.serverResponse = "ID ungültig"
+      return
+    }
+    this.formValid = true
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
-        this.balance = "" + next.balance;
-        if (this.balance.indexOf(".") > 0) {
-          this.balance = this.balance.substring(0, this.balance.indexOf(".") + 2)
-        }
+        console.log(next.balance);
+        this.balance = next.balance;
         this.name = next.surName + " " + next.lastName
         this.getRevenue()
       },
       err => {
-        this.balance = "0";
+        this.balance
+        0.00;
         this.name = "";
         this.confirmError = true;
         switch (err.status) {
@@ -126,17 +135,25 @@ export class RevenueComponent {
     );
   }
 
+  closeOffcanvas() {
+    this.resetOK()
+    this.offcanvasService.dismiss();
+  }
 
   resetError() {
     this.confirmError = false;
     this.serverResponse = "-";
-    this.posBuddyId = "-";
+    this.balance = 0.00;
+    this.name = "";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
   resetOK() {
     this.confirmOK = false;
     this.serverResponse = "-";
-    this.posBuddyId = "-";
+    this.balance = 0.00;
+    this.name = "";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
   }
 
 

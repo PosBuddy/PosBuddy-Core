@@ -21,11 +21,14 @@
     </div>
   </div>
 </div>
-
+<!-----------------------------------------------------------------------------------------------------------Scanner -->
 <ng-template #scanIdOC let-offcanvas>
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="scanID">Id Scannen</h4>
-    <button type="button" class="btn-close-white" aria-label="Close" (click)="offcanvas.dismiss('Cross click')">
+    <button type="button"
+            class="btn-close-white"
+            aria-label="Close"
+            (click)="closeOffcanvas()">
       <i class="bi bi-box-arrow-in-left"></i>
     </button>
   </div>
@@ -38,18 +41,24 @@
     Bitte QR-code in der Kamera ausrichten.
   </div>
 </ng-template>
-
+<!-----------------------------------------------------------------------------------------------------------Umsätze -->
 <ng-template #revenueOC let-offcanvas disable-scolling="false">
   <div class="offcanvas-header">
     <h4 class="offcanvas-title" id="revenue">Umsätze</h4>
-    <button type="button" class="btn-close-white" aria-label="Close" (click)="offcanvas.dismiss('Cross click')">
+    <button
+      type="button"
+      class="btn-close-white"
+      aria-label="Close"
+      (click)="closeOffcanvas()">
       <i class="bi bi-box-arrow-in-left"></i>
     </button>
   </div>
   <div class="offcanvas-body">
     <div class="alert alert-primary" role="alert">
       <span style="white-space: nowrap;">
-        <strong>  {{ name }} / {{ balance | number: '1.2-2' }}<i class="bi bi-currency-euro"></i></strong>
+        <strong>
+          {{ name }} / {{ balance |  currency: 'EUR':'symbol':'1.2-2' }}
+        </strong>
       </span>
     </div>
     <table class="table table-striped">
@@ -57,7 +66,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">S/H</th>
-        <th scope="col">Anzahl</th>
+        <th scope="col">M.</th>
         <th scope="col">Artikel</th>
         <th scope="col">EUR</th>
       </tr>
@@ -65,7 +74,16 @@
       <tbody>
         @for (revenue of revenues; track revenue.timeOfAction; let i = $index) {
           <tr>
-            <th scope="row">{{ i + 1 }}</th>
+            <th scope="row">
+              <button
+                type="button"
+                class="btn btn-outline-secondary me-2"
+                placement="top-start"
+                ngbPopover="{{ revenue.timeOfAction | date:'d.MMM.y - hh:mm:ss' }}"
+                popoverTitle="Zeitpunkt">
+                {{ i + 1 }}
+              </button>
+            </th>
             <td>
               @if (revenue.action == "+") {
                 <i class="bi bi-plus-circle-fill"></i>
@@ -80,15 +98,17 @@
             </td>
             <td>
               @if (revenue.action == "+") {
-                <em>Einzahlung</em>
+                <em>Einz.</em>
               }
               @if (revenue.action == "-") {
-                <em>Auszahlung</em>
+                <em>Ausz.</em>
               }
               {{ revenue.itemText }}
             </td>
             <td>
-              {{ revenue.value * revenue.amount | number: '1.2-2' }}
+              <p class="fs-5">
+                {{ revenue.value * revenue.amount | number: '1.2-2' }}
+              </p>
             </td>
           </tr>
         }
