@@ -6,12 +6,12 @@
   <div class="row pt-3">
     <div class="col-6">
       <p class="text-nowrap fs-4">
-        Wert:{{ orderValue | number: '1.2-2' }} <i class="bi bi-currency-euro"></i> /
+        Wert:{{ orderValue | currency: 'EUR':'symbol':'1.2-2' }} /
       </p>
     </div>
     <div class="col-6">
       <p class="text-nowrap fs-4">
-        Guthaben: {{ balance | number: '1.2-2' }} <i class="bi bi-currency-euro"></i>
+        Guthaben: {{ balance |  currency: 'EUR':'symbol':'1.2-2' }}
       </p>
     </div>
     <div class="row pt-3">
@@ -108,12 +108,10 @@
         <p class="text-nowrap fs-4">
           <strong>
             <i class="bi bi-piggy-bank"></i>
-            {{ balance | number : '1.2-2' }}
-            <i class="bi bi-currency-euro"></i>
+            {{ balance |   currency: 'EUR':'symbol':'1.2-2' }}
             &nbsp;-&nbsp;
             <i class="bi bi-cart-check-fill"></i>
-            {{ orderValue | number: '1.2-2' }}
-            <i class="bi bi-currency-euro"></i>
+            {{ orderValue |  currency: 'EUR':'symbol':'1.2-2' }}
           </strong>
         </p>
       </div>

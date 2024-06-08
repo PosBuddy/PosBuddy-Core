@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, inject, TemplateRef, ViewChild} from '@angular/core';
-import {DecimalPipe} from "@angular/common";
+import {CurrencyPipe, DecimalPipe} from "@angular/common";
 import {NgbAlert, NgbCollapse, NgbOffcanvas} from "@ng-bootstrap/ng-bootstrap";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
@@ -16,7 +16,8 @@ import {PosBuddyConstants} from "../posBuddyConstants";
     ZXingScannerModule,
     FormsModule,
     DecimalPipe,
-    NgbCollapse
+    NgbCollapse,
+    CurrencyPipe
   ],
   templateUrl: './serve.component.html',
   styleUrl: './serve.component.css'
@@ -33,9 +34,9 @@ export class ServeComponent implements AfterViewInit {
   confirmError: boolean = false;
   confirmOK: boolean = false;
   iscollapsed: boolean = false;
-  posBuddyId: string = "-";
+  posBuddyId: string = PosBuddyConstants.INVALID_POSBUDDY_ID;
   name: string = "";
-  balance = '0';
+  balance: number = 0.00;
 
   orderValue: number = 0;
 
@@ -117,17 +118,22 @@ export class ServeComponent implements AfterViewInit {
   onScanSuccess(scanResult: string) {
     this.posBuddyId = scanResult;
     this.offcanvasService.dismiss("success");
+    if (!this.paymentService.isUUID(this.posBuddyId)) {
+      this.balance = 0.00;
+      this.name = "";
+      this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID
+      this.confirmError = true;
+      this.serverResponse = "ID ungültig"
+      return
+    }
     this.paymentService.getIdentity(this.posBuddyId).subscribe(
       next => {
-        this.balance = "" + next.balance;
-        if (this.balance.indexOf(".") > 0) {
-          this.balance = this.balance.substring(0, this.balance.indexOf(".") + 2)
-        }
+        this.balance = Number(next.balance.toFixed(2))
         this.name = next.surName + " " + next.lastName
         this.offcanvasService.open(this.serveOCTemplate, {ariaLabelledBy: 'revenue'})
       },
       err => {
-        this.balance = "0";
+        this.balance = 0.00;
         this.name = "";
         this.confirmError = true;
         switch (err.status) {
@@ -185,22 +191,22 @@ export class ServeComponent implements AfterViewInit {
 
 
   resetServeData() {
-    this.balance = "0";
-    this.orderValue = 0;
+    this.balance = 0.00;
+    this.orderValue = 0.00;
     this.serveitems.map(value => value.count = 0)
   }
 
   resetError() {
     this.confirmError = false;
     this.serverResponse = "-";
-    this.posBuddyId = "-";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
     this.resetServeData();
   }
 
   resetOK() {
     this.confirmOK = false;
     this.serverResponse = "-";
-    this.posBuddyId = "-";
+    this.posBuddyId = PosBuddyConstants.INVALID_POSBUDDY_ID;
     this.resetServeData();
   }
 
