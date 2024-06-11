@@ -145,4 +145,26 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
     }
 
 
+    @Override
+    public boolean isServeOrCheckoutOrAdmin(X509Authentication x509Authentication) {
+        if (!isSslActive) {
+            log.info("SSL disabled -> serveOrCheckout ->> true");
+            return true;
+        }
+        return isCheckoutStation(x509Authentication)
+                || isServeStation(x509Authentication)
+                || isAdmin(x509Authentication);
+    }
+
+    @Override
+    public boolean isCheckoutOrAdmin(X509Authentication x509Authentication) {
+        if (!isSslActive) {
+            log.info("SSL disabled -> serveOrCheckout ->> true");
+            return true;
+        }
+        return isCheckoutStation(x509Authentication)
+                || isAdmin(x509Authentication);
+    }
+
+
 }

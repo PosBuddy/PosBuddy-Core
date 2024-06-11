@@ -81,7 +81,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isServeStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin Berechtigung erforderlich");
         }
         log.debug("get all report items");
@@ -112,7 +112,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isServeStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin Berechtigung erforderlich");
         }
         log.debug("get report data");
@@ -186,7 +186,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isServeOrCheckout(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isServeOrCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine ausgabe,kasse oder admin berechtigung");
         }
         try {
@@ -221,7 +221,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isServeOrCheckout(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isServeOrCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine ausgabe,kasse oder admin berechtigung");
         }
         try {
@@ -256,7 +256,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
         }
         try {
-            if (securityService.isServeOrCheckout(x509Authentication) || securityService.isAdmin(x509Authentication)) {
+            if (securityService.isServeOrCheckoutOrAdmin(x509Authentication)) {
                 partyActionService.serveItems(serveItems, posBuddyId);
             } else {
                 log.warn("forbidden access to serve endpoint");
@@ -292,7 +292,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine Berechtigung");
         }
         try {
@@ -369,7 +369,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN);
         }
         try {
@@ -406,7 +406,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Keine Kasse oder Admin Berechtigung");
         }
         try {
@@ -440,7 +440,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin berechtigung erforderlich");
         }
         try {
@@ -475,7 +475,7 @@ public class StaffRestController {
             log.error("ERROR: Authentication and X509Authentication should be the same instance");
             return HttpResponse.notAllowed();
         }
-        if (!securityService.isCheckoutStation(x509Authentication) || !securityService.isAdmin(x509Authentication)) {
+        if (!securityService.isCheckoutOrAdmin(x509Authentication)) {
             return HttpResponse.status(HttpStatus.FORBIDDEN, "Kasse oder Admin berechtigung erforderlich");
         }
         try {

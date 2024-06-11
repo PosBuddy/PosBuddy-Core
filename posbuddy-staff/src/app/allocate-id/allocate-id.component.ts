@@ -27,7 +27,7 @@ export class AllocateIdComponent implements AfterViewInit {
   private offcanvasService = inject(NgbOffcanvas);
   closeResult = '';
   formValid: boolean = false;
-  formValidText: string = "Mindestens Id und Wert angeben."
+  formValidText: string = "Min. Id, Vorname und Wert angeben."
   serverResponse: string = "-"
   confirmError: boolean = false;
   confirmOK: boolean = false;
@@ -106,6 +106,14 @@ export class AllocateIdComponent implements AfterViewInit {
       if (this.paymentService.isUUID(this.posBuddyId) == false) {
         this.formValid = false;
         this.formValidText = "ID ungültig - Bitte Id scannen";
+        return
+      }
+    }
+    // check surname
+    if (this.borrowCard || this.staticCard) {
+      if (this.surname.trim().length == 0) {
+        this.formValid = false;
+        this.formValidText = "Vorname fehlt";
         return
       }
     }

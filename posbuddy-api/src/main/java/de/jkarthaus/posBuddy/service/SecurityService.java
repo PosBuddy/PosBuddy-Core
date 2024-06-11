@@ -4,6 +4,10 @@ import io.micronaut.security.x509.X509Authentication;
 
 public interface SecurityService {
 
+    boolean isServeOrCheckoutOrAdmin(X509Authentication x509Authentication);
+
+    boolean isCheckoutOrAdmin(X509Authentication x509Authentication);
+
     public static record permissionRecord(
             boolean servePermission,
             boolean checkoutPermission,
