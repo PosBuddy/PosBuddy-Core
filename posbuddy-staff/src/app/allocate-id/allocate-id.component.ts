@@ -101,7 +101,7 @@ export class AllocateIdComponent implements AfterViewInit {
   }
 
   checkAndSend() {
-    // check ID
+    // check ID when borrowCard or Static Card
     if (this.borrowCard || this.staticCard) {
       if (this.paymentService.isUUID(this.posBuddyId) == false) {
         this.formValid = false;
@@ -110,12 +110,10 @@ export class AllocateIdComponent implements AfterViewInit {
       }
     }
     // check surname
-    if (this.borrowCard || this.staticCard) {
-      if (this.surname.trim().length == 0) {
-        this.formValid = false;
-        this.formValidText = "Vorname fehlt";
-        return
-      }
+    if (this.surname.trim().length == 0) {
+      this.formValid = false;
+      this.formValidText = "Vorname fehlt";
+      return
     }
     // check value
     if (isNaN(Number(this.balance))
