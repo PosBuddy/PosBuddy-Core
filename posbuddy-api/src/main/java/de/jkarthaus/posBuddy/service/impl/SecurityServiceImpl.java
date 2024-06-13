@@ -42,11 +42,6 @@ public class SecurityServiceImpl implements de.jkarthaus.posBuddy.service.Securi
 
     @Override
     public permissionRecord getPermissions(X509Authentication x509Authentication) {
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return new permissionRecord(
                 isServeStation(x509Authentication),
                 isCheckoutStation(x509Authentication),
