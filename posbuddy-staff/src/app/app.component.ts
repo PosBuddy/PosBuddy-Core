@@ -23,6 +23,7 @@ import {NgClass} from "@angular/common";
 import {DispensingStationFilterComponent} from "./dispensing-station-filter/dispensing-station-filter.component";
 import {SpecialTransactionComponent} from "./special-transaction/special-transaction.component";
 import {ReportComponent} from "./report/report.component";
+import {LoadingIndicatorComponent} from "./loading-indicator/loading-indicator.component";
 
 @Component({
   selector: 'app-root',
@@ -44,7 +45,8 @@ import {ReportComponent} from "./report/report.component";
     NgClass,
     DispensingStationFilterComponent,
     SpecialTransactionComponent,
-    ReportComponent
+    ReportComponent,
+    LoadingIndicatorComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

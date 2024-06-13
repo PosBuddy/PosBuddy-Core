@@ -1,0 +1,14 @@
+@if (loading$ | async) {
+  <div class="spinner-container">
+    @if (customLoadingIndicator) {
+      <ng-container *ngTemplateOutlet="customLoadingIndicator"/>
+    } @else {
+      <div class="spinner-border d-flex align-self-center"
+           style="width: 3rem;
+           height: 3rem;"
+           role="status">
+      </div>
+      <span class="sr-only">PosBuddy arbeitet...</span>
+    }
+  </div>
+}

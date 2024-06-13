@@ -7,18 +7,20 @@
     </div>
   </div>
   @for (reportItem of reportItems; track reportItem) {
-    <div class="row pt-1 border-bottom">
-      <div class="col-4">
+    <div class="row  pt-1 border-bottom">
+      <div class="col-6">
         @if (reportItem.reportType === PosBuddyConstants.REPORT_TYPE_ONE_TIME) {
-          <i class="bi bi-qr-code-scan"></i>
-          ID-Card
+          <h4>
+            <i class="bi bi-qr-code-scan h2"></i>
+            ID-Card
+          </h4>
         } @else {
-          <i class="bi bi-card-text"></i>
+          <i class="bi bi-card-text h2"></i>
         }
       </div>
-      <div class="col-8">
+      <div class="col-6">
         <a href="api/v1/reportData/{{ reportItem.fileName }}" target="_blank">
-          {{ reportItem.creationDate  | date:'dd.MM hh:mm:ss' }}
+          <h5>{{ reportItem.creationDate  | date:'dd.MM hh:mm:ss' }}</h5>
         </a>
       </div>
     </div>
