@@ -58,7 +58,7 @@ export class AppComponent implements AfterViewInit {
   private offcanvasService = inject(NgbOffcanvas);
   private modalService = inject(NgbModal);
 
-  public permissions = {
+  public perm = {
     "servePermission": false,
     "checkoutPermission": false,
     "adminPermission": false,
@@ -76,7 +76,7 @@ export class AppComponent implements AfterViewInit {
     this.paymentService
       .getPermissions()
       .subscribe(permissions => {
-          this.permissions = permissions;
+          this.perm = permissions;
         }, err => {
           console.error("Error at getting permissions from backend:" + err)
         }

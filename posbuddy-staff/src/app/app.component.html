@@ -18,19 +18,19 @@
     <ul class="navbar-nav mr-auto">
       <li class="nav-item">
         <a class="nav-link"
-           [ngClass]="{'disabled' : !permissions.checkoutPermission}"
+           [ngClass]="{'disabled' : (!perm.checkoutPermission && !perm.servePermission && !perm.adminPermission)}"
            href="#"
            (click)="openFilter(stationFilter)"><i class="bi bi-funnel"></i>Ausgabestationen Filtern</a>
       </li>
       <li class="nav-item">
         <a class="nav-link"
-           [ngClass]="{'disabled' : !permissions.adminPermission}"
+           [ngClass]="{'disabled' : !perm.adminPermission}"
            href="#">
           <i class="bi bi-body-text"></i>Import Textbausteine</a>
       </li>
       <li class="nav-item active">
         <a class="nav-link"
-           [ngClass]="{'disabled' : !permissions.checkoutPermission}"
+           [ngClass]="{'disabled' : !(perm.checkoutPermission || perm.adminPermission)}"
            href="#"
            (click)="openReportList(reportList)"><i class="bi bi-card-list"></i>Reports</a>
       </li>
@@ -49,9 +49,9 @@
      xmlns="http://www.w3.org/1999/html"
      #accMenue="ngbAccordion"
 >
-  @if (permissions.checkoutPermission || permissions.adminPermission) {
+  @if (perm.checkoutPermission || perm.adminPermission) {
     <!--                                   ########ALLOCATE PERSON########                                            -->
-    <div ngbAccordionItem="accF1" [collapsed]="!permissions.checkoutPermission" #accF1="ngbAccordionItem">
+    <div ngbAccordionItem="accF1" [collapsed]="!perm.checkoutPermission" #accF1="ngbAccordionItem">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
           <i class="bi bi-1-circle"></i>
@@ -62,8 +62,8 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (permissions.checkoutPermission) {
-              <app-allocate-id [permissions]=permissions></app-allocate-id>
+            @if (perm.checkoutPermission || perm.adminPermission) {
+              <app-allocate-id [permissions]=perm></app-allocate-id>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
                 <strong>Keine Berechtigung!</strong>
@@ -85,7 +85,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (permissions.checkoutPermission) {
+            @if (perm.checkoutPermission || perm.adminPermission) {
               <app-add-value></app-add-value>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -108,7 +108,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (permissions.checkoutPermission) {
+            @if (perm.checkoutPermission || perm.adminPermission) {
               <app-payout></app-payout>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -131,7 +131,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (permissions.checkoutPermission) {
+            @if (perm.checkoutPermission || perm.adminPermission) {
               <app-deallocate></app-deallocate>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -143,7 +143,7 @@
       </div>
     </div>
   }
-  @if (permissions.servePermission || permissions.checkoutPermission || permissions.adminPermission) {
+  @if (perm.servePermission || perm.checkoutPermission || perm.adminPermission) {
     <!--                                   ########REVENUE########                                                     -->
     <div ngbAccordionItem="accF5" [collapsed]="true" #accF5="ngbAccordionItem">
       <h2 ngbAccordionHeader>
@@ -156,7 +156,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (permissions.checkoutPermission || permissions.servePermission) {
+            @if (perm.checkoutPermission || perm.servePermission || perm.adminPermission) {
               <app-revenue></app-revenue>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -169,7 +169,7 @@
     </div>
     <!--                                   ########SERVE########                                                       -->
     <div ngbAccordionItem="accF6"
-         [collapsed]="permissions.checkoutPermission"
+         [collapsed]="perm.checkoutPermission"
          #accF6="ngbAccordionItem">
       <h2 ngbAccordionHeader>
         <button ngbAccordionButton>
@@ -181,7 +181,7 @@
       <div ngbAccordionCollapse>
         <div ngbAccordionBody>
           <ng-template>
-            @if (permissions.checkoutPermission || permissions.servePermission) {
+            @if (perm.checkoutPermission || perm.servePermission || perm.adminPermission) {
               <app-serve></app-serve>
             } @else {
               <ngb-alert [dismissible]="false" type="danger">
@@ -193,7 +193,7 @@
       </div>
     </div>
   }
-  @if (permissions.adminPermission) {
+  @if (perm.adminPermission) {
     <!--                                   ########SPECIAL-TRANSACTION########                                         -->
     <div ngbAccordionItem="accF7"
          [collapsed]="true"
@@ -264,7 +264,7 @@
         <ul>
           <li>
             Ausgabe - Berechtigung &nbsp;
-            @if (permissions.servePermission) {
+            @if (perm.servePermission) {
               <i class="bi bi-check-lg"></i>
             } @else {
               <i class="bi bi-emoji-frown-fill"></i>
@@ -272,7 +272,7 @@
           </li>
           <li>
             Kasse - Berechtigung &nbsp;
-            @if (permissions.checkoutPermission) {
+            @if (perm.checkoutPermission) {
               <i class="bi bi-check-lg"></i>
             } @else {
               <i class="bi bi-emoji-frown-fill"></i>
@@ -280,7 +280,7 @@
           </li>
           <li>
             Admin - Berechtigung &nbsp;
-            @if (permissions.adminPermission) {
+            @if (perm.adminPermission) {
               <i class="bi bi-check-lg"></i>
             } @else {
               <i class="bi bi-emoji-frown-fill"></i>
@@ -295,6 +295,6 @@
   </div>
 </ng-template>
 
-<loading-indicator />
+<loading-indicator/>
 
 <router-outlet/>
