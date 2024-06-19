@@ -32,6 +32,7 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-annotations")
     implementation("io.micronaut.security:micronaut-security")
     implementation 'commons-net:commons-net:3.10.0'
+    implementation("org.apache.commons:commons-csv:1.10.0")
 
     implementation("net.sf.jasperreports:jasperreports:6.21.0")
     implementation("net.sf.jasperreports:jasperreports-fonts:6.20.5")
@@ -39,7 +40,7 @@ dependencies {
     implementation("com.google.zxing:core:3.5.3")
     implementation("org.apache.xmlgraphics:batik-bridge:1.17")
 
-    compileOnly("org.apache.commons:commons-csv:1.10.0")
+
     compileOnly("org.projectlombok:lombok")
     compileOnly("io.micronaut:micronaut-http-client")
 
