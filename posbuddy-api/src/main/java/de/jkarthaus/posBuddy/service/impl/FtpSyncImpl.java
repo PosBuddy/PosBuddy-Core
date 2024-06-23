@@ -7,8 +7,8 @@ import de.jkarthaus.posBuddy.db.entities.ConfigEntity;
 import de.jkarthaus.posBuddy.db.entities.IdentityEntity;
 import de.jkarthaus.posBuddy.db.entities.RevenueEntity;
 import de.jkarthaus.posBuddy.mapper.ConfigMapper;
-import de.jkarthaus.posBuddy.model.config.FtpConfig;
 import de.jkarthaus.posBuddy.model.StaticIdData;
+import de.jkarthaus.posBuddy.model.config.FtpConfig;
 import de.jkarthaus.posBuddy.model.enums.ConfigID;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
 import de.jkarthaus.posBuddy.service.FtpSyncService;
@@ -24,7 +24,6 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -240,31 +239,30 @@ public class FtpSyncImpl implements FtpSyncService {
             ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
             ftpClient.enterLocalPassiveMode();
             ftpClient.setControlKeepAliveTimeout(Duration.ofSeconds(300));
+            ftpClient.setDefaultTimeout(10 * 1000);
             for (StaticIdData staticIdData : uploadStaticIdData) {
-                log.info("upload id:{}", staticIdData.getPosBuddyId());
-                OutputStream outputStream = ftpClient.storeFileStream(staticIdData.getPosBuddyId() + ".json");
-                if (outputStream != null) {
-                    PrintStream printStream = new PrintStream(outputStream, true, StandardCharsets.UTF_8);
-                    printStream.print(objectMapper.writeValueAsString(staticIdData));
-                    printStream.close();
-                    if (!ftpClient.completePendingCommand()) {
-                        log.error("Fttp completePendingCommand = false - {} reply code:{}",
-                                ftpClient.getReplyString(),
-                                ftpClient.getReplyCode()
+                objectMapper.writeValue(new FileOutputStream(new File("/tmp/upload.json")), staticIdData);
+                ftpClient.storeFile(
+                        staticIdData.getPosBuddyId() + ".json",
+                        new FileInputStream(new File("/tmp/upload.json"))
+                );
+                log.info("upload id:{} reply:{}", staticIdData.getPosBuddyId(), ftpClient.getReplyCode());
+            }
+            // remove id's from ftp server
+            for (String posBuddyRemoveId : removeIdList) {
+                if (ftpClient.listFiles(posBuddyRemoveId + ".json").length > 0) {
+                    log.info("remove id:{} from FTP Server", posBuddyRemoveId);
+                    if (!ftpClient.deleteFile(posBuddyRemoveId + ".json")) {
+                        log.warn("remove file:{}  failed :{}.",
+                                posBuddyRemoveId,
+                                ftpClient.getReplyString()
                         );
                     }
                 } else {
-                    log.error("Ftp reply String:{} reply code:{}",
-                            ftpClient.getReplyString(),
-                            ftpClient.getReplyCode()
-                    );
+                    log.warn("try to delete posBuddyId:{} but not found on FTP Server", posBuddyRemoveId);
                 }
             }
-            for (String posBuddyRemoveId : removeIdList) {
-                log.info("remove id:{} from FTP Server", posBuddyRemoveId);
-                ftpClient.deleteFile(posBuddyRemoveId + ".json");
-                ftpClient.completePendingCommand();
-            }
+            // store new dync state file...
             log.info("Store new SyncState");
             ObjectOutputStream out = new ObjectOutputStream(ftpClient.storeFileStream(FTP_HASH_FILE));
             out.writeObject(lastUploadHashValue);
