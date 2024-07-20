@@ -1,2 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 @import "bootstrap-icons/font/bootstrap-icons.css";
+
+body {
+  background-color:#dee2e6; /* Helles Grau als Hintergrundfarbe */
+  margin: 0;
+  font-family: Arial, sans-serif;
+}

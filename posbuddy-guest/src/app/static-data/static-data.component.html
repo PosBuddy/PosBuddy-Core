@@ -1,5 +1,5 @@
-<!--                                    HEADER                                                           -->
-<div class="container text-center">
+<!--                                    HEADER                                                                      -->
+<div class="container text-center" xmlns="http://www.w3.org/1999/html">
   <div class="row">
     <div class="col gy-1">
       &nbsp;
@@ -19,11 +19,40 @@
       </div>
     </div>
   }
+
   <div class="row">
-    <div class="col">
+    <div class="col-6">
       <button class="btn btn-lg btn-outline-primary"
-              (click)="scanQRCode(scanIdOC)">SCAN ID KARTE
+              (click)="scanQRCode(scanIdOC)">SCAN-ID
       </button>
+    </div>
+    <div class="col-6">
+      <!-- revenue date range select -->
+      <div ngbDropdown class="d-inline-block">
+        <button
+          type="button"
+          class="btn btn-outline-primary"
+          id="revenueDateRangeDropdown" ngbDropdownToggle>
+          Zeitbereich
+        </button>
+        <div ngbDropdownMenu aria-labelledby="revenueDateRangeDropdown">
+          <button ngbDropdownItem
+                  (click)="revenueDateFilter('1d')">Heute
+          </button>
+          <button ngbDropdownItem
+                  (click)="revenueDateFilter('1w')">1 Woche
+          </button>
+          <button ngbDropdownItem
+                  (click)="revenueDateFilter('1m')">1 Monat
+          </button>
+          <button ngbDropdownItem
+                  (click)="revenueDateFilter('1y')">1 Jahr
+          </button>
+          <button ngbDropdownItem
+                  (click)="revenueDateFilter('ALL')">Alles
+          </button>
+        </div>
+      </div>
     </div>
   </div>
   <p></p>
@@ -31,12 +60,15 @@
 <!--                                     REVENUE AND BALANCE                                                         -->
 @if (actPosBuddyId != UNKNOWN_ID) {
   <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
-
     <p class="text-nowrap fs-4">
-      Guthaben:
-      <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
-      <i class="bi bi-currency-euro"></i>
-    </p>
+    <div class="alert alert-success" role="alert">
+      <h5>Guthaben:
+        <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
+        <i class="bi bi-currency-euro"></i>
+      </h5>
+    </div>
+
+    <!--                                             revenue list                                                    -->
     <table class="table table-striped">
       <thead>
       <tr>
@@ -49,36 +81,48 @@
       </thead>
       <tbody>
       <tr *ngFor="let revenue of staticData.revenueList; let i = index ">
-        <th scope="row">{{ i + 1 }}</th>
-        <td>
-          {{ revenue.timeOfAction | date:'hh:mm:ss' }}
-        </td>
-        <td>
-          {{ revenue.amount }}
-        </td>
-        <td>
-          @if (revenue.action == "+") {
-            <i class="bi bi-plus-circle-fill"></i>
-            Einzahlung
-          }
-          @if (revenue.action == "-") {
-            <i class="bi bi-minus-circle-fill"></i>
-            Auszahlung
-          }
-          {{ revenue.itemText }}
-        </td>
-        <td>
-          {{ revenue.value * revenue.amount | number : '1.2-2' }}
-        </td>
+        @if (isInDateFilter(revenue.timeOfAction)) {
+          <th scope="row">
+            <button
+              type="button"
+              class="btn btn-outline-secondary me-2"
+              placement="top-start"
+              ngbPopover="{{ revenue.timeOfAction | date:'d.MMM.y - HH:mm:ss' }}"
+              popoverTitle="Zeitpunkt">{{ i + 1 }}
+            </button>
+
+          </th>
+          <td>
+            {{ revenue.timeOfAction | date:'HH:mm' }}
+          </td>
+          <td>
+            {{ revenue.amount }}
+          </td>
+          <td>
+            @if (revenue.action == "+") {
+              <i class="bi bi-plus-circle-fill"></i>
+              Einzahlung
+            }
+            @if (revenue.action == "-") {
+              <i class="bi bi-minus-circle-fill"></i>
+              Auszahlung
+            }
+            {{ revenue.itemText }}
+          </td>
+          <td>
+            {{ revenue.value * revenue.amount | number : '1.2-2' }}
+          </td>
+        }
       </tr>
       </tbody>
     </table>
     <p class="text-nowrap fs-5">
       Stand:
-      <mark>{{ staticData.syncTimeStamp | date:'medium' }}</mark>
+      <mark>{{ staticData.syncTimeStamp | date:'dd.MM:YYYY HH:mm' }}</mark>
     </p>
   </div>
   <p></p>
+  <!--                                  reload hint                                                                  -->
   <div class="container text-center">
     <div class="row">
       <div class="col">
@@ -103,11 +147,36 @@
     <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
   </div>
   <div class="offcanvas-body">
-    <div class="mb-3">
-      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+    <div class="row">
+      <div class="col">
+        <div ngbDropdown class="d-inline-block">
+          <button type="button" class="btn btn-outline-primary" id="cameraDropDown" ngbDropdownToggle>
+            Kamera auswählen
+          </button>
+          <div ngbDropdownMenu aria-labelledby="cameraDropDown">
+            <button ngbDropdownItem *ngFor="let device of availableDevices"
+                    [value]="device.deviceId"
+                    (click)="onDeviceSelectChange(device.deviceId)">{{ device.label }}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="text-end">
-    Bitte QR-code in der Kamera ausrichten.
+    <p></p>
+    <div class="row">
+      <div class="col">
+        <zxing-scanner
+          [enable]="true"
+          (scanSuccess)="onScanSuccess($event)"
+          (camerasFound)="onCamerasFound($event)"
+          [device]="deviceCurrent"
+          (deviceChange)="onDeviceChange($event)">
+        </zxing-scanner>
+      </div>
+    </div>
+    <div class="text-end">
+      Bitte QR-code in der Kamera ausrichten.<br>
+      Bei Problemen andere Kamera wählen
+    </div>
   </div>
 </ng-template>

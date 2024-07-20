@@ -1,8 +1,17 @@
-import {Component, inject, TemplateRef, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, inject, TemplateRef, ViewChild} from '@angular/core';
 import {DatePipe, DecimalPipe, NgForOf} from "@angular/common";
 import {ReactiveFormsModule} from "@angular/forms";
 import {staticIdData, StaticIdService, UNKNOWN_ID} from "../services/static-id.service";
-import {NgbAlert, NgbOffcanvas, NgbPopover} from "@ng-bootstrap/ng-bootstrap";
+import {
+  NgbAlert,
+  NgbDropdown,
+  NgbDropdownButtonItem,
+  NgbDropdownItem,
+  NgbDropdownMenu,
+  NgbDropdownToggle,
+  NgbOffcanvas,
+  NgbPopover
+} from "@ng-bootstrap/ng-bootstrap";
 import {ZXingScannerModule} from "@zxing/ngx-scanner";
 
 @Component({
@@ -15,16 +24,31 @@ import {ZXingScannerModule} from "@zxing/ngx-scanner";
     DatePipe,
     NgForOf,
     ZXingScannerModule,
+    NgbPopover,
+    NgbDropdown,
+    NgbDropdownMenu,
+    NgbDropdownButtonItem,
+    NgbDropdownToggle,
+    NgbDropdownItem,
+    DatePipe,
     NgbPopover
   ],
   templateUrl: './static-data.component.html',
   styleUrl: './static-data.component.css'
 })
 
-export class StaticDataComponent {
+export class StaticDataComponent implements AfterViewInit {
   @ViewChild('scanIdOC') scanIdOCTemplate: TemplateRef<any> | undefined;
   private offcanvasService = inject(NgbOffcanvas);
   protected actPosBuddyId: string = UNKNOWN_ID;
+  protected readonly UNKNOWN_ID = UNKNOWN_ID;
+
+  availableDevices?: MediaDeviceInfo[];
+  deviceCurrent?: MediaDeviceInfo;
+  deviceSelected?: string;
+  hasDevices?: boolean;
+
+  dateFilter = "1d"
 
   serverResponse: string = "";
   staticData: staticIdData = {
@@ -35,6 +59,82 @@ export class StaticDataComponent {
   }
 
   constructor(private staticIdService: StaticIdService) {
+  }
+
+  revenueDateFilter(range: string) {
+    console.debug("date range:" + range)
+    this.dateFilter = range;
+    this.reloadData();
+  }
+
+  /**
+   * filters all revenues in Date range
+   * @param revenueDate
+   */
+  isInDateFilter(revenueDateString: string): boolean {
+    let revenueDate = new Date(Date.parse(revenueDateString));
+    switch (this.dateFilter) {
+      case "ALL":
+        return false;
+        break;
+      case "1d":
+        if (revenueDate > this.subDate(1)) {
+          return true;
+        }
+        return false;
+        break;
+      case "1w":
+        if (revenueDate > this.subDate(7)) {
+          return true;
+        }
+        return false;
+        break;
+      case "1m":
+        if (revenueDate > this.subDate(31)) {
+          return true;
+        }
+        return false;
+        break;
+      case "1y":
+        if (revenueDate > this.subDate(365)) {
+          return true;
+        }
+        return false;
+        break;
+    }
+    return true;
+  }
+
+  subDate(days: number): Date {
+    let date = new Date();
+    date.setDate(date.getDate() - days);
+    return date;
+  }
+
+  onDeviceSelectChange(selected: string) {
+    console.debug("Camera:" + selected)
+    const selectedStr = selected || '';
+    if (this.deviceSelected === selectedStr) {
+      return;
+    }
+    this.deviceSelected = selectedStr;
+    // @ts-ignore
+    const device = this.availableDevices.find(x => x.deviceId === selected);
+    this.deviceCurrent = device || undefined;
+  }
+
+  onDeviceChange(device: MediaDeviceInfo) {
+    const selectedStr = device?.deviceId || '';
+    if (this.deviceSelected === selectedStr) {
+      return;
+    }
+    this.deviceSelected = selectedStr;
+    this.deviceCurrent = device || undefined;
+  }
+
+  onCamerasFound(devices: MediaDeviceInfo[]): void {
+    this.availableDevices = devices;
+    this.hasDevices = Boolean(devices && devices.length);
   }
 
   onScanSuccess(scanResult: string) {
@@ -116,5 +216,5 @@ export class StaticDataComponent {
     localStorage.removeItem('posBuddyIdTimestamp');
   }
 
-  protected readonly UNKNOWN_ID = UNKNOWN_ID;
+  protected readonly Date = Date;
 }
