@@ -75,7 +75,7 @@ export class StaticDataComponent implements AfterViewInit {
     let revenueDate = new Date(Date.parse(revenueDateString));
     switch (this.dateFilter) {
       case "ALL":
-        return false;
+        return true;
         break;
       case "1d":
         if (revenueDate > this.subDate(1)) {
