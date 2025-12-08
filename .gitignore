@@ -6,3 +6,4 @@
 /posbuddy-guest/build/
 /posbuddy-guest/build_static_website/
 /posbuddy-api/out/
+/node_modules/
