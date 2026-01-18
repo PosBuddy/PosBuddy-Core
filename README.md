@@ -1,6 +1,6 @@
 # Project Site
 
-[https://sites.google.com/view/posbuddy](https://joern-karthaus.de/posbuddy/)
+https://joern-karthaus.de/posbuddy/
 
 ## PosBuddy@Github
 
