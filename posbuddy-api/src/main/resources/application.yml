@@ -56,10 +56,12 @@ micronaut:
       client-authentication: want
       key-store:
         path: classpath:ssl/keystore.p12
+        #password: posbuddy-demo
         password: posBuddy
         type: PKCS12
       trust-store:
         path: classpath:ssl/truststore.jks
+        #password: posbuddy-demo
         password: posBuddy
         type: JKS
       port: 443

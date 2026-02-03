@@ -29,6 +29,8 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
 
     private static final String ONE_TIME_REPORT = "oneTimeID.jrxml";
 
+    
+
     public record reportDescriptor(
             ReportType reportType,
             String fileName,
