@@ -7,8 +7,13 @@ import jakarta.inject.Singleton;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.apache.commons.io.FileUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,10 +31,10 @@ import java.util.*;
 public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportService {
 
     public static final String ONE_TIME_REPORT_PREFIX = "oneTimeID_";
-
     private static final String ONE_TIME_REPORT = "oneTimeID.jrxml";
+    private static final String ACCOUNT_BALANCE_REPORT = "accountBalance.jrxml";
+    private static final String MENUE_REPORT = "menue.jrxml";
 
-    
 
     public record reportDescriptor(
             ReportType reportType,
@@ -135,10 +140,48 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
 
 
     @Override
-    public void createMenueReport() throws JRException, IOException, SQLException {
+    public byte[] createMenueReport() throws JRException, IOException, SQLException {
         Map<String, Object> parameters = new HashMap<>();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JasperReport menueReport = JasperCompileManager.compileReport(
+                reportSource.resolve(MENUE_REPORT).toString()
+        );
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                menueReport,
+                parameters,
+                databaseConnection
+        );
+        JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+        log.info("menue Report created");
+        return outputStream.toByteArray();
+    }
 
+    @Override
+    public byte[] createAccountBalanceReport() throws JRException, IOException, SQLException {
+        Map<String, Object> parameters = new HashMap<>();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JasperReport accountBalanceReport = JasperCompileManager.compileReport(
+                reportSource.resolve(ACCOUNT_BALANCE_REPORT).toString()
+        );
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                accountBalanceReport,
+                parameters,
+                databaseConnection
+        );
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
 
+        // 4. Configure Excel Specific Settings
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(false); // Keep everything on one sheet
+        configuration.setRemoveEmptySpaceBetweenRows(true);
+        configuration.setDetectCellType(true); // Ensures numbers stay numbers
+        configuration.setWhitePageBackground(false);
+        exporter.setConfiguration(configuration);
+        log.info("account Balance Report created");
+        exporter.exportReport();
+        return outputStream.toByteArray();
     }
 
     @Override

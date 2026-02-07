@@ -24,6 +24,7 @@ import {DispensingStationFilterComponent} from "./dispensing-station-filter/disp
 import {SpecialTransactionComponent} from "./special-transaction/special-transaction.component";
 import {ReportComponent} from "./report/report.component";
 import {LoadingIndicatorComponent} from "./loading-indicator/loading-indicator.component";
+import {ReportFormComponent} from "./report-form/report-form.component";
 
 @Component({
   selector: 'app-root',
@@ -46,7 +47,8 @@ import {LoadingIndicatorComponent} from "./loading-indicator/loading-indicator.c
     DispensingStationFilterComponent,
     SpecialTransactionComponent,
     ReportComponent,
-    LoadingIndicatorComponent
+    LoadingIndicatorComponent,
+    ReportFormComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'

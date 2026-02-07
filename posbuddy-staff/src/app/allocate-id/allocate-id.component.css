@@ -1,0 +1,18 @@
+.edit-zone {
+  border-radius: 15px;
+  overflow: hidden; /* Damit der farbige Header die abgerundeten Ecken übernimmt */
+}
+
+.border-dashed {
+  border-style: dashed !important;
+}
+
+.fw-mono {
+  font-family: 'Courier New', Courier, monospace;
+  letter-spacing: 1px;
+}
+
+/* Verhindert, dass die Card im Akkordeon "eingequetscht" aussieht */
+.container {
+  max-width: 800px;
+}

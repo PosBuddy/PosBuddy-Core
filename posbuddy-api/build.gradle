@@ -39,6 +39,8 @@ dependencies {
     implementation("net.sf.barcode4j:barcode4j:2.1")
     implementation("com.google.zxing:core:3.5.3")
     implementation("org.apache.xmlgraphics:batik-bridge:1.17")
+    implementation("org.apache.poi:poi-ooxml:5.2.3")
+
 
 
     compileOnly("org.projectlombok:lombok")

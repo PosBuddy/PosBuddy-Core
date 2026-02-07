@@ -1,214 +1,223 @@
-<nav class="navbar navbar-light" style="background-color: #e3f2fd;">
-  <a class="navbar-brand mb-0 h1" href="#">PosBuddy {{ version }} &#9400; by JK</a>
-  <button class="navbar-toggler"
-          type="button"
-          (click)="isCollapsed = !isCollapsed"
-          data-toggle="collapse"
-          data-bs-toggle="collapse"
-          data-target="#navbarSupportedContent"
-          data-bs-target="#navbarSupportedContent"
-          [attr.aria-expanded]="!isCollapsed"
-          aria-controls="navbarSupportedContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-  <!---------------------------------------------------------------------------------------------------Hamburger Menue-->
-  <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a class="nav-link"
-           [ngClass]="{'disabled' : (!perm.checkoutPermission && !perm.servePermission && !perm.adminPermission)}"
-           href="#"
-           (click)="openFilter(stationFilter)"><i class="bi bi-funnel"></i>Ausgabestationen Filtern</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link"
-           [ngClass]="{'disabled' : !perm.adminPermission}"
-           href="#">
-          <i class="bi bi-body-text"></i>Import Textbausteine</a>
-      </li>
-      <li class="nav-item active">
-        <a class="nav-link"
-           [ngClass]="{'disabled' : !(perm.checkoutPermission || perm.adminPermission)}"
-           href="#"
-           (click)="openReportList(reportList)"><i class="bi bi-card-list"></i>Reports</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link"
-           href="#"
-           (click)="openInfo(infoModal)"
-        >Info</a>
-      </li>
-    </ul>
+<nav class="navbar navbar-expand-lg navbar-light shadow-sm mb-3"
+     style="background-color: #e3f2fd; border-bottom: 2px solid #bbdefb;">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-primary" href="#">
+      <i class="bi bi-cpu-fill me-2"></i>PosBuddy {{ version }} <span class="fw-light small fs-6">&#9400; by JK</span>
+    </a>
+    <button class="navbar-toggler border-0"
+            type="button"
+            (click)="isCollapsed = !isCollapsed"
+            [attr.aria-expanded]="!isCollapsed"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent" [ngbCollapse]="isCollapsed">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link px-3"
+             [ngClass]="{'disabled opacity-50' : (!perm.checkoutPermission && !perm.servePermission && !perm.adminPermission)}"
+             href="#" (click)="openFilter(stationFilter)">
+            <i class="bi bi-funnel me-1"></i> Stationen Filter
+          </a>
+        </li>
+        <!--  Not yet implemented
+        <li class="nav-item">
+          <a class="nav-link px-3" [ngClass]="{'disabled opacity-50' : !perm.adminPermission}" href="#">
+            <i class="bi bi-file-earmark-arrow-up me-1"></i> Textbausteine
+          </a>
+        </li>
+        -->
+        <li class="nav-item">
+          <a class="nav-link px-3 active"
+             [ngClass]="{'disabled opacity-50' : !(perm.checkoutPermission || perm.adminPermission)}"
+             href="#" (click)="openReportList(reportList)">
+            <i class="bi bi-graph-up-arrow me-1"></i> Reports
+          </a>
+        </li>
+        <li class="nav-item border-start ms-lg-2 ps-lg-3">
+          <a class="nav-link btn btn-outline-primary btn-sm px-3 mt-1 mt-lg-0" href="#" (click)="openInfo(infoModal)">
+            <i class="bi bi-info-circle"></i> Info
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </nav>
-<!--------------------------------------------------------------------------------------------------------------Actions-->
-<div ngbAccordion
-     [closeOthers]="true"
-     xmlns="http://www.w3.org/1999/html"
-     #accMenue="ngbAccordion"
->
+
+<div ngbAccordion [closeOthers]="true" #accMenue="ngbAccordion" class="custom-accordion container pb-5">
   @if (perm.checkoutPermission || perm.adminPermission) {
-    <!--                                   ########ALLOCATE PERSON########                                            -->
-    <div ngbAccordionItem="accF1" [collapsed]="!perm.checkoutPermission" #accF1="ngbAccordionItem">
+    <div ngbAccordionItem="accF1" [collapsed]="!perm.checkoutPermission" class="accordion-card mb-3 border-0 shadow-sm">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton>
-          <i class="bi bi-1-circle"></i>
-          <span style="width: 50px"></span>
-          <i class="bi bi-database-fill-add">&nbsp;Person zuordnen</i>
+        <button ngbAccordionButton class="fw-semibold">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3">1</span>
+            <i class="bi bi-database-fill-add me-2 text-primary"></i> Person zuordnen
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody class="p-0">
           <ng-template>
-            @if (perm.checkoutPermission || perm.adminPermission) {
-              <app-allocate-id [permissions]=perm></app-allocate-id>
-            } @else {
-              <ngb-alert [dismissible]="false" type="danger">
-                <strong>Keine Berechtigung!</strong>
-              </ngb-alert>
-            }
+            <div class="p-3">
+              @if (perm.checkoutPermission || perm.adminPermission) {
+                <app-allocate-id [permissions]=perm></app-allocate-id>
+              } @else {
+                <ngb-alert [dismissible]="false" type="danger"><strong>Keine Berechtigung!</strong></ngb-alert>
+              }
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
-    <!--                                   ########ADD VALUE########                                                   -->
-    <div ngbAccordionItem="accF2" [collapsed]="true" #accF2="ngbAccordionItem">
+
+    <div ngbAccordionItem="accF2" [collapsed]="true" class="accordion-card mb-3 border-0 shadow-sm">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton>
-          <i class="bi bi-2-circle"></i>
-          <span style="width: 50px"></span>
-          <i class="bi bi-currency-euro">&nbsp;Konto aufladen</i>
+        <button ngbAccordionButton class="fw-semibold text-success">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-success text-white">2</span>
+            <i class="bi bi-currency-euro me-2"></i> Konto aufladen
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody class="p-0">
           <ng-template>
-            @if (perm.checkoutPermission || perm.adminPermission) {
-              <app-add-value></app-add-value>
-            } @else {
-              <ngb-alert [dismissible]="false" type="danger">
-                <strong>Keine Berechtigung!</strong>
-              </ngb-alert>
-            }
+            <div class="p-3">
+              @if (perm.checkoutPermission || perm.adminPermission) {
+                <app-add-value></app-add-value>
+              } @else {
+                <ngb-alert [dismissible]="false" type="danger">Keine Berechtigung!</ngb-alert>
+              }
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
-    <!--                                   ########PAYOUT########                                                      -->
-    <div ngbAccordionItem="accF3" [collapsed]="true" #accF3="ngbAccordionItem">
+
+    <div ngbAccordionItem="accF3" [collapsed]="true" class="accordion-card mb-3 border-0 shadow-sm">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton>
-          <i class="bi bi-3-circle"></i>
-          <span style="width: 50px"></span>
-          <i class="bi bi-arrow-90deg-down">&nbsp;Auszahlen</i>
+        <button ngbAccordionButton class="fw-semibold text-danger">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-danger text-white">3</span>
+            <i class="bi bi-arrow-90deg-down me-2"></i> Auszahlen
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody class="p-0">
           <ng-template>
-            @if (perm.checkoutPermission || perm.adminPermission) {
-              <app-payout></app-payout>
-            } @else {
-              <ngb-alert [dismissible]="false" type="danger">
-                <strong>Keine Berechtigung!</strong>
-              </ngb-alert>
-            }
+            <div class="p-3">
+              @if (perm.checkoutPermission || perm.adminPermission) {
+                <app-payout></app-payout>
+              }
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
-    <!--                                   ########DE-ALLOCATE PERSON########                                          -->
-    <div ngbAccordionItem="accF4" [collapsed]="true" #accF4="ngbAccordionItem">
+
+    <div ngbAccordionItem="accF4" [collapsed]="true" class="accordion-card mb-3 border-0 shadow-sm">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton>
-          <i class="bi bi-4-circle"></i>
-          <span style="width: 50px"></span>
-          <i class="bi bi-arrow-bar-right">&nbsp;Personenzuordnung aufheben</i>
+        <button ngbAccordionButton class="fw-semibold text-secondary">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-secondary text-white">4</span>
+            <i class="bi bi-arrow-bar-right me-2"></i> Personenzuordnung aufheben
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody class="p-0">
           <ng-template>
-            @if (perm.checkoutPermission || perm.adminPermission) {
+            <div class="p-3">
               <app-deallocate></app-deallocate>
-            } @else {
-              <ngb-alert [dismissible]="false" type="danger">
-                <strong>Keine Berechtigung!</strong>
-              </ngb-alert>
-            }
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
   }
+
   @if (perm.servePermission || perm.checkoutPermission || perm.adminPermission) {
-    <!--                                   ########REVENUE########                                                     -->
-    <div ngbAccordionItem="accF5" [collapsed]="true" #accF5="ngbAccordionItem">
+    <div ngbAccordionItem="accF5" [collapsed]="true"
+         class="accordion-card mb-3 border-0 shadow-sm border-start border-4 border-info">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton>
-          <i class="bi bi-5-circle"></i>
-          <span style="width: 50px"></span>
-          <i class="bi bi-list-columns-reverse">&nbsp;ID Umsätze anzeigen</i>
+        <button ngbAccordionButton class="fw-semibold">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-info text-dark">5</span>
+            <i class="bi bi-list-columns-reverse me-2"></i> ID Umsätze anzeigen
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody class="p-0">
           <ng-template>
-            @if (perm.checkoutPermission || perm.servePermission || perm.adminPermission) {
+            <div class="p-3">
               <app-revenue></app-revenue>
-            } @else {
-              <ngb-alert [dismissible]="false" type="danger">
-                <strong>Keine Berechtigung!</strong>
-              </ngb-alert>
-            }
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
-    <!--                                   ########SERVE########                                                       -->
-    <div ngbAccordionItem="accF6"
-         [collapsed]="perm.checkoutPermission"
-         #accF6="ngbAccordionItem">
+
+    <div ngbAccordionItem="accF6" [collapsed]="perm.checkoutPermission"
+         class="accordion-card mb-3 border-0 shadow-sm border-start border-4 border-primary">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton>
-          <i class="bi bi-6-circle"></i>
-          <span style="width: 50px"></span>
-          <i class="bi bi-cart-check">&nbsp;Ausgabe</i>
+        <button ngbAccordionButton class="fw-semibold">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-primary text-white">6</span>
+            <i class="bi bi-cart-check me-2"></i> Ausgabe
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody>
+        <div ngbAccordionBody class="p-0">
           <ng-template>
-            @if (perm.checkoutPermission || perm.servePermission || perm.adminPermission) {
+            <div class="p-3">
               <app-serve></app-serve>
-            } @else {
-              <ngb-alert [dismissible]="false" type="danger">
-                <strong>Keine Berechtigung!</strong>
-              </ngb-alert>
-            }
+            </div>
           </ng-template>
         </div>
       </div>
     </div>
   }
+
   @if (perm.adminPermission) {
-    <!--                                   ########SPECIAL-TRANSACTION########                                         -->
-    <div ngbAccordionItem="accF7"
-         [collapsed]="true"
-         #accF7="ngbAccordionItem">
+    <div ngbAccordionItem="accF7" [collapsed]="true" class="accordion-card mb-3 border-0 shadow-sm special-zone">
       <h2 ngbAccordionHeader>
-        <button ngbAccordionButton style="background-color: #ffc107">
-          <i class="bi bi-7-circle"></i>
-          <span style="width: 55px"></span>
-          <i class="bi bi-exposure">&nbsp;Sonderbuchung</i>
+        <button ngbAccordionButton class="fw-bold admin-button">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-warning text-dark border border-dark">7</span>
+            <i class="bi bi-exposure me-2"></i> Sonderbuchung
+          </div>
         </button>
       </h2>
       <div ngbAccordionCollapse>
-        <div ngbAccordionBody style="background-color: #fff3cd">
+        <div ngbAccordionBody class="bg-warning-subtle p-0">
           <ng-template>
-            <app-special-transaction></app-special-transaction>
+            <div class="p-3">
+              <app-special-transaction></app-special-transaction>
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </div>
+
+    <div ngbAccordionItem="accF8" [collapsed]="true" class="accordion-card mb-3 border-0 shadow-sm special-zone">
+      <h2 ngbAccordionHeader>
+        <button ngbAccordionButton class="fw-bold admin-button">
+          <div class="d-flex align-items-center w-100">
+            <span class="step-badge me-3 bg-warning text-dark border border-dark">8</span>
+            <i class="bi bi-file-earmark-text me-2"></i> Berichtgenerierung
+          </div>
+        </button>
+      </h2>
+      <div ngbAccordionCollapse>
+        <div ngbAccordionBody class="bg-warning-subtle p-0">
+          <ng-template>
+            <div class="p-3">
+              <app-report-form></app-report-form>
+            </div>
           </ng-template>
         </div>
       </div>
@@ -216,85 +225,70 @@
   }
 </div>
 
-<!----------------------------------------------------------------------------------offcanvas-dispensing Station Filter-->
 <ng-template #stationFilter let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="offcanvas-basic-title">Filter</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  <div class="offcanvas-header bg-light">
+    <h4 class="offcanvas-title"><i class="bi bi-funnel me-2"></i>Filter</h4>
+    <button type="button" class="btn-close" (click)="offcanvas.dismiss()"></button>
   </div>
   <div class="offcanvas-body">
-    <div class="mb-3">
-      <app-dispensing-station-filter></app-dispensing-station-filter>
-    </div>
-  </div>
-  <div class="text-end">
-    Ausgabestationen
+    <app-dispensing-station-filter></app-dispensing-station-filter>
+    <div class="text-muted small mt-3 text-end">Ausgabestationen</div>
   </div>
 </ng-template>
-<!----------------------------------------------------------------------------------------------------offcanvas-Reports-->
+
 <ng-template #reportList let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="offcanvas-report">Reports</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  <div class="offcanvas-header bg-light">
+    <h4 class="offcanvas-title"><i class="bi bi-card-list me-2"></i>Reports</h4>
+    <button type="button" class="btn-close" (click)="offcanvas.dismiss()"></button>
   </div>
   <div class="offcanvas-body">
-    <div class="mb-3">
-      <app-report></app-report>
-    </div>
-  </div>
-  <div class="text-end">
-    Report auswählen
+    <app-report></app-report>
+    <div class="text-muted small mt-3 text-end">Report auswählen</div>
   </div>
 </ng-template>
-<!---------------------------------------------------------------------------------------------------------- Info Modal-->
+
 <ng-template #infoModal let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-basic-title">PosBuddy {{ version }}</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+    <h4 class="modal-title">PosBuddy {{ version }}</h4>
+    <button type="button" class="btn-close" (click)="modal.dismiss()"></button>
   </div>
   <div class="modal-body">
-    <form>
-      <div class="mb-3">
-        <a href="https://github.com/PosBuddy" target="_blank">PosBuddy</a>
-        das Kassensystem für Vereine.
-        <p></p>
-        <h5>
-          Konzeption : Carsten Puhl / Jörn Karthaus
-        </h5>
-        <ul>
-          <li>
-            Ausgabe - Berechtigung &nbsp;
-            @if (perm.servePermission) {
-              <i class="bi bi-check-lg"></i>
-            } @else {
-              <i class="bi bi-emoji-frown-fill"></i>
-            }
+    <div class="text-center mb-4">
+      <a href="https://github.com/PosBuddy" target="_blank" class="btn btn-dark btn-sm">
+        <i class="bi bi-github me-2"></i>GitHub Projekt
+      </a>
+    </div>
+    <div class="card bg-light border-0">
+      <div class="card-body">
+        <h6 class="fw-bold border-bottom pb-2">Berechtigungen:</h6>
+        <ul class="list-unstyled mb-0">
+          <li class="d-flex justify-content-between align-items-center py-1">
+            Ausgabe-Berechtigung:
+            <i
+              [class]="perm.servePermission ? 'bi bi-check-circle-fill text-success' : 'bi bi-x-circle-fill text-danger'"></i>
           </li>
-          <li>
-            Kasse - Berechtigung &nbsp;
-            @if (perm.checkoutPermission) {
-              <i class="bi bi-check-lg"></i>
-            } @else {
-              <i class="bi bi-emoji-frown-fill"></i>
-            }
+          <li class="d-flex justify-content-between align-items-center py-1">
+            Kasse-Berechtigung:
+            <i
+              [class]="perm.checkoutPermission ? 'bi bi-check-circle-fill text-success' : 'bi bi-x-circle-fill text-danger'"></i>
           </li>
-          <li>
-            Admin - Berechtigung &nbsp;
-            @if (perm.adminPermission) {
-              <i class="bi bi-check-lg"></i>
-            } @else {
-              <i class="bi bi-emoji-frown-fill"></i>
-            }
+          <li class="d-flex justify-content-between align-items-center py-1">
+            Admin-Berechtigung:
+            <i
+              [class]="perm.adminPermission ? 'bi bi-check-circle-fill text-success' : 'bi bi-x-circle-fill text-danger'"></i>
           </li>
         </ul>
       </div>
-    </form>
+    </div>
+    <p class="mt-3 small text-center text-muted">Konzeption: Carsten Puhl / Jörn Karthaus</p>
   </div>
-  <div class="modal-footer">
-    <i class="bi bi-opencollective"></i> by <a href="https://joern-karthaus.de" target="_blank">Jörn Karthaus</a>
+  <div class="modal-footer justify-content-center">
+    <span class="small text-muted">
+      <i class="bi bi-opencollective"></i> by
+      <a href="https://joern-karthaus.de" target="_blank" class="text-decoration-none">Jörn Karthaus</a>
+    </span>
   </div>
 </ng-template>
 
 <loading-indicator/>
-
 <router-outlet/>

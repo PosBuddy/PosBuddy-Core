@@ -5,11 +5,8 @@ import de.jkarthaus.posBuddy.mapper.ConfigMapper;
 import de.jkarthaus.posBuddy.model.gui.FtpConfigDto;
 import de.jkarthaus.posBuddy.model.gui.FtpSyncLogResponse;
 import de.jkarthaus.posBuddy.model.gui.SpecialTransactionDto;
-import de.jkarthaus.posBuddy.service.DataImportService;
-import de.jkarthaus.posBuddy.service.FtpSyncService;
-import de.jkarthaus.posBuddy.service.PartyActionService;
-import de.jkarthaus.posBuddy.service.ReportService;
-import de.jkarthaus.posBuddy.service.SecurityService;
+import de.jkarthaus.posBuddy.service.*;
+import io.micronaut.http.HttpHeaders;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -28,10 +25,13 @@ import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS;
 
 
-@Controller(value = "/api/v1", port = "${ micronaut.server.ssl.port }")
+@Controller(value = "staff/api/v1", port = "${ micronaut.server.ssl.port }")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminRestController {
@@ -43,9 +43,11 @@ public class AdminRestController {
     final ReportService reportService;
     final ConfigMapper configMapper;
 
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");
+
     //--------------------------------------------------------------------------------------------------store ftp config
     @Secured(IS_ANONYMOUS)
-    @Post(uri = "/report/menue", produces = MediaType.APPLICATION_JSON)
+    @Get(uri = "/report/menu", produces = MediaType.APPLICATION_JSON)
     @ApiResponses(value = {
             @ApiResponse(responseCode = "500", description = "server error occured"),
             @ApiResponse(responseCode = "401", description = "forbidden - you need a admin certificate"),
@@ -53,12 +55,19 @@ public class AdminRestController {
     })
     @Tag(name = "admin")
     @ReadOnly
-    public HttpResponse<String> createMenueReport(
+    public HttpResponse<byte[]> createMenueReport(
             @Nullable X509Authentication x509Authentication,
             @Nullable Authentication authentication) {
         try {
             if (securityService.isAdmin(x509Authentication)) {
-                reportService.createMenueReport();
+                byte[] reportContent = reportService.createMenueReport();
+                String fileName = "speisekarte_" + LocalDateTime.now().format(formatter) + ".pdf";
+                return HttpResponse.ok(reportContent)
+                        .contentType("application/pdf")
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + fileName + "\""
+                        ).contentLength(reportContent.length);
+
             } else {
                 log.warn("forbidden access to serve endpoint");
                 return HttpResponse.status(HttpStatus.FORBIDDEN);
@@ -67,9 +76,7 @@ public class AdminRestController {
             log.error("Exception:{}", e.getMessage());
             return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return HttpResponse.ok();
     }
-
 
     //--------------------------------------------------------------------------------------------------store ftp config
     @Secured(IS_ANONYMOUS)
@@ -245,5 +252,35 @@ public class AdminRestController {
         return HttpResponse.ok();
     }
 
+    //-----------------------------------------------------------------------------------------------Ad Hoc Reporting
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/report/account-balance-report")
+    @Tag(name = "admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "forbidden - you need a admin certificate"),
+            @ApiResponse(responseCode = "500", description = "server error occured"),
+    })
+    public HttpResponse<byte[]> accountBalanceReport(
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        try {
+            if (securityService.isAdmin(x509Authentication)) {
+                log.info("create an account balance report");
+                byte[] reportContent = reportService.createAccountBalanceReport();
+                String fileName = "kontostaende_" + LocalDateTime.now().format(formatter) + ".xlsx";
+                return HttpResponse.ok(reportContent)
+                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + fileName + "\""
+                        ).contentLength(reportContent.length);
+            } else {
+                log.warn("forbidden access to serve endpoint");
+                return HttpResponse.status(HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            log.error("Exception:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
 
 }

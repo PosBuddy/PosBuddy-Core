@@ -1,145 +1,151 @@
-<div class="container">
-  <div class="row pt-3">
-    <div class="col-4">ID :</div>
-    <div class="col-8">
-      <input type="password"
-             readonly
-             [(ngModel)]="posBuddyId"
-             tabindex="-1"
-             [disabled]="disableIdScan"
-      />
+<div class="container py-4">
+  <div class="card border-0 shadow-lg edit-zone">
+    <div class="card-header bg-primary text-white py-3">
+      <h5 class="mb-0 d-flex align-items-center">
+        <i class="bi bi-pencil-square me-2"></i> Stammdaten bearbeiten & zuordnen
+      </h5>
     </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-4">Vorname :</div>
-    <div class="col-8">
-      <input type="text"
-             [maxLength]="40"
-             [(ngModel)]="surname"
-             tabindex="1" #surnameInput/>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-4">Nachname :</div>
-    <div class="col-8">
-      <input type="text"
-             [maxlength]="40"
-             [(ngModel)]="lastname"
-             tabindex="2"/>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-4">Geburtstag :</div>
-    <div class="col-8">
-      <input type="text" [(ngModel)]="birthday" tabindex="3"/>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-4">Merkmal 1 :</div>
-    <div class="col-8">
-      <input type="text"
-             [maxlength]="40"
-             [(ngModel)]="attribute1"
-             tabindex="4"/>
-    </div>
-  </div>
-  <div class="row pt-2">
-    <div class="col-4">Merkmal 2 :</div>
-    <div class="col-8">
-      <input type="text"
-             [maxlength]="40"
-             [(ngModel)]="attribute2"
-             tabindex="5"/>
-    </div>
-  </div>
-  <div class="row pt-2">
-    <div class="col-4">Merkmal 3 :</div>
-    <div class="col-8">
-      <input type="text"
-             [maxlength]="40"
-             [(ngModel)]="attribute3"
-             tabindex="6"/>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-4">Startbetrag :</div>
-    <div class="col-8">
-      <input type="text" [(ngModel)]="balance" tabindex="7"/>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
-      <div class="col-4">
-        <input type="radio"
-               class="btn-check"
-               name="btnradioBorrowCard"
-               id="btnradioBorrowCard"
-               autocomplete="off" [checked]="borrowCard"
-               (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_BORROW)">
-        <label class="btn btn-outline-primary" for="btnradioBorrowCard">Leihkarte</label>
+
+    <div class="card-body p-4 bg-white">
+
+      <div class="id-section mb-4 p-3 rounded-3 border-start border-4 border-primary bg-light">
+        <label class="small fw-bold text-uppercase text-muted mb-2 d-block">System-Identifikation</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="bi bi-upc-scan text-primary"></i></span>
+          <input type="password" class="form-control bg-white fw-mono"
+                 readonly [(ngModel)]="posBuddyId" tabindex="-1" [disabled]="disableIdScan"
+                 placeholder="ID scannen erforderlich...">
+        </div>
       </div>
-      <div class="col-4">
-        <input type="radio"
-               class="btn-check"
-               name="btnradio"
-               id="btnradioOneTimeCard"
-               autocomplete="off" [checked]="oneTimeCard"
-               (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_ONE_TIME)">
-        <label class="btn btn-outline-primary" for="btnradioOneTimeCard">Einmalkarte</label>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="form-floating shadow-sm">
+            <input type="text" class="form-control" id="surname" [(ngModel)]="surname" placeholder="Vorname"
+                   #surnameInput tabindex="1">
+            <label for="surname">Vorname</label>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-floating shadow-sm">
+            <input type="text" class="form-control" id="lastname" [(ngModel)]="lastname" placeholder="Nachname"
+                   tabindex="2">
+            <label for="lastname">Nachname</label>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="form-floating shadow-sm">
+            <input type="text" class="form-control" id="birthday" [(ngModel)]="birthday" placeholder="Geburtstag"
+                   tabindex="3">
+            <label for="birthday">Geburtstag</label>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="form-floating shadow-sm">
+            <input type="text" class="form-control" id="balance" [(ngModel)]="balance" placeholder="Startbetrag"
+                   tabindex="7">
+            <label for="balance">Startbetrag (€)</label>
+          </div>
+        </div>
       </div>
-      <div class="col-4">
-        <input type="radio"
-               class="btn-check"
-               name="btnradio"
-               id="btnradioStaticCard"
-               autocomplete="off" [checked]="staticCard" [disabled]="!permissions.adminPermission"
-               (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_STATIC)">
-        <label class="btn btn-outline-primary" for="btnradioStaticCard">Pers. Karte</label>
+
+      <div class="my-4 py-2 border-top border-bottom bg-light mx-n4 px-4">
+        <label class="form-label fw-bold text-primary mb-3">Kartentyp Konfiguration</label>
+        <div class="btn-group w-100 shadow-sm" role="group">
+          <input type="radio" class="btn-check" name="cardType" id="btnBorrow" [checked]="borrowCard"
+                 (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_BORROW)">
+          <label class="btn btn-outline-primary py-2 fw-semibold" for="btnBorrow">Leihkarte</label>
+
+          <input type="radio" class="btn-check" name="cardType" id="btnOneTime" [checked]="oneTimeCard"
+                 (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_ONE_TIME)">
+          <label class="btn btn-outline-primary py-2 fw-semibold" for="btnOneTime">Einmalkarte</label>
+
+          <input type="radio" class="btn-check" name="cardType" id="btnStatic" [checked]="staticCard"
+                 [disabled]="!permissions.adminPermission" (click)="toggleCardType(PosBuddyConstants.CARD_TYPE_STATIC)">
+          <label class="btn btn-outline-primary py-2 fw-semibold" for="btnStatic">Pers. Karte</label>
+        </div>
+      </div>
+
+      <div class="row g-2 mb-4">
+        <div class="col-md-4">
+          <input type="text" class="form-control form-control-sm border-dashed" [(ngModel)]="attribute1"
+                 placeholder="Merkmal 1" tabindex="4">
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control form-control-sm border-dashed" [(ngModel)]="attribute2"
+                 placeholder="Merkmal 2" tabindex="5">
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control form-control-sm border-dashed" [(ngModel)]="attribute3"
+                 placeholder="Merkmal 3" tabindex="6">
+        </div>
+      </div>
+
+      <div class="row g-3 mt-2">
+        <div class="col-6">
+          <button class="btn btn-lg btn-secondary w-100 shadow-sm py-3" (click)="scanQRCode(content)"
+                  [disabled]="disableIdScan" tabindex="8">
+            <i class="bi bi-qr-code-scan me-2"></i> SCAN
+          </button>
+        </div>
+        <div class="col-6">
+          <button class="btn btn-lg btn-success w-100 shadow-sm py-3 fw-bold" (click)="checkAndSend()"
+                  [disabled]="confirmError || confirmOK" tabindex="9">
+            <i class="bi bi-cloud-arrow-up me-2"></i> ZUORDNEN
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-4">
+        @if (!formValid) {
+          <ngb-alert type="info" [dismissible]="false" class="shadow-sm border-0 bg-info-subtle"><i
+            class="bi bi-info-circle me-2"></i> {{ formValidText }}
+          </ngb-alert>
+        }
+        @if (confirmError) {
+          <ngb-alert type="danger" (closed)="resetError()" class="shadow-sm border-0"><i
+            class="bi bi-x-octagon me-2"></i> {{ serverResponse }}
+          </ngb-alert>
+        }
+        @if (confirmOK) {
+          <ngb-alert type="success" (closed)="resetOK()" class="shadow-sm border-0"><i
+            class="bi bi-check-circle me-2"></i> Id zugewiesen
+          </ngb-alert>
+        }
       </div>
     </div>
   </div>
-  <div class="row pt-3">
-    <div class="col-4">
-      <button class="btn btn-lg btn-outline-secondary"
-              #scan
-              (click)="scanQRCode(content)"
-              (keyup.enter)="scanQRCode(content)"
-              [disabled]="disableIdScan"
-              tabindex="8">SCAN
-      </button>
-    </div>
-    <div class="col-8">
-      <button class="btn btn-lg btn-outline-primary" tabindex="9"
-              (click)="checkAndSend()" [disabled]="confirmError || confirmOK">zuordnen
-      </button>
-    </div>
-  </div>
-  <div class="row pt-3">
-    <div class="col-12">
-      @if (!formValid) {
-        <ngb-alert type="info" [dismissible]="false">{{ formValidText }}</ngb-alert>
-      }
-      @if (confirmError) {
-        <ngb-alert type="danger" (closed)="resetError()">{{ serverResponse }}</ngb-alert>
-      }
-      @if (confirmOK) {
-        <ngb-alert type="success" (closed)="resetOK()">Id zugewiesen</ngb-alert>
-      }
-    </div>
-  </div>
-</div>
-<!-------------------------------------------------------------------------------                           SCANNER -->
+</div><!--                                                                  Scanner                                        -->
 <ng-template #content let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="offcanvas-basic-title">Id Scannen</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  <div class="offcanvas-header bg-light border-bottom">
+    <h5 class="offcanvas-title d-flex align-items-center" id="offcanvas-basic-title">
+      <i class="bi bi-qr-code-scan me-2 text-primary"></i>
+      ID Scannen
+    </h5>
+    <button type="button" class="btn-close text-reset" aria-label="Close"
+            (click)="offcanvas.dismiss('Cross click')"></button>
   </div>
-  <div class="offcanvas-body">
-    <div class="mb-3">
-      <zxing-scanner (scanSuccess)="onScanSuccess($event)"></zxing-scanner>
+
+  <div class="offcanvas-body d-flex flex-column align-items-center justify-content-center bg-dark text-white">
+    <div class="scanner-wrapper w-100 shadow-lg rounded overflow-hidden border border-secondary">
+      <zxing-scanner
+        (scanSuccess)="onScanSuccess($event)"
+        [previewFitMode]="'cover'">
+      </zxing-scanner>
+    </div>
+
+    <div class="mt-4 text-center">
+      <div class="spinner-grow spinner-grow-sm text-primary me-2" role="status"></div>
+      <span class="small text-uppercase tracking-wider">Suche nach QR-Code...</span>
+      <p class="text-muted mt-2 small">
+        Bitte halten Sie den QR-Code mittig in das Kamera-Sichtfeld.
+      </p>
     </div>
   </div>
-  <div class="text-end">
-    Bitte QR-code in der Kamera ausrichten.
+
+  <div class="offcanvas-footer p-3 border-top bg-light text-center">
+    <button type="button" class="btn btn-outline-danger w-100" (click)="offcanvas.dismiss()">
+      Abbrechen
+    </button>
   </div>
 </ng-template>
