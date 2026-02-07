@@ -1,0 +1,56 @@
+<div [class.blur-content]="confirmDownload" class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0 bg-light">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-box bg-primary text-white rounded-3 p-3 me-3">
+              <i class="bi bi-credit-card-2-front fs-4"></i>
+            </div>
+            <h5 class="card-title m-0">Kontostände</h5>
+          </div>
+          <p class="card-text text-muted flex-grow-1">
+            Detaillierte Übersicht über die Salden aller derzeit aktiven Karten im System.
+          </p>
+          <button class="btn btn-primary w-100 mt-3 d-flex align-items-center justify-content-center"
+                  (click)="createReport('account-balance-report')">
+            <i class="bi bi-file-earmark-pdf me-2"></i> Report generieren
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card h-100 shadow-sm border-0 bg-light">
+        <div class="card-body d-flex flex-column">
+          <div class="d-flex align-items-center mb-3">
+            <div class="icon-box bg-success text-white rounded-3 p-3 me-3">
+              <i class="bi bi-restaurant fs-4"></i>
+            </div>
+            <h5 class="card-title m-0">Speisekarte</h5>
+          </div>
+          <p class="card-text text-muted flex-grow-1">
+            Aktuelles Sortiment. Alle angebotenen Artikel inklusive der hinterlegten Preise.
+          </p>
+          <button class="btn btn-success w-100 mt-3 d-flex align-items-center justify-content-center"
+                  (click)="createReport('menu')">
+            <i class="bi bi-file-earmark-pdf me-2"></i>Speisekarte abrufen
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@if (confirmDownload) {
+  <div class="alert-overlay">
+    <div class="alert-container">
+      <ngb-alert type="success" (closed)="resetConfirm()" class="shadow-lg border-2">
+        <div class="d-flex align-items-center">
+          <i class="bi bi-check-circle-fill fs-4 me-3"></i>
+          <span>Der Report befindet sich unter <strong>Downloads</strong></span>
+        </div>
+      </ngb-alert>
+    </div>
+  </div>
+}

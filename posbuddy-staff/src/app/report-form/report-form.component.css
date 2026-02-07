@@ -1,0 +1,37 @@
+.blur-content {
+  filter: blur(8px); /* Stärke der Unschärfe */
+  pointer-events: none; /* Verhindert Klicks auf Buttons im Hintergrund */
+  user-select: none; /* Verhindert Textmarkierung */
+  transition: filter 0.3s ease;
+}
+
+.alert-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.2); /* Ganz leichte Abdunklung */
+  display: flex;
+  align-items: center; /* Vertikal zentrieren */
+  justify-content: center; /* Horizontal zentrieren */
+  z-index: 9999; /* Ganz nach vorne */
+}
+
+.alert-container {
+  width: 100%;
+  max-width: 500px;
+  padding: 1rem;
+  animation: scaleIn 0.2s ease-out; /* Kleiner Einblend-Effekt */
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
