@@ -33,6 +33,7 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
     public static final String ONE_TIME_REPORT_PREFIX = "oneTimeID_";
     private static final String ONE_TIME_REPORT = "oneTimeID.jrxml";
     private static final String ACCOUNT_BALANCE_REPORT = "accountBalance.jrxml";
+    private static final String REVENUE_REPORT = "revenueReport.jrxml";
     private static final String MENUE_REPORT = "menue.jrxml";
 
 
@@ -180,6 +181,34 @@ public class ReportServiceImpl implements de.jkarthaus.posBuddy.service.ReportSe
         configuration.setWhitePageBackground(false);
         exporter.setConfiguration(configuration);
         log.info("account Balance Report created");
+        exporter.exportReport();
+        return outputStream.toByteArray();
+    }
+
+    @Override
+    public byte[] createRevenueReport() throws JRException, IOException, SQLException {
+        Map<String, Object> parameters = new HashMap<>();
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        JasperReport accountBalanceReport = JasperCompileManager.compileReport(
+                reportSource.resolve(REVENUE_REPORT).toString()
+        );
+        JasperPrint jasperPrint = JasperFillManager.fillReport(
+                accountBalanceReport,
+                parameters,
+                databaseConnection
+        );
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+
+        // 4. Configure Excel Specific Settings
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(false); // Keep everything on one sheet
+        configuration.setRemoveEmptySpaceBetweenRows(true);
+        configuration.setDetectCellType(true); // Ensures numbers stay numbers
+        configuration.setWhitePageBackground(false);
+        exporter.setConfiguration(configuration);
+        log.info("revenue report created");
         exporter.exportReport();
         return outputStream.toByteArray();
     }

@@ -252,7 +252,7 @@ public class AdminRestController {
         return HttpResponse.ok();
     }
 
-    //-----------------------------------------------------------------------------------------------Ad Hoc Reporting
+    //-----------------------------------------------------------------------------------------------account-balance-report
     @Secured(IS_ANONYMOUS)
     @Get(uri = "/report/account-balance-report")
     @Tag(name = "admin")
@@ -268,6 +268,37 @@ public class AdminRestController {
                 log.info("create an account balance report");
                 byte[] reportContent = reportService.createAccountBalanceReport();
                 String fileName = "kontostaende_" + LocalDateTime.now().format(formatter) + ".xlsx";
+                return HttpResponse.ok(reportContent)
+                        .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + fileName + "\""
+                        ).contentLength(reportContent.length);
+            } else {
+                log.warn("forbidden access to serve endpoint");
+                return HttpResponse.status(HttpStatus.FORBIDDEN);
+            }
+        } catch (Exception e) {
+            log.error("Exception:{}", e.getMessage());
+            return HttpResponse.status(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------revenue-report
+    @Secured(IS_ANONYMOUS)
+    @Get(uri = "/report/revenue-report")
+    @Tag(name = "admin")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "401", description = "forbidden - you need a admin certificate"),
+            @ApiResponse(responseCode = "500", description = "server error occured"),
+    })
+    public HttpResponse<byte[]> revenueReport(
+            @Nullable X509Authentication x509Authentication,
+            @Nullable Authentication authentication) {
+        try {
+            if (securityService.isAdmin(x509Authentication)) {
+                log.info("create an revenue report");
+                byte[] reportContent = reportService.createRevenueReport();
+                String fileName = "umsaetze_" + LocalDateTime.now().format(formatter) + ".xlsx";
                 return HttpResponse.ok(reportContent)
                         .contentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                         .header(HttpHeaders.CONTENT_DISPOSITION,

@@ -18,5 +18,7 @@ public interface ReportService {
 
     byte[] createAccountBalanceReport() throws JRException, IOException, SQLException;
 
+    byte[] createRevenueReport() throws JRException, IOException, SQLException;
+
     byte[] getReportData(String filename) throws IOException;
 }
