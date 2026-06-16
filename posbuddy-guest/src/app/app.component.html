@@ -1,43 +1,75 @@
-<ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills">
-  <li [ngbNavItem]="1">
-    <button ngbNavLink>Willkommen</button>
-    <ng-template ngbNavContent>
-      <div class="p-3 mb-2 bg-gradient text-dark border border-primary">
-        <markdown [src]="'/asset/welcome.md'"></markdown>
+<div class="container-fluid container-md py-3 py-md-5">
+  <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom bg-white rounded-4 shadow-sm px-4">
+    <div class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+      <img src="assets/guest.png" alt="Logo" width="45" height="45" class="me-3 logo-img">
+      <div>
+        <h1 class="fs-4 fw-bold mb-0 text-primary">posBuddy</h1>
+        <small class="text-secondary fw-semibold text-uppercase tracking-wider" style="font-size: 0.65rem; letter-spacing: 0.1rem;">Guest Portal</small>
       </div>
-    </ng-template>
-  </li>
-  <li [ngbNavItem]="2">
-    <button ngbNavLink>Speisekarte</button>
-    <ng-template ngbNavContent>
-      <div class="p-3 mb-2 bg-gradient text-dark border border-info">
-        <markdown [src]="'/asset/menue.md'"></markdown>
-      </div>
-    </ng-template>
-  </li>
-  <li [ngbNavItem]="3">
-    <button ngbNavLink>Info</button>
-    <ng-template ngbNavContent>
-      <div class="p-3 mb-2 bg-light text-dark border border-black">
-        <markdown [src]="'/asset/info.md'"></markdown>
-      </div>
-    </ng-template>
-  </li>
-  <li [ngbNavItem]="4">
-    <button ngbNavLink>Umsätze</button>
-    <ng-template ngbNavContent>
-      <div class="mb-2 bg-light text-dark border border-danger">
-        @if (environment.callStaticApi) {
-          <app-static-data></app-static-data>
-        } @else {
-          <app-revenue></app-revenue>
-        }
-      </div>
-    </ng-template>
-  </li>
-</ul>
-<div [ngbNavOutlet]="nav" class="mt-2"></div>
+    </div>
+  </header>
 
+  <ul ngbNav #nav="ngbNav" [(activeId)]="active" class="nav-pills nav-fill mb-4 p-2 bg-white rounded-4 shadow-sm custom-nav">
+    <li [ngbNavItem]="1">
+      <button ngbNavLink class="d-flex align-items-center justify-content-center py-2">
+        <i class="bi bi-house-door fs-5 me-2"></i>
+        <span class="d-none d-sm-inline">Willkommen</span>
+        <span class="d-inline d-sm-none">Start</span>
+      </button>
+      <ng-template ngbNavContent>
+        <div class="card border-0 shadow-sm rounded-4 animate-fade-in">
+          <div class="card-body p-4 p-md-5">
+            <markdown [src]="'/asset/welcome.md'"></markdown>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="2">
+      <button ngbNavLink class="d-flex align-items-center justify-content-center py-2">
+        <i class="bi bi-book fs-5 me-2"></i>
+        <span>Speisekarte</span>
+      </button>
+      <ng-template ngbNavContent>
+        <div class="card border-0 shadow-sm rounded-4 animate-fade-in">
+          <div class="card-body p-4 p-md-5">
+            <markdown [src]="'/asset/menue.md'"></markdown>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="3">
+      <button ngbNavLink class="d-flex align-items-center justify-content-center py-2">
+        <i class="bi bi-info-circle fs-5 me-2"></i>
+        <span>Info</span>
+      </button>
+      <ng-template ngbNavContent>
+        <div class="card border-0 shadow-sm rounded-4 animate-fade-in">
+          <div class="card-body p-4 p-md-5">
+            <markdown [src]="'/asset/info.md'"></markdown>
+          </div>
+        </div>
+      </ng-template>
+    </li>
+    <li [ngbNavItem]="4">
+      <button ngbNavLink class="d-flex align-items-center justify-content-center py-2">
+        <i class="bi bi-currency-euro fs-5 me-2"></i>
+        <span>Umsätze</span>
+      </button>
+      <ng-template ngbNavContent>
+        <div class="card border-0 shadow-sm rounded-4 animate-fade-in">
+          <div class="card-body p-4">
+            @if (environment.callStaticApi) {
+              <app-static-data></app-static-data>
+            } @else {
+              <app-revenue></app-revenue>
+            }
+          </div>
+        </div>
+      </ng-template>
+    </li>
+  </ul>
+
+  <div [ngbNavOutlet]="nav" class="mt-2"></div>
+</div>
 
 <router-outlet></router-outlet>
-

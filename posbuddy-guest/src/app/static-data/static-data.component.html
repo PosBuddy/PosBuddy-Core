@@ -1,182 +1,170 @@
-<!--                                    HEADER                                                                      -->
-<div class="container text-center" xmlns="http://www.w3.org/1999/html">
-  <div class="row">
-    <div class="col gy-1">
-      &nbsp;
-    </div>
-  </div>
-  @if (serverResponse != "") {
-    <div class="row">
-      <div class="col">
-        <ngb-alert type="danger" [dismissible]="false">{{ serverResponse }}</ngb-alert>
-      </div>
-    </div>
-  }
-  @if (actPosBuddyId == UNKNOWN_ID) {
-    <div class="row">
-      <div class="col">
-        <ngb-alert type="primary" [dismissible]="false">Bitte ID scannen</ngb-alert>
-      </div>
-    </div>
-  }
+<div class="container-fluid py-3 px-0">
+  <!--                                    HEADER / SCAN TRIGGER                                                      -->
+  <div class="card shadow-sm rounded-4 border-0 mb-4 animate-fade-in">
+    <div class="card-body p-4">
+      @if (serverResponse != "") {
+        <ngb-alert type="danger" [dismissible]="false" class="rounded-3 border-0 shadow-sm mb-4">
+          <i class="bi bi-exclamation-circle-fill me-2"></i>{{ serverResponse }}
+        </ngb-alert>
+      }
 
-  <div class="row">
-    <div class="col-6">
-      <button class="btn btn-lg btn-outline-primary"
-              (click)="scanQRCode(scanIdOC)">SCAN-ID
-      </button>
-    </div>
-    <div class="col-6">
-      <!-- revenue date range select -->
-      <div ngbDropdown class="d-inline-block">
-        <button
-          type="button"
-          class="btn btn-outline-primary"
-          id="revenueDateRangeDropdown" ngbDropdownToggle>
-          Zeitbereich
-        </button>
-        <div ngbDropdownMenu aria-labelledby="revenueDateRangeDropdown">
-          <button ngbDropdownItem
-                  (click)="revenueDateFilter('1d')">Heute
-          </button>
-          <button ngbDropdownItem
-                  (click)="revenueDateFilter('1w')">1 Woche
-          </button>
-          <button ngbDropdownItem
-                  (click)="revenueDateFilter('1m')">1 Monat
-          </button>
-          <button ngbDropdownItem
-                  (click)="revenueDateFilter('1y')">1 Jahr
-          </button>
-          <button ngbDropdownItem
-                  (click)="revenueDateFilter('ALL')">Alles
+      @if (actPosBuddyId == UNKNOWN_ID) {
+        <div class="text-center py-4">
+          <i class="bi bi-qr-code-scan display-1 text-primary-emphasis mb-3 opacity-25"></i>
+          <h4 class="fw-bold">Keine Karte verknüpft</h4>
+          <p class="text-secondary mb-4">Bitte scannen Sie Ihre ID-Karte, um Ihre Umsätze zu sehen.</p>
+          <button class="btn btn-primary btn-lg rounded-pill px-5 shadow-sm fw-bold" (click)="scanQRCode(scanIdOC)">
+            <i class="bi bi-camera me-2"></i>Jetzt scannen
           </button>
         </div>
-      </div>
-    </div>
-  </div>
-  <p></p>
-</div>
-<!--                                     REVENUE AND BALANCE                                                         -->
-@if (actPosBuddyId != UNKNOWN_ID) {
-  <div class="container-fluid" xmlns="http://www.w3.org/1999/html">
-    <p class="text-nowrap fs-4">
-    <div class="alert alert-success" role="alert">
-      <h5>Guthaben:
-        <mark> {{ staticData.balance | number: '1.2-2' }}</mark>
-        <i class="bi bi-currency-euro"></i>
-      </h5>
-    </div>
-
-    <!--                                             revenue list                                                    -->
-    <table class="table table-striped">
-      <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Zeit</th>
-        <th scope="col">M.</th>
-        <th scope="col">Artikel</th>
-        <th scope="col">Wert</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr *ngFor="let revenue of staticData.revenueList; let i = index ">
-        @if (isInDateFilter(revenue.timeOfAction)) {
-          <th scope="row">
-            <button
-              type="button"
-              class="btn btn-outline-secondary me-2"
-              placement="top-start"
-              ngbPopover="{{ revenue.timeOfAction | date:'d.MMM.y - HH:mm:ss' }}"
-              popoverTitle="Zeitpunkt">{{ i + 1 }}
-            </button>
-
-          </th>
-          <td>
-            {{ revenue.timeOfAction | date:'HH:mm' }}
-          </td>
-          <td>
-            {{ revenue.amount }}
-          </td>
-          <td>
-            @if (revenue.action == "+") {
-              <i class="bi bi-plus-circle-fill"></i>
-              Einzahlung
-            }
-            @if (revenue.action == "-") {
-              <i class="bi bi-minus-circle-fill"></i>
-              Auszahlung
-            }
-            {{ revenue.itemText }}
-          </td>
-          <td>
-            {{ revenue.value * revenue.amount | number : '1.2-2' }}
-          </td>
-        }
-      </tr>
-      </tbody>
-    </table>
-    <p class="text-nowrap fs-5">
-      Stand:
-      <mark>{{ staticData.syncTimeStamp | date:'dd.MM:YYYY HH:mm' }}</mark>
-    </p>
-  </div>
-  <p></p>
-  <!--                                  reload hint                                                                  -->
-  <div class="container text-center">
-    <div class="row">
-      <div class="col">
-        <button
-          type="button"
-          class="btn btn-lg btn-outline-primary"
-          placement="top"
-          ngbPopover="Die Umsätze werden während Veranstaltungen minütlich aktualisiert"
-          popoverTitle="Hinweis"
-          (click)="reloadData()">Erneut abrufen
-        </button>
-      </div>
-    </div>
-  </div>
-  <p></p>
-}
-
-<!--                                    SCANNER OFF CANVAS                                                           -->
-<ng-template #scanIdOC let-offcanvas>
-  <div class="offcanvas-header">
-    <h4 class="offcanvas-title" id="scanID">Karte Scannen</h4>
-    <button type="button" class="btn-close" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
-  </div>
-  <div class="offcanvas-body">
-    <div class="row">
-      <div class="col">
-        <div ngbDropdown class="d-inline-block">
-          <button type="button" class="btn btn-outline-primary" id="cameraDropDown" ngbDropdownToggle>
-            Kamera auswählen
-          </button>
-          <div ngbDropdownMenu aria-labelledby="cameraDropDown">
-            <button ngbDropdownItem *ngFor="let device of availableDevices"
-                    [value]="device.deviceId"
-                    (click)="onDeviceSelectChange(device.deviceId)">{{ device.label }}
+      } @else {
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+          <div>
+            <h5 class="fw-bold mb-1 text-dark">Deine Umsätze</h5>
+            <p class="text-secondary small mb-0">ID: {{ actPosBuddyId }}</p>
+          </div>
+          <div class="d-flex gap-2">
+            <!-- revenue date range select -->
+            <div ngbDropdown class="d-inline-block">
+              <button type="button" class="btn btn-outline-primary rounded-pill btn-sm px-3 fw-semibold" id="revenueDateRangeDropdown" ngbDropdownToggle>
+                <i class="bi bi-calendar3 me-2"></i>
+                @switch (dateFilter) {
+                  @case ('1d') { Heute }
+                  @case ('1w') { 1 Woche }
+                  @case ('1m') { 1 Monat }
+                  @case ('1y') { 1 Jahr }
+                  @case ('ALL') { Alles }
+                }
+              </button>
+              <div ngbDropdownMenu aria-labelledby="revenueDateRangeDropdown" class="rounded-3 shadow border-0">
+                <button ngbDropdownItem (click)="revenueDateFilter('1d')">Heute</button>
+                <button ngbDropdownItem (click)="revenueDateFilter('1w')">1 Woche</button>
+                <button ngbDropdownItem (click)="revenueDateFilter('1m')">1 Monat</button>
+                <button ngbDropdownItem (click)="revenueDateFilter('1y')">1 Jahr</button>
+                <button ngbDropdownItem (click)="revenueDateFilter('ALL')">Alles</button>
+              </div>
+            </div>
+            <button class="btn btn-primary rounded-pill btn-sm px-3 fw-semibold shadow-sm" (click)="scanQRCode(scanIdOC)">
+              <i class="bi bi-qr-code-scan me-1"></i>Andere Karte
             </button>
           </div>
         </div>
+      }
+    </div>
+  </div>
+
+  <!--                                     REVENUE AND BALANCE                                                         -->
+  @if (actPosBuddyId != UNKNOWN_ID) {
+    <div class="animate-fade-in">
+      <div class="card balance-card shadow rounded-4 mb-4">
+        <div class="card-body p-4 text-center">
+          <p class="text-uppercase small fw-bold tracking-wider mb-1 opacity-75">Aktuelles Guthaben</p>
+          <div class="display-3 fw-bold mb-0">
+            {{ staticData.balance | number: '1.2-2' }} <small class="fs-2">€</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container shadow-sm border mb-4">
+        <div class="table-responsive">
+          <table class="table table-hover mb-0 revenue-table align-middle">
+            <thead>
+              <tr>
+                <th class="ps-4">Zeit</th>
+                <th class="text-center">Menge</th>
+                <th>Artikel</th>
+                <th class="text-end pe-4">Wert</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let revenue of staticData.revenueList; let i = index ">
+                @if (isInDateFilter(revenue.timeOfAction)) {
+                  <td class="ps-4 py-3">
+                    <span class="fw-semibold text-dark" [ngbPopover]="revenue.timeOfAction | date:'d. MMM y - HH:mm:ss'" popoverTitle="Zeitpunkt" placement="top-start" style="cursor: help;">
+                      {{ revenue.timeOfAction | date:'HH:mm' }}
+                    </span>
+                  </td>
+                  <td class="text-center py-3">
+                    <span class="badge bg-light text-dark border rounded-pill px-3">{{ revenue.amount }}</span>
+                  </td>
+                  <td class="py-3">
+                    <div class="d-flex align-items-center">
+                      <span class="action-badge" [class.bg-success-subtle]="revenue.action == '+'" [class.text-success]="revenue.action == '+'" [class.bg-danger-subtle]="revenue.action == '-'" [class.text-danger]="revenue.action == '-'">
+                        <i class="bi" [class.bi-plus-lg]="revenue.action == '+'" [class.bi-dash-lg]="revenue.action == '-'"></i>
+                      </span>
+                      <div>
+                        <div class="fw-bold text-dark">{{ revenue.itemText }}</div>
+                        <div class="small text-secondary">{{ revenue.action == '+' ? 'Einzahlung' : 'Auszahlung' }}</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="text-end pe-4 py-3 fw-bold" [class.text-success]="revenue.action == '+'" [class.text-danger]="revenue.action == '-'">
+                    {{ (revenue.action == '+' ? '' : '-') }}{{ Math.abs(revenue.value * revenue.amount) | number : '1.2-2' }} €
+                  </td>
+                }
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center px-2">
+        <span class="sync-timestamp">
+          <i class="bi bi-clock-history me-1"></i>Stand: {{ staticData.syncTimeStamp | date:'dd.MM.yyyy HH:mm' }}
+        </span>
+        <button type="button" class="btn btn-sm btn-outline-primary rounded-pill px-3" (click)="reloadData()" [ngbPopover]="reloadPopContent" popoverTitle="Hinweis" placement="top-end">
+          <i class="bi bi-arrow-clockwise me-1"></i>Erneut abrufen
+        </button>
+        <ng-template #reloadPopContent>
+          Die Umsätze werden während Veranstaltungen minütlich aktualisiert.
+        </ng-template>
       </div>
     </div>
-    <p></p>
-    <div class="row">
-      <div class="col">
-        <zxing-scanner
-          [enable]="true"
-          (scanSuccess)="onScanSuccess($event)"
-          (camerasFound)="onCamerasFound($event)"
-          [device]="deviceCurrent"
-          (deviceChange)="onDeviceChange($event)">
-        </zxing-scanner>
+  }
+</div>
+
+<!--                                    SCANNER OFF CANVAS                                                           -->
+<ng-template #scanIdOC let-offcanvas>
+  <div class="offcanvas-header border-bottom bg-light">
+    <h5 class="offcanvas-title fw-bold" id="scanID">
+      <i class="bi bi-camera me-2 text-primary"></i>Karte scannen
+    </h5>
+    <button type="button" class="btn-close shadow-none" aria-label="Close" (click)="offcanvas.dismiss('Cross click')"></button>
+  </div>
+  <div class="offcanvas-body p-4 text-center">
+    <div class="mb-4 text-start">
+      <label class="form-label small fw-bold text-secondary text-uppercase mb-2">Kamera auswählen</label>
+      <div ngbDropdown class="w-100">
+        <button type="button" class="btn btn-outline-secondary w-100 text-start d-flex justify-content-between align-items-center rounded-3" id="cameraDropDown" ngbDropdownToggle>
+          <span class="text-truncate">{{ deviceCurrent?.label || 'Standardkamera' }}</span>
+        </button>
+        <div ngbDropdownMenu aria-labelledby="cameraDropDown" class="w-100 shadow border-0 rounded-3">
+          <button ngbDropdownItem *ngFor="let device of availableDevices" [value]="device.deviceId" (click)="onDeviceSelectChange(device.deviceId)" class="py-2">
+            <i class="bi bi-camera-video me-2"></i>{{ device.label }}
+          </button>
+        </div>
       </div>
     </div>
-    <div class="text-end">
-      Bitte QR-code in der Kamera ausrichten.<br>
-      Bei Problemen andere Kamera wählen
+
+    <div class="scanner-container mb-4">
+      <zxing-scanner
+        [enable]="true"
+        (scanSuccess)="onScanSuccess($event)"
+        (camerasFound)="onCamerasFound($event)"
+        [device]="deviceCurrent"
+        (deviceChange)="onDeviceChange($event)"
+        class="w-100 h-100">
+      </zxing-scanner>
+      <div class="scanner-overlay">
+        <div class="scan-box rounded-3"></div>
+      </div>
     </div>
+
+    <p class="text-secondary small mb-0 px-3">
+      <i class="bi bi-info-circle me-1"></i>Bitte QR-Code in der Kamera ausrichten. Bei Problemen eine andere Kamera wählen.
+    </p>
+  </div>
+  <div class="offcanvas-footer p-3 text-center border-top">
+    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" (click)="offcanvas.dismiss()">Abbrechen</button>
   </div>
 </ng-template>

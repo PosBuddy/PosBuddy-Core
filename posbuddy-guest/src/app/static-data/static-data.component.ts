@@ -217,4 +217,5 @@ export class StaticDataComponent implements AfterViewInit {
   }
 
   protected readonly Date = Date;
+  protected readonly Math = Math;
 }

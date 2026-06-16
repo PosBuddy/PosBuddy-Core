@@ -24,6 +24,7 @@ import {Title} from "@angular/platform-browser";
     StaticDataComponent
   ],
   templateUrl: './app.component.html',
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
   active = 1;

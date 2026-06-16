@@ -80,5 +80,6 @@ export class RevenueComponent {
 
 
   protected readonly UNKNOWN_ID = UNKNOWN_ID;
+  protected readonly Math = Math;
 }
 
